@@ -1,0 +1,27 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/MacPorts 2014_5) (preloaded format=pdflatex 2015.2.21)  25 AUG 2015 23:36
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**citiBikeExample.py 10
+(./citiBikeExample.py
+LaTeX2e <2014/05/01>
+Babel <3.9k> and hyphenation patterns for 43 languages loaded.
+! You can't use `macro parameter character #' in vertical mode.
+l.1 #
+     !/usr/bin/env python
+? x
+ 
+Here is how much of TeX's memory you used:
+ 6 strings out of 494213
+ 176 string characters out of 6157463
+ 48530 words of memory out of 5000000
+ 3399 multiletter control sequences out of 15000+600000
+ 3640 words of font info for 14 fonts, out of 8000000 for 9000
+ 430 hyphenation exceptions out of 8191
+ 5i,0n,1p,47b,8s stack positions out of 5000i,500n,10000p,200000b,80000s
+No pages of output.
+PDF statistics:
+ 0 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+
