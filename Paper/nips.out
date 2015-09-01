@@ -1,0 +1,9 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Statistical Model}{}% 2
+\BOOKMARK [1][-]{section.3}{Stratified Bayesian Optimization \(SBO\) Algorithm}{}% 3
+\BOOKMARK [1][-]{section.4}{Computation of the Value of Information}{}% 4
+\BOOKMARK [2][-]{subsection.4.1}{Formulas for n\(x,xn+1,wn+1\) and an\(x\) }{section.4}% 5
+\BOOKMARK [1][-]{section.5}{Numerical Experiments}{}% 6
+\BOOKMARK [2][-]{subsection.5.1}{Analytic Test Problem}{section.5}% 7
+\BOOKMARK [2][-]{subsection.5.2}{New York City Citi Bike System}{section.5}% 8
+\BOOKMARK [1][-]{section.6}{Conclusion}{}% 9
