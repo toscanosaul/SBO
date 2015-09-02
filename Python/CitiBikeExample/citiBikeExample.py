@@ -28,7 +28,7 @@ g=unhappyPeople
 
 n1=4
 n2=4
-numberSamplesForF=2
+numberSamplesForF=int(sys.argv[3])
 fil="2014-05PoissonParameters.txt"
 nSets=4
 A,lamb=generateSets(nSets,fil)
@@ -39,7 +39,7 @@ for j in xrange(n2):
 ####
 
 TimeHours=4.0
-trainingPoints=2
+trainingPoints=int(sys.argv[2])
 numberBikes=600
 lowerX=100*np.ones(4)
 UpperX=numberBikes*np.ones(4)

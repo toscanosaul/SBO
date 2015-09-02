@@ -14,6 +14,8 @@ import os
 randomSeed=int(sys.argv[1])
 np.random.seed(randomSeed)
 
+
+
 ###Objective function
 def g(x,w1,w2):
     val=(w2)/(w1)
@@ -23,8 +25,8 @@ n1=1
 n2=1
 varianceW2givenW1=1.0
 dimensionKernel=2
-trainingPoints=5
-numberSamplesForF=30
+trainingPoints=int(sys.argv[2])
+numberSamplesForF=int(sys.argv[3])
 lowerX=[-3.0]
 UpperX=[3.0]
 nGrid=50
