@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+import numpy as np
+import matplotlib.pyplot as plt
+from math import *
+import os
+
+font = {'family' : 'normal',
+    'weight' : 'bold',
+    'size'   : 15}
+
+repetitions=100
+
+samplesIteration=15
+numberIterations=15
+numberPrior=5
+directory=os.path.join(AnalyticExample,"Results"+"%d"%samplesIteration+"AveragingSamples"+"%d"%numberPrior+"TrainingPoints")
+
+
+x=np.linspace(0,samplesIteration*numberIterations,numberIterations+1)
+y=np.zeros([repetitions,numberIterations+1])
+for i in range(0,repetitions):
+    temp=np.loadtxt(os.path.join(directory,"SBO","%d"%i+"optimalValues.txt"))
+    for j in range(numberIterations+1):
+        y[i,j]=temp[2*j]
+
+
+means=np.zeros(numberIterations+1)
+var=np.zeros(numberIterations+1)
+
+for i in xrange(numberIterations+1):
+    means[i]=np.mean(y[:,i])
+    var[i]=np.var(y[:,i])
+
+plt.plot(x,means,color='r',linewidth=2.0,label='SBO')
+confidence=means+1.96*(var**.5)/np.sqrt(repetitions)
+plt.plot(x,confidence,'--',color='r',label="95% CI")
+confidence=means-1.96*(var**.5)/np.sqrt(repetitions)
+plt.plot(x,confidence,'--',color='r')
+
+
+#y=np.zeros([35,n])
+#for i in range(1,36):
+
+#    y[i-1,:]=np.loadtxt("%d"%i+"G(xn)KGAnalytic.txt")
+    
+#for i in xrange(n):
+#    means[i]=np.mean(y[:,i])
+#    var[i]=np.var(y[:,i])
+#means+=.19
+#plt.plot(x,means,color='g',linewidth=2.0,label='KG')
+#confidence=means+1.96*(var**.5)/np.sqrt(35.0)
+#plt.plot(x,confidence,'--',color='g',label="95% CI")
+#confidence=means-1.96*(var**.5)/np.sqrt(35.0)
+#plt.plot(x,confidence,'--',color='g')
+
+
+
+
+plt.xlabel('Number of Samples',fontsize=26)
+plt.ylabel('Optimum Value of G',fontsize=24)
+plt.legend(loc=3,
+           ncol=2, mode="expand", borderaxespad=0.)
+plt.savefig("comparisonDifferentMethods.pdf")
+plt.close("all")
+
+
+
+
