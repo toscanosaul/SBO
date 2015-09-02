@@ -20,13 +20,16 @@ directory=os.path.join("CitiBikeExample","Results"+"%d"%samplesIteration+"Averag
 x=np.linspace(0,samplesIteration*numberIterations,numberIterations+1)
 y=np.zeros([repetitions,numberIterations+1])
 varY=np.zeros([repetitions,numberIterations+1])
+minSol=np.zeros([repetitions,numberIterations+1])
 cont=0
 for i in range(1,100+1):
     temp=np.loadtxt(os.path.join(directory,"SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
+    temp2=np.loadtxt(os.path.join(directory,"SBO","%d"%i+"run","%d"%i+"optimalSolutions.txt"))
     if len(temp)==(numberIterations+1)*2:
         for j in range(numberIterations+1):
             y[cont,j]=temp[2*j]
             varY[cont,j]=temp[2*j+1]
+            minSol[cont,j]=np.min(temp2[j,:])
         cont+=1
 
 print cont
@@ -37,11 +40,17 @@ var=np.zeros(numberIterations+1)
 meansVar=np.zeros(numberIterations+1)
 varVar=np.zeros(numberIterations+1)
 
+meansMin=np.zeros(numberIterations+1)
+varMin=np.zeros(numberIterations+1)
+
+
 for i in xrange(numberIterations+1):
     means[i]=np.mean(y[:,i])
     var[i]=np.var(y[:,i])
     meansVar[i]=np.mean(varY[:,i])
     varVar[i]=np.var(varY[:,i])
+    meansMin[i]=np.mean(minSol[:,i])
+    varMin[i]=np.var(minSol[:,i])
 
 plt.plot(x,means,color='r',linewidth=2.0,label='SBO')
 confidence=means+1.96*(var**.5)/np.sqrt(repetitions)
@@ -87,5 +96,18 @@ plt.ylabel('Variance of the Value of G',fontsize=24)
 plt.legend(loc=3,
            ncol=2, mode="expand", borderaxespad=0.)
 plt.savefig(os.path.join(directory,"VariancesComparisonDifferentMethods.pdf"))
+plt.close("all")
+
+plt.plot(x,meansMin,color='r',linewidth=2.0,label='Variances of the estimations of G')
+confidence=meansMin+1.96*(varMin**.5)/np.sqrt(repetitions)
+plt.plot(x,confidence,'--',color='r',label="95% CI")
+confidence=meansMin-1.96*(varMin**.5)/np.sqrt(repetitions)
+plt.plot(x,confidence,'--',color='r')
+
+plt.xlabel('Number of Samples',fontsize=26)
+plt.ylabel('Min Entry of the Solutions',fontsize=24)
+plt.legend(loc=3,
+           ncol=2, mode="expand", borderaxespad=0.)
+plt.savefig(os.path.join(directory,"MinimumEntryComparisonDifferentMethods.pdf"))
 plt.close("all")
 
