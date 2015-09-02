@@ -20,8 +20,8 @@ directory=os.path.join("AnalyticExample","Results"+"%d"%samplesIteration+"Averag
 x=np.linspace(0,samplesIteration*numberIterations,numberIterations+1)
 y=np.zeros([repetitions,numberIterations+1])
 for i in range(1,repetitions+1):
-    print temp
     temp=np.loadtxt(os.path.join(directory,"SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
+    print temp
     for j in range(numberIterations+1):
         y[i-1,j]=temp[2*j]
 
