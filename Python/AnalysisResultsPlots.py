@@ -14,7 +14,7 @@ repetitions=100
 samplesIteration=15
 numberIterations=15
 numberPrior=5
-directory=os.path.join(AnalyticExample,"Results"+"%d"%samplesIteration+"AveragingSamples"+"%d"%numberPrior+"TrainingPoints")
+directory=os.path.join("AnalyticExample","Results"+"%d"%samplesIteration+"AveragingSamples"+"%d"%numberPrior+"TrainingPoints")
 
 
 x=np.linspace(0,samplesIteration*numberIterations,numberIterations+1)
@@ -61,7 +61,7 @@ plt.xlabel('Number of Samples',fontsize=26)
 plt.ylabel('Optimum Value of G',fontsize=24)
 plt.legend(loc=3,
            ncol=2, mode="expand", borderaxespad=0.)
-plt.savefig("comparisonDifferentMethods.pdf")
+plt.savefig(os.path.join(directory,"comparisonDifferentMethods.pdf"))
 plt.close("all")
 
 
