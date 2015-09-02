@@ -9,7 +9,7 @@ font = {'family' : 'normal',
     'weight' : 'bold',
     'size'   : 15}
 
-repetitions=93
+repetitions=100
 
 samplesIteration=100
 numberIterations=30
