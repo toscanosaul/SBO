@@ -442,6 +442,6 @@ l['numberParallel']=10
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
-sboObj.SBOAlg(15,nRepeat=3,Train=True)
+sboObj.SBOAlg(30,nRepeat=10,Train=True)
 
 

@@ -218,5 +218,5 @@ l['numberParallel']=10
 
 sboObj=SB.SBO(**l)
 
-sboObj.SBOAlg(15,nRepeat=3,Train=True)
+sboObj.SBOAlg(15,nRepeat=10,Train=True)
 
