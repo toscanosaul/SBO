@@ -82,4 +82,10 @@ plt.plot(x,confidence,'--',color='r',label="95% CI")
 confidence=meansVar-1.96*(varVar**.5)/np.sqrt(repetitions)
 plt.plot(x,confidence,'--',color='r')
 
+plt.xlabel('Number of Samples',fontsize=26)
+plt.ylabel('Variance of the Value of G',fontsize=24)
+plt.legend(loc=3,
+           ncol=2, mode="expand", borderaxespad=0.)
+plt.savefig(os.path.join(directory,"VariancesComparisonDifferentMethods.pdf"))
+plt.close("all")
 
