@@ -12,7 +12,7 @@ font = {'family' : 'normal',
 repetitions=100
 
 samplesIteration=15
-numberIterations=15
+numberIterations=20
 numberPrior=5
 directory=os.path.join("AnalyticExample","Results"+"%d"%samplesIteration+"AveragingSamples"+"%d"%numberPrior+"TrainingPoints")
 
