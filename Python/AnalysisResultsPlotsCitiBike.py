@@ -19,21 +19,29 @@ directory=os.path.join("CitiBikeExample","Results"+"%d"%samplesIteration+"Averag
 
 x=np.linspace(0,samplesIteration*numberIterations,numberIterations+1)
 y=np.zeros([repetitions,numberIterations+1])
+varY=np.zeros([repetitions,numberIterations+1])
 cont=0
 for i in range(1,100+1):
     temp=np.loadtxt(os.path.join(directory,"SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
     if len(temp)==(numberIterations+1)*2:
         for j in range(numberIterations+1):
             y[cont,j]=temp[2*j]
+            vary[cont,j]=temp[2*(j+1)]
         cont+=1
 
+print cont
 
 means=np.zeros(numberIterations+1)
 var=np.zeros(numberIterations+1)
 
+meansVar=np.zeros(numberIterations+1)
+varVar=np.zeros(numberIterations+1)
+
 for i in xrange(numberIterations+1):
     means[i]=np.mean(y[:,i])
     var[i]=np.var(y[:,i])
+    meansVar[i]=np.mean(meansVar[:,i])
+    varVar[i]=np.var(varVar[:,i])
 
 plt.plot(x,means,color='r',linewidth=2.0,label='SBO')
 confidence=means+1.96*(var**.5)/np.sqrt(repetitions)
@@ -68,6 +76,10 @@ plt.legend(loc=3,
 plt.savefig(os.path.join(directory,"comparisonDifferentMethods.pdf"))
 plt.close("all")
 
-
+plt.plot(x,meansVar,color='r',linewidth=2.0,label='Variances of the estimations of G')
+confidence=meansVar+1.96*(varVar**.5)/np.sqrt(repetitions)
+plt.plot(x,confidence,'--',color='r',label="95% CI")
+confidence=meansVar-1.96*(varVar**.5)/np.sqrt(repetitions)
+plt.plot(x,confidence,'--',color='r')
 
 
