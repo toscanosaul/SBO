@@ -26,7 +26,7 @@ for i in range(1,100+1):
     if len(temp)==(numberIterations+1)*2:
         for j in range(numberIterations+1):
             y[cont,j]=temp[2*j]
-            vary[cont,j]=temp[2*(j+1)]
+            varY[cont,j]=temp[2*(j+1)]
         cont+=1
 
 print cont
@@ -40,8 +40,8 @@ varVar=np.zeros(numberIterations+1)
 for i in xrange(numberIterations+1):
     means[i]=np.mean(y[:,i])
     var[i]=np.var(y[:,i])
-    meansVar[i]=np.mean(meansVar[:,i])
-    varVar[i]=np.var(varVar[:,i])
+    meansVar[i]=np.mean(varY[:,i])
+    varVar[i]=np.var(varY[:,i])
 
 plt.plot(x,means,color='r',linewidth=2.0,label='SBO')
 confidence=means+1.96*(var**.5)/np.sqrt(repetitions)
