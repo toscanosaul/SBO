@@ -214,7 +214,7 @@ l['gradWBfunc']=gradWB
 l['randomSeed']=randomSeed
 l['pointsVOI']=pointsVOI
 l['gradXBforAn']=gradXBforAn
-l['numberParallel']=1
+l['numberParallel']=10
 
 sboObj=SB.SBO(**l)
 
