@@ -71,9 +71,21 @@ def simulatorW(n):
         wPrior[:,i]=np.random.poisson(parameterSetsPoisson[i],n)
     return wPrior
 
+
+###Used to select a starting point for gradient ascent
+def sampleFromX(n):
+    temp=np.random.randint(0,numberBikes,(n,n1-1))
+    results=np.zeros((n,n1-1))
+    for i in xrange(n):
+        results[i,:]=np.floor(euclidean_proj_l1ball(temp[i,:]))
+    return results
+
 ####Prior Data
-randomIndexes=np.random.random_integers(0,pointsVOI.shape[0]-1,trainingPoints)
-Xtrain=pointsVOI[randomIndexes,:]
+#randomIndexes=np.random.random_integers(0,pointsVOI.shape[0]-1,trainingPoints)
+tempX=sampleFromX(trainingPoints)
+tempFour=numberBikes-np.sum(tempX,1)
+tempFour=tempFour.reshape((trainingPoints,1))
+Xtrain=np.concatenate((tempX,tempFour),1)
 Wtrain=simulatorW(trainingPoints)
 XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
@@ -331,13 +343,7 @@ def euclidean_proj_l1ball(v, s=numberBikes):
     return w
 
 
-###Used to select a starting point for gradient ascent
-def sampleFromX(n):
-    temp=np.random.randint(0,numberBikes,(n,n1-1))
-    results=np.zeros((n,n1-1))
-    for i in xrange(n):
-        results[i,:]=np.floor(euclidean_proj_l1ball(temp[i,:]))
-    return results
+
 
 ###at eatch steept of the gradient ascent method, it will project the point using this function
 def projectGradientDescent(x):
