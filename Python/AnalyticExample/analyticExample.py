@@ -183,9 +183,10 @@ def transformationDomainW(w):
 def estimationObjective(x):
     return -x**2,0
 
+nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 
 l={}
-l['folderContainerResults']=os.path.join("Results","SBO")
+l['folderContainerResults']=os.path.join(nameDirectory,"SBO")
 l['estimationObjective']=estimationObjective
 l['transformationDomainW']=transformationDomainW
 l['transformationDomainX']=transformationDomainX

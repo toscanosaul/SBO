@@ -406,8 +406,11 @@ def estimationObjective(x):
     
     return np.mean(result),float(np.var(result))/estimator
 
+
+nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
+
 l={}
-l['folderContainerResults']=os.path.join("Results","SBO")
+l['folderContainerResults']=os.path.join(nameDirectory,"SBO")
 l['estimationObjective']=estimationObjective
 l['transformationDomainW']=transformationDomainW
 l['transformationDomainX']=transformationDomainX
