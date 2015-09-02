@@ -20,7 +20,7 @@ directory=os.path.join("CitiBikeExample","Results"+"%d"%samplesIteration+"Averag
 x=np.linspace(0,samplesIteration*numberIterations,numberIterations+1)
 y=np.zeros([repetitions,numberIterations+1])
 cont=0
-for i in range(1,repetitions+1):
+for i in range(1,100+1):
     temp=np.loadtxt(os.path.join(directory,"SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
     if len(temp)==(numberIterations+1)*2:
         for j in range(numberIterations+1):
