@@ -9,10 +9,10 @@ font = {'family' : 'normal',
     'weight' : 'bold',
     'size'   : 15}
 
-repetitions=100
+repetitions=1000
 
 samplesIteration=15
-numberIterations=20
+numberIterations=19
 numberPrior=5
 directory=os.path.join("AnalyticExample","Results"+"%d"%samplesIteration+"AveragingSamples"+"%d"%numberPrior+"TrainingPoints")
 
@@ -38,6 +38,7 @@ plt.plot(x,confidence,'--',color='r',label="95% CI")
 confidence=means-1.96*(var**.5)/np.sqrt(repetitions)
 plt.plot(x,confidence,'--',color='r')
 
+plt.axhline(y=0, xmin=0, xmax=samplesIteration*numberIterations,color='b',label='Optimal Solution')
 
 #y=np.zeros([35,n])
 #for i in range(1,36):
