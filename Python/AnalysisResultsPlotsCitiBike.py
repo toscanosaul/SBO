@@ -26,7 +26,7 @@ for i in range(1,100+1):
     if len(temp)==(numberIterations+1)*2:
         for j in range(numberIterations+1):
             y[cont,j]=temp[2*j]
-            varY[cont,j]=temp[2*(j+1)]
+            varY[cont,j]=temp[2*j+1]
         cont+=1
 
 print cont
