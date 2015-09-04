@@ -120,6 +120,38 @@ class VOISBO(VOI):
             return self.evalVOI(n,pointNew,a,b,gamma,BN,L)
         return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad)
 
+class EI(VOI):
+    def __init__(self,gradXKern,*args,**kargs):
+        VOI.__init__(self,*args,**kargs)
+        self.VOI_name="EI"
+        self._GP=stat.EIGP(kernel=self._k,dimPoints=self._dimKernel,
+                       Xhist=self._PointsHist, dimKernel=self._dimKernel,
+                       yHist=self._yHist,noiseHist=self._noiseHist,numberTraining=self._numberTraining,
+                       gradXKern=gradXKern)
+      
+      
+      
+    def VOIfunc(self,n,pointNew,grad):
+        xNew=pointNew
+        nTraining=self._GP._numberTraining
+        tempN=nTraining+n
+      #  n=n-1
+        vec=np.zeros(tempN)
+        X=self._PointsHist
+        for i in xrange(tempN):
+            vec[i]=self._GP.muN(X[i,:],n)
+        maxObs=np.max(vec)
+        std=np.sqrt(self._GP.varN(xNew,n))
+        muNew,gradMu=self._GP.muN(xNew,n,grad=True)
+        Z=(muNew-maxObs)/std
+        temp1=(muNew-maxObs)*norm.cdf(Z)+std*norm.pdf(Z)
+        if grad==False:
+            return temp1
+        var,gradVar=self._GP.varN(xNew,n,grad=True)
+        gradstd=.5*gradVar/std
+        gradZ=((std*gradMu)-(muNew-maxObs)*gradstd)/var
+        temp10=gradMu*norm.cdf(Z)+(muNew-maxObs)*norm.pdf(Z)*gradZ+norm.pdf(Z)*gradstd+std*(norm.pdf(Z)*Z*(-1.0))*gradZ
+        return temp1,temp10
     
 ##evaluate the function h of the paper
 ##b has been modified in affineBreakPointsPrep
