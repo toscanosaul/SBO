@@ -73,13 +73,13 @@ def gradXKernel(x,n,objVOI):
     gradX=np.zeros((tempN,n1))
     for j in xrange(n1):
         for i in xrange(tempN):
-            gradX[i,j]=kern.K(x,X[i,:].reshape((1,n1)))*(2.0*alpha[j]*(x[0,j]-X[i,j]))
+            gradX[i,j]=kern.K(x,X[i,:].reshape((1,n1)))*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
     return gradX
 
 def gradXKernel2(x,i,keep,j,objVOI):
     kern=objVOI._k
     alpha=0.5*((kern.alpha)**2)
-    return kern.K(x,pointsVOI[keep[i]:keep[i]+1,:])*(2.0*alpha[j]*(x[0,j]-pointsVOI[keep[i],j]))
+    return kern.K(x,pointsVOI[keep[i]:keep[i]+1,:])*(-2.0*alpha[j]*(x[0,j]-pointsVOI[keep[i],j]))
 
 def projectGradientDescent(x):
     c=lowerX
