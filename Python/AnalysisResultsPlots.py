@@ -54,6 +54,8 @@ for i in range(1,repetitions+1):
                 temp1=temp[2*j]
   	    y2=np.vstack((y2,temp1))
             cont+=1
+    except:
+           continue
   #  y[i-1,:]=np.loadtxt("%d"%i+"G(xn)KGAnalytic.txt")
 print cont
 
