@@ -89,9 +89,9 @@ for i in xrange(numberIterations+1):
 
 plt.plot(x,means,color='b',linewidth=2.0,label='KG')
 confidence=means+1.96*(var**.5)/np.sqrt(cont)
-plt.plot(x,confidence,'--',color='g',label="95% CI")
+plt.plot(x,confidence,'--',color='b',label="95% CI")
 confidence=means-1.96*(var**.5)/np.sqrt(cont)
-plt.plot(x,confidence,'--',color='g')
+plt.plot(x,confidence,'--',color='b')
 
 
 
