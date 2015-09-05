@@ -73,7 +73,7 @@ def gradXKernel(x,n,objVOI):
     gradX=np.zeros((tempN,n1))
     for j in xrange(n1):
         for i in xrange(tempN):
-            gradX[i,j]=kern.K(x,X[i,:].reshape((1,n1)))*(2.0*alpha[j]*(x[0,j]-X[i,j]))
+            gradX[i,j]=kern.K(x,X[i,:].reshape((1,n1)))*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
     return gradX
 
 
