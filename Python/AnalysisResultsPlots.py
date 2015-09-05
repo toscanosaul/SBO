@@ -43,7 +43,7 @@ plt.axhline(y=0, xmin=0, xmax=samplesIteration*numberIterations,color='b',label=
 
 y2=np.zeros([repetitions-3,numberIterations+1])
 cont=0
-for i in range((1,repetitions+1)):
+for i in range(1,repetitions+1):
     temp=np.loadtxt(os.path.join(directory2,"EI","%d"%i+"run","%d"%i+"optimalValues.txt"))
     if len(temp)==(numberIterations+1)*2:
         for j in range(numberIterations+1):
@@ -52,7 +52,7 @@ for i in range((1,repetitions+1)):
   #  y[i-1,:]=np.loadtxt("%d"%i+"G(xn)KGAnalytic.txt")
 print cont
 
-for i in xrange(n):
+for i in xrange(numberIterations+1):
     means[i]=np.mean(y2[:,i])
     var[i]=np.var(y2[:,i])
 
