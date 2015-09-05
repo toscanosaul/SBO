@@ -151,10 +151,10 @@ l['pointsVOI']=pointsVOI
 
 l['gradXKern']=gradXKernel
 l['gradXKern2']=gradXKernel2
-l['numberParallel']=1
+l['numberParallel']=10
 l['noisyG']=noisyG
 
 kgObj=KG.KG(**l)
 
-kgObj.KGAlg(20,nRepeat=1,Train=True)
+kgObj.KGAlg(20,nRepeat=10,Train=True)
 
