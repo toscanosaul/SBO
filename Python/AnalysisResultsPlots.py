@@ -42,14 +42,18 @@ plt.plot(x,confidence,'--',color='r')
 
 plt.axhline(y=0, xmin=0, xmax=samplesIteration*numberIterations,color='b',label='Optimal Solution')
 
-y2=np.zeros([972,numberIterations+1])
+#y2=np.zeros([972,numberIterations+1])
+y2=np.zeros([0,numberIterations+1])
 cont=0
 for i in range(1,repetitions+1):
-    temp=np.loadtxt(os.path.join(directory2,"EI","%d"%i+"run","%d"%i+"optimalValues.txt"))
-    if len(temp)>=(numberIterations+1)*2 and cont<972:
-        for j in range(numberIterations+1):
-            y2[cont,j]=temp[2*j]
-        cont+=1
+    try:
+        temp=np.loadtxt(os.path.join(directory2,"EI","%d"%i+"run","%d"%i+"optimalValues.txt"))
+        if len(temp)>=(numberIterations+1)*2 :
+            temp1=np.zeros(numberIterations+1)	    
+            for j in range(numberIterations+1):
+                temp1=temp[2*j]
+  	    y2=np.vstack((y2,temp1))
+            cont+=1
   #  y[i-1,:]=np.loadtxt("%d"%i+"G(xn)KGAnalytic.txt")
 print cont
 
@@ -72,7 +76,7 @@ for i in range(1,repetitions+1):
     try:
     	temp=np.loadtxt(os.path.join(directory3,"KG","%d"%i+"run","%d"%i+"optimalValues.txt"))
         if len(temp)>=(numberIterations+1)*2:
-	    temp1=np.zeros((numberIterations+1))
+	    temp1=np.zeros(numberIterations+1)
             for j in range(numberIterations+1):
                 temp1[j]=temp[2*j]
 	    y2=np.vstack((y2,temp1))
