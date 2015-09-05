@@ -51,7 +51,7 @@ for i in range(1,repetitions+1):
         if len(temp)>=(numberIterations+1)*2 :
             temp1=np.zeros(numberIterations+1)	    
             for j in range(numberIterations+1):
-                temp1=temp[2*j]
+                temp1[j]=temp[2*j]
   	    y2=np.vstack((y2,temp1))
             cont+=1
     except:
