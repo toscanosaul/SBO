@@ -152,7 +152,77 @@ class EI(VOI):
         gradZ=((std*gradMu)-(muNew-maxObs)*gradstd)/var
         temp10=gradMu*norm.cdf(Z)+(muNew-maxObs)*norm.pdf(Z)*gradZ+norm.pdf(Z)*gradstd+std*(norm.pdf(Z)*Z*(-1.0))*gradZ
         return temp1,temp10
+ 
+class KG(VOI):
+    def __init__(self,gradXKern,gradXKern2,*args,**kargs):
+        VOI.__init__(self,*args,**kargs)
+        self.VOI_name="KG"
+        self.gradXKern=gradXKern
+        self.gradXKern2=gradXKern2
+        self._GP=stat.KG(kernel=self._k,dimPoints=self._dimKernel,
+                       Xhist=self._PointsHist, dimKernel=self._dimKernel,
+                       yHist=self._yHist,noiseHist=self._noiseHist,numberTraining=self._numberTraining,
+                       gradXKern=gradXKern,gradXKern2=gradXKern2)
+      
+    def evalVOI(self,n,pointNew,a,b,L,grad=False):
+       # print "a,b,"
+       # print a,b
+        a,b,keep=AffineBreakPointsPrep(a,b)
+        keep1,c=AffineBreakPoints(a,b)
+        keep1=keep1.astype(np.int64)
+        n1=self._dimKernel
+        h=hvoi(b,c,keep1) ##Vn
+        if grad==False:
+            return h
+        ####Gradient
+        a=a[keep1]
+        b=b[keep1]
+        keep=keep[keep1] #indices conserved
+        M=len(keep)
+        if M<=1:
+            return h,np.zeros(self._dimKernel)
+        c=c[keep1+1]
+        c2=np.abs(c[0:M-1])
+        evalC=norm.pdf(c2)
+        nTraining=self._GP._numberTraining
+
+        tempN=nTraining+n
+        B=np.zeros((1,tempN))
+        X=self._PointsHist
+        for i in xrange(tempN):
+            B[0,i]=self._k.K(pointNew,X[i:i+1,:])[:,0]
+        temp2=linalg.solve_triangular(L,B.T,lower=True)
+        temp3=temp2
+        sigmaXnew=sqrt(self._k.K(np.array(pointNew).reshape((1,n1)))-np.dot(temp2.T,temp3))
+       # gradX=np.zeros([M,tempN])
+        gradX=self.gradXKern(pointNew,n,self._GP)
+        temp=np.zeros([tempN,n1])
+        tmp100=norm.pdf(c2)
+        gradient=np.zeros(n1)
+        B2=np.zeros((1,tempN))
+        temp54=np.zeros(M)
+        for j in xrange(n1):
+            for i in xrange(M):
+                for p1 in xrange(tempN):
+                   # gradX[i,p1]=self._k.K(xNew,X[p1,:].reshape((1,n1)))*(2.0*alpha1[j]*(xNew[0,j]-X[p1,j]))
+                    B2[0,p1]=self._k.K(self._points[keep[i]:keep[i]+1,:],X[p1:p1+1,:])[:,0]
+                temp52=linalg.solve_triangular(L,B2.T,lower=True)
+               # temp2=linalg.solve_triangular(L,gradX[i:i+1,:].T,lower=True)
+                temp2=linalg.solve_triangular(L,gradX[:,j],lower=True)
+               # temp53=self._k.K(xNew,self._points[keep[i]:keep[i]+1,:])*(2.0*self._alpha1[j]*(xNew[0,j]-self._points[keep[i],j]))
+                temp53=self.gradXKern2(pointNew,i,keep,j,self)
+                temp54[i]=(temp53-np.dot(temp2.T,temp52))/(float(sigmaXnew))
+            gradient[j]=-np.dot(np.diff(temp54),tmp100)
+        return h,gradient
+            
+    def VOIfunc(self,n,pointNew,grad):
+        n1=self._dimKernel
+        a,b,L=self._GP.aANDb(n,self._points,pointNew)
+        if grad==False:
+            return self.evalVOI(n,pointNew,a,b,L)
+        return self.evalVOI(n,pointNew,a,b,L,grad)
     
+      
 ##evaluate the function h of the paper
 ##b has been modified in affineBreakPointsPrep
 def hvoi (b,c,keep):
