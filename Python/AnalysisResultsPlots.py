@@ -41,7 +41,7 @@ plt.plot(x,confidence,'--',color='r')
 
 plt.axhline(y=0, xmin=0, xmax=samplesIteration*numberIterations,color='b',label='Optimal Solution')
 
-y2=np.zeros([repetitions-3,numberIterations+1])
+y2=np.zeros([972,numberIterations+1])
 cont=0
 for i in range(1,repetitions+1):
     temp=np.loadtxt(os.path.join(directory2,"EI","%d"%i+"run","%d"%i+"optimalValues.txt"))
