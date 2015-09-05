@@ -275,10 +275,9 @@ class KG(GaussianProcess):
 #        gradX=np.zeros((n,self._n1))
         gradX=self.gradXKern(x,n,self)
         gradi=np.zeros(self.n1)
-        temp3=linalg.solve_triangular(L,y-muStart,lower=True)
         for j in xrange(self.n1):
             temp2=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
-            gradi[j]=muStart+np.dot(temp2.T,temp3)
+            gradi[j]=np.dot(temp2.T,temp1)
         return a,gradi
         
    
