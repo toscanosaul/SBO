@@ -280,4 +280,71 @@ class KG(GaussianProcess):
             gradi[j]=np.dot(temp2.T,temp1)
         return a,gradi
         
-   
+class PIGP(GaussianProcess):
+    def __init__(self,dimPoints,gradXKern,*args,**kargs):
+        GaussianProcess.__init__(self,*args,**kargs)
+        self.SBOGP_name="GP_EI"
+        self.n1=dimPoints
+        self.gradXKern=gradXKern
+    
+    def muN(self,x,n,grad=False):
+        x=np.array(x)
+        m=1
+        tempN=self._numberTraining+n
+        X=self._Xhist[0:tempN,:]
+        A=self._k.A(self._Xhist[0:tempN,:],noise=self._noiseHist[0:tempN])
+        L=np.linalg.cholesky(A)
+        x=np.array(x).reshape((1,self.n1))
+        B=np.zeros([m,tempN])
+        
+        for i in xrange(tempN):
+            B[:,i]=self._k.K(x,X[i:i+1,:])
+            
+        y=self._yHist[0:tempN,:]
+        temp2=linalg.solve_triangular(L,B.T,lower=True)
+        muStart=self._k.mu
+        temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
+        a=muStart+np.dot(temp2.T,temp1)
+        if grad==False:
+            return a
+        x=np.array(x).reshape((1,self.n1))
+       # gradX=np.zeros((n,self.n1))
+        gradX=self.gradXKern(x,n,self)
+        gradi=np.zeros(self.n1)
+        temp3=linalg.solve_triangular(L,y-muStart,lower=True)
+        
+        for j in xrange(self.n1):
+           # for i in xrange(n):
+           #     gradX[i,j]=self._k.K(x,X[i,:].reshape((1,self._n1)))*(2.0*self._alpha1[j]*(x[0,j]-X[i,j]))
+            temp2=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
+            gradi[j]=muStart+np.dot(temp2.T,temp3)
+        return a,gradi
+    
+    
+    def varN(self,x,n,grad=False):
+        temp=self._k.K(np.array(x).reshape((1,self.n1)))
+        tempN=self._numberTraining+n
+        sigmaVec=np.zeros((tempN,1))
+        for i in xrange(tempN):
+            sigmaVec[i,0]=self._k.K(np.array(x).reshape((1,self.n1)),self._Xhist[i:i+1,:])[:,0]
+        A=self._k.A(self._Xhist[0:tempN,:],noise=self._noiseHist[0:tempN])
+        L=np.linalg.cholesky(A)
+        temp3=linalg.solve_triangular(L,sigmaVec,lower=True)
+        temp2=np.dot(temp3.T,temp3)
+        temp2=temp-temp2
+        if grad==False:
+            return temp2
+        else:
+            gradi=np.zeros(self.n1)
+            x=np.array(x).reshape((1,self.n1))
+
+            gradX=self.gradXKern(x,n,self)
+            #gradX=np.zeros((n,self._n1))
+            for j in xrange(self.n1):
+              #  for i in xrange(n):
+                  #  gradX[i,j]=self._k.K(x,self._X[i,:].reshape((1,self._n1)))*(2.0*self._alpha1[j]*(x[0,j]-self._X[i,j]))
+                temp5=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
+                gradi[j]=np.dot(temp5.T,temp3)
+            gradVar=-2.0*gradi
+            return temp2,gradVar
+    
