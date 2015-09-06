@@ -94,11 +94,11 @@ class EI:
         for i in range(m):
             print i
             self.optVOIParal(i,self.numberParallel)
-            st=np.array([[2.1]])
-            args2={}
-            args2['start']=st
-            args2['i']=i
-            misc.AnOptWrapper(self,**args2)
+           # st=np.array([[2.1]])
+           # args2={}
+           # args2['start']=st
+           # args2['i']=i
+          # misc.AnOptWrapper(self,**args2)
             print i
             self.optAnParal(i,self.numberParallel)
             print i
