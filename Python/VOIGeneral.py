@@ -221,7 +221,38 @@ class KG(VOI):
         if grad==False:
             return self.evalVOI(n,pointNew,a,b,L)
         return self.evalVOI(n,pointNew,a,b,L,grad)
-    
+
+class PI(VOI):
+    def __init__(self,gradXKern,*args,**kargs):
+        VOI.__init__(self,*args,**kargs)
+        self.VOI_name="PI"
+        self._GP=stat.PIGP(kernel=self._k,dimPoints=self._dimKernel,
+                       Xhist=self._PointsHist, dimKernel=self._dimKernel,
+                       yHist=self._yHist,noiseHist=self._noiseHist,numberTraining=self._numberTraining,
+                       gradXKern=gradXKern)
+      
+        
+    def VOIfunc(self,n,pointNew,grad):
+        xNew=pointNew
+        nTraining=self._GP._numberTraining
+        tempN=n+nTraining
+        X=self._PointsHist[0:tempN,:]
+        vec=np.zeros(tempN)
+        for i in xrange(tempN):
+            vec[i]=self._GP.muN(X[i,:],n)
+        maxObs=np.max(vec)
+        std=np.sqrt(self._GP.varN(xNew,n))
+        muNew,gradMu=self._GP.muN(xNew,n,grad=True)
+        Z=(muNew-maxObs)/std
+        temp1=norm.cdf(Z)
+        if grad==False:
+            return temp1
+        var,gradVar=self._GP.varN(xNew,n,grad=True)
+        gradstd=.5*gradVar/std
+        gradZ=((std*gradMu)-(muNew-maxObs)*gradstd)/var
+        temp10=norm.pdf(Z)*gradZ
+        return temp1,temp10
+     
       
 ##evaluate the function h of the paper
 ##b has been modified in affineBreakPointsPrep
