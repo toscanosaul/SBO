@@ -145,10 +145,10 @@ l['kernel']=kernel
 l['randomSeed']=randomSeed
 l['pointsVOI']=pointsVOI
 l['gradXKern']=gradXKernel
-l['numberParallel']=1
+l['numberParallel']=10
 l['noisyG']=noisyG
 
 piObj=PI.PI(**l)
 
-piObj.PIAlg(20,nRepeat=1,Train=True)
+piObj.PIAlg(20,nRepeat=10,Train=True)
 
