@@ -53,12 +53,10 @@ class SBOGP(GaussianProcess):
             self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
             self.histSaved+=1
         B=self.Bhist
-        
         BN=np.zeros([m,1])
         n2=self.n2
 
         BN[:,0]=self.B(x,np.concatenate((xNew,wNew),1),self.n1,n2) #B(x,n+1)
-        
         muStart=self._k.mu
         y=self._yHist
         temp2=linalg.solve_triangular(L,B.T,lower=True)
@@ -73,7 +71,6 @@ class SBOGP(GaussianProcess):
         temp1=linalg.solve_triangular(L,gamma,lower=True)
         b=(BN-np.dot(temp2.T,temp1))
         b2=self._k.K(new)-np.dot(temp1.T,temp1)
-
         b2=np.clip(b2,0,np.inf)
         try:
             b=b/(np.sqrt(b2))
