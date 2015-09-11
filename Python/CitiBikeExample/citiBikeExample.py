@@ -20,15 +20,23 @@ import multiprocessing as mp
 import os
 from scipy.stats import poisson
 
+try:
+    nTemp=int(sys.argv[1])
+    nTemp2=int(sys.argv[2])
+    nTemp3=int(sys.argv[3])
+except:
+    nTemp=1
+    nTemp2=10
+    nTemp3=10
 
-randomSeed=int(sys.argv[1])
+randomSeed=nTemp
 np.random.seed(randomSeed)
 
 g=unhappyPeople
 
 n1=4
 n2=4
-numberSamplesForF=int(sys.argv[3])
+numberSamplesForF=nTemp3
 fil="2014-05PoissonParameters.txt"
 nSets=4
 A,lamb=generateSets(nSets,fil)
@@ -39,8 +47,8 @@ for j in xrange(n2):
 ####
 
 TimeHours=4.0
-trainingPoints=int(sys.argv[2])
-numberBikes=600
+trainingPoints=nTemp2
+numberBikes=6000
 lowerX=100*np.ones(4)
 UpperX=numberBikes*np.ones(4)
 dimensionKernel=n1+n2
@@ -154,11 +162,12 @@ def euclidean_proj_l1ball(v, s=numberBikes):
 
 ###Used to select a starting point for gradient ascent
 def sampleFromX(n):
-    temp=np.random.randint(0,numberBikes,(n,n1-1))
-    results=np.zeros((n,n1-1))
-    for i in xrange(n):
-        results[i,:]=np.floor(euclidean_proj_l1ball(temp[i,:]))
-    return results
+    temp=np.random.dirichlet(np.ones(n1),n)
+    temp=temp[:,0:n1-1]
+    temp=numberBikes*temp
+    temp=np.floor(temp)
+    return temp
+
 
 ####Prior Data
 #randomIndexes=np.random.random_integers(0,pointsVOI.shape[0]-1,trainingPoints)
@@ -198,7 +207,8 @@ for j in range(trainingPoints):
 
 #########
 
-kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain)
+scaleAlpha=50.0
+kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
 #########
 
@@ -221,8 +231,8 @@ def B(x,XW,n1,n2):
   #  expec=np.array([i for i in xrange(quantil)])
     X=XW[0:n1]
     W=XW[n1:n1+n2]
-    alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)
-    alpha1=0.5*((kernel.alpha[0:n1])**2)
+    alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
+    alpha1=0.5*((kernel.alpha[0:n1])**2)/scaleAlpha**2
     variance0=kernel.variance
     
     logproductExpectations=0.0
@@ -248,10 +258,10 @@ def gradXWSigmaOfunc(n,new,objVOI,Xtrain2,Wtrain2):
     tempN=n+trainingPoints
     past=objVOI._PointsHist[0:tempN,:]
     gamma=np.transpose(kern.A(new,past))
-    alpha1=0.5*((kern.alpha[0:n1])**2)
+    alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
     Xtrain=past[:,0:n1]
     gradWSigma0=np.zeros([n+trainingPoints+1,n2])
-    alpha2=0.5*((kern.alpha[n1:n1+n2])**2)
+    alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
     xNew=new[0,0:n1]
     wNew=new[0,n1:n1+n2]
     for i in xrange(n+trainingPoints):
@@ -269,7 +279,7 @@ def gradXWSigmaOfunc(n,new,objVOI,Xtrain2,Wtrain2):
 def gradXB(new,objVOI,BN,keep):
     points=objVOI._points
     kern=objVOI._k
-    alpha1=0.5*((kern.alpha[0:n1])**2)
+    alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
     xNew=new[0,0:n1].reshape((1,n1))
     gradXBarray=np.zeros([len(keep),n1])
     M=len(keep)
@@ -282,7 +292,7 @@ def gradXB(new,objVOI,BN,keep):
 def gradWB(new,objVOI,BN,keep):
     points=objVOI._points
     kern=objVOI._k
-    alpha2=0.5*((kern.alpha[n1:n1+n2])**2)
+    alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
     variance0=kern.variance
     wNew=new[0,n1:n1+n2].reshape((1,n2))
     gradWBarray=np.zeros([len(keep),n2])
@@ -321,7 +331,7 @@ def gradWB(new,objVOI,BN,keep):
 def gradXBforAn(x,n,B,objGP,X):
     gradXB=np.zeros((n1,n+trainingPoints))
     kern=objGP._k
-    alpha1=0.5*((kern.alpha[0:n1])**2)
+    alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
     for i in xrange(n+trainingPoints):
         gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
     return gradXB
@@ -414,9 +424,11 @@ def estimationObjective(x):
     return np.mean(result),float(np.var(result))/estimator
 
 
+
+
+
 nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 
-l={}
 l['folderContainerResults']=os.path.join(nameDirectory,"SBO")
 l['estimationObjective']=estimationObjective
 l['transformationDomainW']=transformationDomainW
@@ -447,7 +459,7 @@ l['randomSeed']=randomSeed
 l['pointsVOI']=pointsVOI
 l['gradXBforAn']=gradXBforAn
 l['numberParallel']=10
-#l['folder']="citiBike"
+l['scaledAlpha']=100.0
 
 print 'ok'
 sboObj=SB.SBO(**l)
