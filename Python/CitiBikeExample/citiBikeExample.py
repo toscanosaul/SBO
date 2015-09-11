@@ -464,6 +464,6 @@ l['scaledAlpha']=100.0
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
-sboObj.SBOAlg(30,nRepeat=10,Train=True)
+sboObj.SBOAlg(20,nRepeat=10,Train=True)
 
 
