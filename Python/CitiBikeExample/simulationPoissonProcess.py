@@ -7,7 +7,7 @@ import json
 from numpy import linalg as LA
 from scipy.stats import poisson
 
-nBikes=600
+nBikes=6000
 nStations=329
 distancesBikeStations=np.loadtxt("distanceBikeStations.txt")
 
@@ -177,5 +177,5 @@ if __name__ == '__main__':
     N=np.zeros(nSets)
     for i in range(nSets):
         N[i]=SimulateNt(A[i],lamb[i],T)
-    print unhappyPeople (T,N,np.array([150,150,150,150]),m,lamb,A,date)
+    print unhappyPeople (T,N,np.array([1500,1500,1500,1500]),m,lamb,A,date)
     #X=PoissonProcess(T,lamb[0],A[0],N[0])
