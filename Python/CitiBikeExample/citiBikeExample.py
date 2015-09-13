@@ -442,12 +442,12 @@ l['gradWBfunc']=gradWB
 l['randomSeed']=randomSeed
 l['pointsVOI']=pointsVOI
 l['gradXBforAn']=gradXBforAn
-l['numberParallel']=1
+l['numberParallel']=10
 l['scaledAlpha']=100.0
 
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
-sboObj.SBOAlg(1,nRepeat=1,Train=True)
+sboObj.SBOAlg(20,nRepeat=10,Train=True)
 
 
