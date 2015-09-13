@@ -239,6 +239,9 @@ class SBO:
             j = np.argmax([o.fOpt for o in self.optRuns])
             temp=self.optRuns[j].xOpt
             gradOpt=self.optRuns[j].gradOpt
+            numberIterations=self.optRuns[j].nIterations
+            gradOpt=np.sqrt(np.sum(gradOpt**2))
+            gradOpt=np.array([gradOpt,numberIterations])
             xTrans=self.transformationDomainX(self.optRuns[j].xOpt[0:1,0:self.dimXsteepest])
             wTrans=self.transformationDomainW(self.optRuns[j].xOpt[0:1,self.dimXsteepest:self.dimXsteepest+self._dimW])
             ###falta transformar W
@@ -326,6 +329,8 @@ class SBO:
             j = np.argmax([o.fOpt for o in self.optRuns])
             temp=self.optRuns[j].xOpt
             tempGrad=self.optRuns[j].gradOpt
+            tempGrad=np.sqrt(np.sum(tempGrad**2))
+            tempGrad=np.array([tempGrad,self.optRuns[j].nIterations])
             xTrans=self.transformationDomainX(self.optRuns[j].xOpt[0:1,0:self.dimXsteepest])
         #    temp2=self.
             self._solutions.append(xTrans)

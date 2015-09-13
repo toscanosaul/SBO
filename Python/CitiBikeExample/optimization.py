@@ -24,6 +24,7 @@ class Optimization:
         self.status=None
         self.bfgsFactor=bfgsFactor
         self.gradOpt=None
+        self.nIterations=None
 
     def run(self, **kwargs):
         self.opt(**kwargs)
@@ -183,15 +184,16 @@ class OptSteepestDescent(Optimization):
             if LA.norm(X[0,:]-oldPoint[0,:])<tol or iter > maxit:
                 tolMet=True
                 g1,g2=f(X,grad=True)
-                return X,g1,g2
+                return X,g1,g2,iter
                 
     
     #f gives both the function and the derivative
     def opt(self,f=None,df=None):
-        x,g,g1=self.steepestAscent(f)
+        x,g,g1,it=self.steepestAscent(f)
         self.xOpt=x
         self.fOpt =g
         self.gradOpt=g1
+        self.nIterations=it
         
 ##x is a string with the name of the method we want to use.
 ##x: 'bfgs',..
