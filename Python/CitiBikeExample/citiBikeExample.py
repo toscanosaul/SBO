@@ -185,11 +185,6 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 yTrain=np.zeros([0,1])
 NoiseTrain=np.zeros(0)
 
-#for i in xrange(trainingPoints):
-#    print i
-#    temp=noisyF(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF)
-#    yTrain=np.vstack([yTrain,temp[0]])
-#    NoiseTrain=np.append(NoiseTrain,temp[1])
 
 jobs = []
 pool = mp.Pool()
@@ -207,7 +202,7 @@ for j in range(trainingPoints):
 
 #########
 
-scaleAlpha=50.0
+scaleAlpha=1000.0
 kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
 #########
@@ -227,8 +222,6 @@ def B(x,XW,n1,n2):
     x=np.array(x).reshape((x.shape[0],n1))
     results=np.zeros(x.shape[0])
     parameterLamb=parameterSetsPoisson
-  #  quantil=int(poisson.ppf(.99999999,max(parameterLamb)))
-  #  expec=np.array([i for i in xrange(quantil)])
     X=XW[0:n1]
     W=XW[n1:n1+n2]
     alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
@@ -241,11 +234,6 @@ def B(x,XW,n1,n2):
         temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[j])**2)),G.args)
         logproductExpectations+=np.log(temp)
     for i in xrange(x.shape[0]):
-       # temp=log(variance0)+logSumExp(-alpha1*((x[i,:]-X)**2) )
-       # temp2=log()
-       # temp2=0
-       # for j in xrange(n2):
-      #      temp2=temp2+-parameterLamb[j]+logSumExp(-alpha2[j]*((expec-W[j])**2)+expec*log(parameterLamb[j])-logFactorial[expec])
         results[i]=logproductExpectations+np.log(variance0)-np.sum(alpha1*((x[i,:]-X)**2))
     return np.exp(results)
 
@@ -258,6 +246,7 @@ def gradXWSigmaOfunc(n,new,objVOI,Xtrain2,Wtrain2):
     tempN=n+trainingPoints
     past=objVOI._PointsHist[0:tempN,:]
     gamma=np.transpose(kern.A(new,past))
+
     alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
     Xtrain=past[:,0:n1]
     gradWSigma0=np.zeros([n+trainingPoints+1,n2])
@@ -268,7 +257,6 @@ def gradXWSigmaOfunc(n,new,objVOI,Xtrain2,Wtrain2):
         gradXSigma0[i,:]=-2.0*gamma[i]*alpha1*(xNew-Xtrain2[i,:])
         gradWSigma0[i,:]=-2.0*gamma[i]*alpha2*(wNew-Wtrain2[i,:])
     return gradXSigma0,gradWSigma0
-
 
 
 
@@ -289,9 +277,11 @@ def gradXB(new,objVOI,BN,keep):
     return gradXBarray
 
 
+
 def gradWB(new,objVOI,BN,keep):
     points=objVOI._points
     kern=objVOI._k
+    alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
     alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
     variance0=kern.variance
     wNew=new[0,n1:n1+n2].reshape((1,n2))
@@ -303,7 +293,7 @@ def gradWB(new,objVOI,BN,keep):
    # logproductExpectations=0.0
   #  a=range(n2)
     X=new[0,0:n1]
-    W=new[n1:n1+n2]
+    W=new[0,n1:n1+n2]
    
     for i in xrange(n2):
         logproductExpectations=0.0
@@ -314,18 +304,12 @@ def gradWB(new,objVOI,BN,keep):
             temp=G.dist.expect(lambda z: np.exp(-alpha2[r]*((z-W[r])**2)),G.args)
             logproductExpectations+=np.log(temp)
         G=poisson(parameterLamb[i])
-        temp=G.dist.expect(lambda z: -2.0*alpha2[i]*(-z+W[r])*np.exp(-alpha2[i]*((z-W[i])**2)),G.args)
-        logproductExpectations+=np.log(temp)
+        temp=G.dist.expect(lambda z: -2.0*alpha2[i]*(-z+W[i])*np.exp(-alpha2[i]*((z-W[i])**2)),G.args)
+        productExpectations=np.exp(logproductExpectations)*temp
         for j in xrange(M):
-           # temp=logSumExp(-alpha2[i]*((expec-wNew[0,i])**2)+expec*log(parameterLamb[j])-logFactorial[expec])
-           # temp2=logSumExp(-alpha2[i]*((expec-wNew[0,i])**2)+
-           #                 expec*log(parameterLamb[j])-logFactorial[expec]+log(wNew[0,i]))
-           # temp=-np.exp(temp)*wNew[0,i]
-           # temp2=np.exp(temp2)
-           # temp3=temp2+temp
-           # temp3=temp3*2.0*alpha2[i]*variance0
-            gradWBarray[j,i]=np.log(variance0)+logproductExpectations-np.sum(alpha1*((points[keep[j],:]-X)**2))
-    return np.exp(gradWBarray)
+            gradWBarray[j,i]=np.log(variance0)-np.sum(alpha1*((points[keep[j],:]-X)**2))
+            gradWBarray[j,i]=np.exp(gradWBarray[j,i])*productExpectations
+    return gradWBarray
 
 ###the same for any squared exponential kernel
 def gradXBforAn(x,n,B,objGP,X):
@@ -428,7 +412,7 @@ def estimationObjective(x):
 
 
 nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
-
+l={}
 l['folderContainerResults']=os.path.join(nameDirectory,"SBO")
 l['estimationObjective']=estimationObjective
 l['transformationDomainW']=transformationDomainW
@@ -458,12 +442,12 @@ l['gradWBfunc']=gradWB
 l['randomSeed']=randomSeed
 l['pointsVOI']=pointsVOI
 l['gradXBforAn']=gradXBforAn
-l['numberParallel']=10
+l['numberParallel']=1
 l['scaledAlpha']=100.0
 
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
-sboObj.SBOAlg(20,nRepeat=10,Train=True)
+sboObj.SBOAlg(1,nRepeat=1,Train=True)
 
 

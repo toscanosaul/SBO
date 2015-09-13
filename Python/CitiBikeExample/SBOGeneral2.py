@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#d!/usr/bin/env python
 
 #!/usr/bin/env python
 #Stratified Bayesian Optimization
@@ -100,7 +100,11 @@ class SBO:
             f.close()
             f=open(os.path.join(self.path,'%d'%randomSeed+"optimalValues.txt"),'w')
             f.close()
-        if kernel is None:
+            f=open(os.path.join(self.path,'%d'%randomSeed+"optVOIgrad.txt"),'w')
+            f.close()
+            f=open(os.path.join(self.path,'%d'%randomSeed+"optAngrad.txt"),'w')
+            f.close()
+
             kernel=SK.SEK(dimensionKernel)
        # if acquisitionFunction is None:
         #    acquisitionFunction=VOI
@@ -151,19 +155,23 @@ class SBO:
             self.optVOIParal(i,self.numberParallel)
             
             #####
-          #  n1=self._n1
-          #  n2=self._dimW
-          #  Xst=self.sampleFromX(1)
-          #  wSt=self._simulatorW(1)
-          #  st=np.concatenate((Xst,wSt),1)
-          #  args2={}
-          #  args2['start']=Xst
-          #  args2['i']=i
-          #  misc.AnOptWrapper(self,**args2)
+            n1=self._n1
+            n2=self._dimW
+            Xst=self.sampleFromX(1)
+            wSt=self._simulatorW(1)
+            st=np.concatenate((Xst,wSt),1)
+            args2={}
+            args2['start']=st
+            args2['i']=i
+          #  misc.VOIOptWrapper(self,**args2)
             ####
             print i
             self.optAnParal(i,self.numberParallel)
             print i
+        args2={}
+        args2['start']=self.sampleFromX(1)
+        args2['i']=m
+      #  misc.AnOptWrapper(self,**args2)
         self.optAnParal(m,self.numberParallel)
     ###start is a matrix of one row
     ###
@@ -174,6 +182,7 @@ class SBO:
       #  self.functionGradientAscentAn
         def g(x,grad):
             return self.functionGradientAscentVn(x,grad,self,i)
+
             #temp=self._VOI.VOIfunc(i,x,grad=grad)
             #if grad==True:
             #    return temp[0],temp[1]
@@ -229,6 +238,7 @@ class SBO:
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
             temp=self.optRuns[j].xOpt
+            gradOpt=self.optRunsp[j].gradOpt
             xTrans=self.transformationDomainX(self.optRuns[j].xOpt[0:1,0:self.dimXsteepest])
             wTrans=self.transformationDomainW(self.optRuns[j].xOpt[0:1,self.dimXsteepest:self.dimXsteepest+self._dimW])
             ###falta transformar W
@@ -253,6 +263,9 @@ class SBO:
                 np.savetxt(f,y)
             with open(os.path.join(self.path,'%d'%self.randomSeed+"XWHist.txt"), "a") as f:
                 np.savetxt(f,temp)
+            with open(os.path.join(self.path,'%d'%self.randomSeed+"optVOIgrad.txt"), "a") as f:
+                np.savetxt(f,gradOpt)
+
         self.optRuns=[]
         self.optPointsArray=[]
             
@@ -312,6 +325,7 @@ class SBO:
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
             temp=self.optRuns[j].xOpt
+            tempGrad=self.optRuns[j].gradOpt
             xTrans=self.transformationDomainX(self.optRuns[j].xOpt[0:1,0:self.dimXsteepest])
         #    temp2=self.
             self._solutions.append(xTrans)
@@ -321,6 +335,8 @@ class SBO:
                 result,var=self.estimationObjective(xTrans[0,:])
                 res=np.append(result,var)
                 np.savetxt(f,res)
+            with open(os.path.join(self.path,'%d'%self.randomSeed+"optAngrad.txt"), "a") as f:
+                np.savetxt(f,tempGrad)
             self.optRuns=[]
             self.optPointsArray=[]
             

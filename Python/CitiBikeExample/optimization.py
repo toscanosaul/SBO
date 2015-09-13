@@ -23,6 +23,7 @@ class Optimization:
         self.fOpt=None
         self.status=None
         self.bfgsFactor=bfgsFactor
+        self.gradOpt=None
 
     def run(self, **kwargs):
         self.opt(**kwargs)
@@ -161,7 +162,6 @@ class OptSteepestDescent(Optimization):
             oldPoint=X
                 
             g1,g2=f(X,grad=True)
-       
             if (tolMet==True):
                 break
             def fns(alpha,X_=oldPoint,g2=g2):
@@ -169,6 +169,7 @@ class OptSteepestDescent(Optimization):
                 return f(tmp,grad=False)
             lineSearch=self.goldenSectionLineSearch(fns,tol,maxtry,X,g2)
             X=X+lineSearch*g2
+            print X
             X[0,0:n1]=self.projectGradient(X[0,0:n1])
         #    if (any(X[0,0:n1]<c)):
         #        temp1=np.array(X[0,0:n1]).reshape(n1)
@@ -182,16 +183,16 @@ class OptSteepestDescent(Optimization):
             
             if LA.norm(X[0,:]-oldPoint[0,:])<tol or iter > maxit:
                 tolMet=True
-                g1=f(X,grad=False)
-                return X,g1
+                g1,g2=f(X,grad=True)
+                return X,g1,g2
                 
     
     #f gives both the function and the derivative
     def opt(self,f=None,df=None):
-        x,g=self.steepestAscent(f)
+        x,g,g1=self.steepestAscent(f)
         self.xOpt=x
         self.fOpt =g
-        
+        self.gradOpt=g1
         
 ##x is a string with the name of the method we want to use.
 ##x: 'bfgs',..
