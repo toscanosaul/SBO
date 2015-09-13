@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 #from optimization import *
+import numpy as np
+
+#Computes log*sum(exp(x)) for a vector x, but in numerically careful way
+def logSumExp(x):
+    maxAbs=np.max(np.abs(x))
+    if maxAbs>max(x):
+        c=np.min(x)
+    else:
+        c=np.max(x)
+    y=c+np.log(np.sum(np.exp(x-c)))
+    return y
 
 
 

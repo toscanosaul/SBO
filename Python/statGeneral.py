@@ -55,7 +55,6 @@ class SBOGP(GaussianProcess):
         B=self.Bhist
         BN=np.zeros([m,1])
         n2=self.n2
-
         BN[:,0]=self.B(x,np.concatenate((xNew,wNew),1),self.n1,n2) #B(x,n+1)
         muStart=self._k.mu
         y=self._yHist
