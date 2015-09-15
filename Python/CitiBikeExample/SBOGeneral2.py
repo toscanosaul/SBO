@@ -104,7 +104,7 @@ class SBO:
             f.close()
             f=open(os.path.join(self.path,'%d'%randomSeed+"optAngrad.txt"),'w')
             f.close()
-
+        if kernel is None:
             kernel=SK.SEK(dimensionKernel)
        # if acquisitionFunction is None:
         #    acquisitionFunction=VOI
