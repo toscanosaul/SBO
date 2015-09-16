@@ -180,7 +180,7 @@ def logSumExp(x):
     return y
 
 
-def B(x,XW,n1,n2,scaleAlpha):
+def B(x,XW,n1,n2,scaleAlpha,kernel):
     x=np.array(x).reshape((x.shape[0],n1))
     results=np.zeros(x.shape[0])
     parameterLamb=parameterSetsPoisson
@@ -189,7 +189,17 @@ def B(x,XW,n1,n2,scaleAlpha):
     alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
     alpha1=0.5*((kernel.alpha[0:n1])**2)/scaleAlpha**2
     variance0=kernel.variance
-    
+    print "veamos B"
+    print "x is"
+    print x
+    print "parameters"
+    print parameterLamb
+    print "X"
+    print X
+    print "W"
+    print W
+    print "alphas,variance"
+    print alpha1,alpha2,variance0 
     logproductExpectations=0.0
     for j in xrange(n2):
         G=poisson(parameterLamb[j])
@@ -396,7 +406,7 @@ def startSBOobjects(directory,ind,kern,scaleAlpha):
     l['varHist']=np.loadtxt(os.path.join(directory,"%d"%ind+"varHist.txt"))[0:numberPoints]
     l['kernel']=kern
     def B2(x,XW,n1,n2):
-        return B(x,XW,n1,n2,scaleAlpha)
+        return B(x,XW,n1,n2,scaleAlpha,kern)
     l['B']=B2
     def gradXWSigma0func2(n,new,objVOI,Xtrain2,Wtrain2):
         return gradXWSigmaOfunc(n,new,objVOI,Xtrain2,Wtrain2,scaleAlpha=scaleAlpha)
@@ -418,7 +428,7 @@ def startSBOobjects(directory,ind,kern,scaleAlpha):
 def testKernel(scaleAlpha=1000.0,n=0,numberPoints=20,ind=-1):
     kern=kernelFunc(XWtrain,yTrain,NoiseTrain,scaleAlpha)
     bike1=startSBOobjects(directory[0],1,kern,scaleAlpha)
-    bike1.trainModel(numStarts=1)
+    bike1.trainModel(numStarts=10)
    # print kern.alpha
     tempX=sampleFromX(1)
     tempFour=numberBikes-np.sum(tempX,1)
@@ -430,17 +440,44 @@ def testKernel(scaleAlpha=1000.0,n=0,numberPoints=20,ind=-1):
         return 0
     print "pointsNew"
     print new
-    ######An################
+    ######An################ 
+    tempX=np.array([[ 905.60177805 , 131.2408212, 1053.83098478]])
+    tempFour=numberBikes-np.sum(tempX,1)
+    tempFour=tempFour.reshape((1,1))
+    Xtrain=np.concatenate((tempX,tempFour),1)
+    
     args2={}
     args2['start']=tempX
     args2['i']=0
     print "Anopt"
-    misc.AnOptWrapper(bike1,**args2) 
+   # misc.AnOptWrapper(bike1,**args2) 
+    print "using the function"
+    tempN=numberPoints
+    A=bike1._k.A(bike1._XWhist[0:tempN,:],noise=bike1._varianceObservations[0:tempN])
+    L=np.linalg.cholesky(A)
+    print "B is"
+    print B(Xtrain,bike1._VOI._GP._Xhist[0,:],n1,n2,scaleAlpha,kern)     
+#    print functionGradientAscentAn(tempX,True,bike1,0,L)
+#    print "SBO obje"
+#    print  bike1.functionGradientAscentAn(tempX,True,bike1,0,L)
+    print "alpha,mu,variance"
+    print kern.alpha
+    print kern.mu
+    print kern.variance
+    print "misc"
+    print "Points"
+#    print bike1._XWhist
+    print "responses"
+ #   print bike1._yHist
+    print "variances"
+  #  print bike1._varianceObservations
+#    bike1.optimizeAn(tempX,0)
     print "endAnOpti"
+   # bike1.SBOAlg(1,nRepeat=1,Train=True)
     ########################
-    c1,c2=functionGradientAscentVn(np.concatenate((tempX,Wtrain),1),True,bike1,0)
-    a1,b1=gradXWSigmaOfunc(n,new,bike1._VOI,XWtrain[0:numberPoints,0:n1],XWtrain[0:numberPoints,n1:n1+n2],scaleAlpha)
-    print np.sqrt(np.sum(a1**2)),np.sqrt(np.sum(b1**2)),np.sqrt(np.sum(c2**2))
+#    c1,c2=functionGradientAscentVn(np.concatenate((tempX,Wtrain),1),True,bike1,0)
+#    a1,b1=gradXWSigmaOfunc(n,new,bike1._VOI,XWtrain[0:numberPoints,0:n1],XWtrain[0:numberPoints,n1:n1+n2],scaleAlpha)
+#    print np.sqrt(np.sum(a1**2)),np.sqrt(np.sum(b1**2)),np.sqrt(np.sum(c2**2))
 
 for i in range(1):
     testKernel()
@@ -460,7 +497,8 @@ def printSBO(sboObj):
     print bike1._k.variance
     print "mu"
     print bike1._k.mu
-
+print "points"
+print "end"
 #printSBO(bike1)
 #A=bike1._k.A(bike1._XWhist,noise=bike1._varianceObservations)
 #L=bike.np.linalg.cholesky(A)
