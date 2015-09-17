@@ -95,7 +95,7 @@ class VOISBO(VOI):
                 beta2=BN[keep[j],:]-np.dot(inv1.T,inv3)
                 tmp2=(.5)*(beta1**(-1.5))*beta2*(2.0*np.dot(inv2.T,inv3))
                 gradient[j]=tmp+tmp2
-            result[i]=-np.dot(np.diff(gradient),evalC)
+            result[i]=np.dot(np.diff(gradient),evalC)
             
         for i in xrange(n2):
             for j in xrange(M):
@@ -107,7 +107,7 @@ class VOISBO(VOI):
                 beta2=BN[keep[j],:]-np.dot(inv1.T,inv3)
                 tmp2=(.5)*(beta1**(-1.5))*(2.0*np.dot(inv2.T,inv3))*beta2
                 gradient[j]=tmp+tmp2
-            result[i+n1]=-np.dot(np.diff(gradient),evalC)
+            result[i+n1]=np.dot(np.diff(gradient),evalC)
         
         
         return h,result
@@ -212,7 +212,7 @@ class KG(VOI):
                # temp53=self._k.K(xNew,self._points[keep[i]:keep[i]+1,:])*(2.0*self._alpha1[j]*(xNew[0,j]-self._points[keep[i],j]))
                 temp53=self.gradXKern2(pointNew,i,keep,j,self)
                 temp54[i]=(temp53-np.dot(temp2.T,temp52))/(float(sigmaXnew))
-            gradient[j]=-np.dot(np.diff(temp54),tmp100)
+            gradient[j]=np.dot(np.diff(temp54),tmp100)
         return h,gradient
             
     def VOIfunc(self,n,pointNew,grad):
