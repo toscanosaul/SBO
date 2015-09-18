@@ -346,7 +346,11 @@ def projectGradientDescent(x):
    # z=np.abs(z)
    # y=euclidean_proj_simplex(z)
    # y=np.floor(y)
-    x=np.abs(x)   
+    if (len(x)==1):		
+        x[0,np.where(x[0,:]<0)]=0
+    else:
+	x[np.where(x<0)]=0
+   # x=np.abs(x)   
     return euclidean_proj_l1ball(x)
 
 ####we eliminate one variable to optimize the function
@@ -390,9 +394,9 @@ dimXsteepest=n1-1
 
 ##transform the result steepest ascent is getting (x1,x2,x3) to  the right domain of x (x1,x2,x3,x4)
 def transformationDomainX(x):
-    x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
-    x=np.concatenate((x,x4),1)
-    return np.floor(x)
+    x4=np.array(numberBikes-np.sum(np.floor(x))).reshape((1,1))
+    x=np.concatenate((np.floor(x),x4),1)
+    return x
 
 ####In this case, we want to transform the result steepest ascent is getting to  the right domain of W
 def transformationDomainW(w):
@@ -444,7 +448,11 @@ l['pointsVOI']=pointsVOI
 l['gradXBforAn']=gradXBforAn
 l['numberParallel']=10
 l['scaledAlpha']=100.0
+l['xtol']=1.0
 
+def conditionOpt(x):
+    return np.max(np.abs(x))
+l['functionConditionOpt']=conditionOpt
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'

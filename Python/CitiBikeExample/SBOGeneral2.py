@@ -67,8 +67,12 @@ class SBO:
                  constraintA=None,constraintB=None,simulatorW=None,createNewFiles=True,randomSeed=1,
                  functionGradientAscentVn=None,functionGradientAscentAn=None,numberParallel=10,
                  transformationDomainX=None,transformationDomainW=None,estimationObjective=None,
-                 folderContainerResults=None,scaledAlpha=1.0):
+                 folderContainerResults=None,scaledAlpha=1.0,xtol=None,functionConditionOpt=None):
        # np.random.seed(randomSeed)
+	if xtol is None:
+	    xtol=1e-8
+	self.functionConditionOpt=functionConditionOpt
+	self.xtol=xtol
         self.scaledAlpha=scaledAlpha
         self.transformationDomainX=transformationDomainX
         self.transformationDomainW=transformationDomainW
@@ -163,8 +167,10 @@ class SBO:
             args2={}
             args2['start']=st
             args2['i']=i
-          #  misc.VOIOptWrapper(self,**args2)
+            #misc.VOIOptWrapper(self,**args2)
             ####
+            args2['start']=self.sampleFromX(1)
+           # misc.AnOptWrapper(self,**args2)
             print i
             self.optAnParal(i,self.numberParallel)
             print i
@@ -176,7 +182,7 @@ class SBO:
     ###start is a matrix of one row
     ###
     def optimizeVOI(self,start, i):
-        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,xStart=start,xtol=1e-8)
+        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,stopFunction=self.functionConditionOpt,xStart=start,xtol=self.xtol)
         opt.constraintA=self._constraintA
         opt.constraintB=self._constraintB
       #  self.functionGradientAscentAn
@@ -273,7 +279,7 @@ class SBO:
         self.optPointsArray=[]
             
     def optimizeAn(self,start,i):
-        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,xStart=start,xtol=1e-8)
+        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,xStart=start,xtol=self.xtol,stopFunction=self.functionConditionOpt)
         opt.constraintA=self._constraintA
         opt.constraintB=self._constraintB
         tempN=i+self.numberTraining

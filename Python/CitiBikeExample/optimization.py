@@ -59,13 +59,16 @@ class OptBFGS(Optimization):
         
         
 class OptSteepestDescent(Optimization):
-    def __init__(self,n1,projectGradient=None, *args, **kwargs):
+    def __init__(self,stopFunction,n1,projectGradient=None, *args, **kwargs):
         Optimization.__init__(self,*args,**kwargs)
         self.Name="steepest"
         self.maxtry=25
         self.constraintA=-3.0
         self.constraintB=3.0
         self.n1=n1
+	if stopFunction is None:
+	    stopFunction=LA.norm
+	self.stopFunction=stopFunction
         self.projectGradient=projectGradient
         
         #Golden Section
@@ -178,13 +181,19 @@ class OptSteepestDescent(Optimization):
             def gradfLine(x):
 		x=x.reshape((1,len(x)))
    		f1,df=f(x,grad=True)
+                df=df.reshape((1,x.shape[1]))
 	#	print "psdfadf"
 		z=-1.0*df[0,:]
 	#	print z
 		return z
 	  #  print "new line search"
+  	    g2=g2.reshape((1,len(oldPoint[0,:]))) 
 	    lineSearch2=line_search(fLine,gradfLine,oldPoint[0,:],g2[0,:])
+            step=lineSearch2[0]
 	    #print lineSearch, lineSearch2
+            if step is None:
+	       tolMet=True
+	       return X,g1,g2[0,:],iter
             X=X+lineSearch2[0]*g2
           #  print X
             X[0,0:n1]=self.projectGradient(X[0,0:n1])
@@ -196,9 +205,11 @@ class OptSteepestDescent(Optimization):
          #   if (any(X[0,0:n1]>d)):
          #       index2=np.where(X[0,0:n1]>d)
          #       X[0,index2[0]]=d[index2[0]]
-
-            
-            if LA.norm(X[0,:]-oldPoint[0,:])<tol or iter > maxit:
+	 #   print "iteration"
+         #   print oldPoint
+	 #   print g1,X
+	 #   print self.stopFunction(X[0,:]-oldPoint[0,:])
+            if self.stopFunction(X[0,:]-oldPoint[0,:])<tol or iter > maxit:
                 tolMet=True
                 g1,g2=f(X,grad=True)
                 return X,g1,g2,iter
