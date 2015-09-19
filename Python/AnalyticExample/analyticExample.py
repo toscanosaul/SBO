@@ -130,20 +130,26 @@ def gradXBforAn(x,n,B,objGP,X):
         gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
     return gradXB
 
-def projectGradientDescent(x):
+####CHANGE
+def projectGradientDescent(x,direction,xo):
     c=lowerX
     d=UpperX
-    
-    if (any(x<c)):
-        temp1=np.array(X[0,0:n1]).reshape(n1)
-        index2=np.where(temp1<c)
-        x[index2[0]]=c[index2[0]]
+    alph=[] 
+    if (any(x[0:n1]<c)):
+	ind=np.where(direction[0:n1]<0)[0]
+        quotient=(-xo[ind].astype(float)+c[ind])/direction[ind]
+        alp=np.min(quotient)
+        alph.append(alp)       
    
-    if (any(x>d)):
-        index2=np.where(x>d)
-        x[index2[0]]=d[index2[0]]
+    if (any(x[0:n1]>d)):
+       	ind=np.where(direction[0:n1]>0)[0]
+        quotient=(-xo[ind].astype(float)+d[ind])/direction[ind]
+        alp2=np.min(quotient)
+        alph.append(alp2)       
         
-    return x
+    if (len(alph)==0):
+        return x
+    return xo+direction*min(alph)  
 
 def sampleFromX(n):
     return np.random.uniform(lowerX,UpperX,(n,n1))
