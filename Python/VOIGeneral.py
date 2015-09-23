@@ -185,15 +185,12 @@ class KG(VOI):
         c2=np.abs(c[0:M-1])
         evalC=norm.pdf(c2)
         nTraining=self._GP._numberTraining
-
         tempN=nTraining+n
         B=np.zeros((1,tempN))
         X=self._PointsHist
         for i in xrange(tempN):
             B[0,i]=self._k.K(pointNew,X[i:i+1,:])[:,0]
-        temp2=linalg.solve_triangular(L,B.T,lower=True)
-        temp3=temp2
-        sigmaXnew=sqrt(self._k.K(np.array(pointNew).reshape((1,n1)))-np.dot(temp2.T,temp3))
+        temp22=linalg.solve_triangular(L,B.T,lower=True)
        # gradX=np.zeros([M,tempN])
         gradX=self.gradXKern(pointNew,n,self._GP)
         temp=np.zeros([tempN,n1])
@@ -201,17 +198,24 @@ class KG(VOI):
         gradient=np.zeros(n1)
         B2=np.zeros((1,tempN))
         temp54=np.zeros(M)
+        sigmaXnew=sqrt(self._k.K(np.array(pointNew).reshape((1,n1)))-np.dot(temp22.T,temp22))
+        inv3=linalg.solve_triangular(L,B[0,:],lower=True)
+        beta1=(self._GP._k.A(pointNew)-np.dot(inv3.T,inv3))
         for j in xrange(n1):
             for i in xrange(M):
                 for p1 in xrange(tempN):
                    # gradX[i,p1]=self._k.K(xNew,X[p1,:].reshape((1,n1)))*(2.0*alpha1[j]*(xNew[0,j]-X[p1,j]))
                     B2[0,p1]=self._k.K(self._points[keep[i]:keep[i]+1,:],X[p1:p1+1,:])[:,0]
-                temp52=linalg.solve_triangular(L,B2.T,lower=True)
+                inv1=linalg.solve_triangular(L,B2.T,lower=True)
                # temp2=linalg.solve_triangular(L,gradX[i:i+1,:].T,lower=True)
-                temp2=linalg.solve_triangular(L,gradX[:,j],lower=True)
+                inv2=linalg.solve_triangular(L,gradX[:,j],lower=True)
                # temp53=self._k.K(xNew,self._points[keep[i]:keep[i]+1,:])*(2.0*self._alpha1[j]*(xNew[0,j]-self._points[keep[i],j]))
+		tmp=np.dot(inv2.T,inv1)
                 temp53=self.gradXKern2(pointNew,i,keep,j,self)
-                temp54[i]=(temp53-np.dot(temp2.T,temp52))/(float(sigmaXnew))
+		tmp=(beta1**(-.5))*(temp53-tmp)
+                beta2=self._k.K(self._points[keep[i]:keep[i]+1,:],pointNew)-np.dot(inv1.T,inv3)
+                tmp2=(.5)*(beta1**(-1.5))*beta2*(2.0*np.dot(inv2.T,inv3))
+                temp54[i]=tmp+tmp2
             gradient[j]=np.dot(np.diff(temp54),tmp100)
         return h,gradient
             

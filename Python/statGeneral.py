@@ -214,6 +214,7 @@ class KG(GaussianProcess):
         B=np.zeros([m,tempN])
         X=self._Xhist
         y=self._yHist
+
         for i in xrange(tempN):
             B[:,i]=self._k.K(x,X[i:i+1,:])[:,0]
         muStart=self._k.mu
@@ -233,7 +234,7 @@ class KG(GaussianProcess):
            # a[j,0]=muStart+np.dot(temp1.T,temp5)
            # b[j,0]=-temp3+self._k.K(x[j:j+1,:],xNew)[:,0]
            # b[j,0]=b[j,0]/sqrt(float(BN))
-            a[j]=muStart+np.dot(temp1.T,temp5)
+            a[j]=muStart+np.dot(temp2.T,temp1)
             b[j]=-temp3+self._k.K(x[j:j+1,:],xNew)[:,0]
             b[j]=b[j]/sqrt(float(BN))
         ######error check again!!!!!!!!!!
