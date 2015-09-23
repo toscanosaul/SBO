@@ -1,0 +1,2 @@
+##$1 is the random seed, $2 the number of training points, $3 the number of samples to estimate F
+python citiBikeExample.py $1 5 15
