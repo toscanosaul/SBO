@@ -90,6 +90,7 @@ class SBO:
             self.path=folder+'%d'%randomSeed+"run"
         self.numberParallel=numberParallel
         if not os.path.exists(self.path):
+#	self.path='%d'%randomSeed+"run"
             os.makedirs(self.path)
         if createNewFiles is True:
             f=open(os.path.join(self.path,'%d'%randomSeed+"hyperparameters.txt"),'w')
@@ -167,7 +168,7 @@ class SBO:
             args2={}
             args2['start']=st
             args2['i']=i
-            #misc.VOIOptWrapper(self,**args2)
+           # misc.VOIOptWrapper(self,**args2)
             ####
             args2['start']=self.sampleFromX(1)
            # misc.AnOptWrapper(self,**args2)

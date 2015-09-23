@@ -166,49 +166,32 @@ class OptSteepestDescent(Optimization):
             oldPoint=X
                 
             g1,g2=f(X,grad=True)
-           # print g1,np.sqrt(np.sum(g2**2))
             if (tolMet==True):
                 break
             def fns(alpha,X_=oldPoint,g2=g2):
                 tmp=X_+alpha*g2
                 return f(tmp,grad=False)
-           # lineSearch=self.goldenSectionLineSearch(fns,tol,maxtry,X,g2)
 	    def fLine(x):
 		x=x.reshape((1,len(x)))
 		z=-1.0*f(x,grad=False)
-	#	print z
 		return z
             def gradfLine(x):
 		x=x.reshape((1,len(x)))
    		f1,df=f(x,grad=True)
                 df=df.reshape((1,x.shape[1]))
-	#	print "psdfadf"
 		z=-1.0*df[0,:]
-	#	print z
 		return z
-	  #  print "new line search"
   	    g2=g2.reshape((1,len(oldPoint[0,:]))) 
 	    lineSearch2=line_search(fLine,gradfLine,oldPoint[0,:],g2[0,:])
             step=lineSearch2[0]
-	    #print lineSearch, lineSearch2
             if step is None:
+	       print "step is none"
 	       tolMet=True
-	       return X,g1,g2[0,:],iter
+               g1,g2=f(X,grad=True)
+	       return X,g1,g2,iter
             X=X+lineSearch2[0]*g2
-          #  print X
-            X[0,0:n1]=self.projectGradient(X[0,0:n1])
-        #    if (any(X[0,0:n1]<c)):
-        #        temp1=np.array(X[0,0:n1]).reshape(n1)
-        #        index2=np.where(temp1<c)
-        #        X[0,index2[0]]=c[index2[0]]
-           
-         #   if (any(X[0,0:n1]>d)):
-         #       index2=np.where(X[0,0:n1]>d)
-         #       X[0,index2[0]]=d[index2[0]]
-	 #   print "iteration"
-         #   print oldPoint
-	 #   print g1,X
-	 #   print self.stopFunction(X[0,:]-oldPoint[0,:])
+            X[0,:]=self.projectGradient(X[0,:],g2[0,:],oldPoint[0,:])
+
             if self.stopFunction(X[0,:]-oldPoint[0,:])<tol or iter > maxit:
                 tolMet=True
                 g1,g2=f(X,grad=True)
