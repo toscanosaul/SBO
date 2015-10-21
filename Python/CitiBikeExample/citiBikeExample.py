@@ -105,23 +105,30 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 
 ###################################################
-
+parallel=False
 yTrain=np.zeros([0,1])
 NoiseTrain=np.zeros(0)
 
 
-jobs = []
-pool = mp.Pool()
-for i in xrange(trainingPoints):
-    job = pool.apply_async(noisyF,(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF))
-    jobs.append(job)
 
-pool.close()  # signal that no more data coming in
-pool.join()  # wait for all the tasks to complete
-for j in range(trainingPoints):
-    temp=jobs[j].get()
-    yTrain=np.vstack([yTrain,temp[0]])
-    NoiseTrain=np.append(NoiseTrain,temp[1])
+if parallel:
+    jobs = []
+    pool = mp.Pool()
+    for i in xrange(trainingPoints):
+        job = pool.apply_async(noisyF,(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF))
+        jobs.append(job)
+    
+    pool.close()  # signal that no more data coming in
+    pool.join()  # wait for all the tasks to complete
+    for j in range(trainingPoints):
+        temp=jobs[j].get()
+        yTrain=np.vstack([yTrain,temp[0]])
+        NoiseTrain=np.append(NoiseTrain,temp[1])
+else:
+    for i in xrange(trainingPoints):
+        temp=noisyF(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF)
+        yTrain=np.vstack([yTrain,temp[0]])
+        NoiseTrain=np.append(NoiseTrain,temp[1])
 
 
 #########
@@ -346,6 +353,7 @@ def estimationObjective(x):
 
 nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 l={}
+l['parallel']=parallel
 l['folderContainerResults']=os.path.join(nameDirectory,"SBO")
 l['estimationObjective']=estimationObjective
 l['transformationDomainW']=transformationDomainW

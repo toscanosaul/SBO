@@ -60,7 +60,7 @@ import misc
 ####E(fobj)
 ####trainingData is a dictionary={XWpoints,Ypoints,Noise}, Xpoints is a matrix, Ypoints,Nose are vectors
 class SBO:
-    def __init__(self, fobj,dimensionKernel,noisyF,gradXBfunc,gradXWSigmaOfunc,gradXBforAn,
+    def __init__(self, fobj,dimensionKernel,noisyF,gradXBfunc,gradXWSigmaOfunc,gradXBforAn, parallel,
                  dimSeparation=None,trainingData=None,numberEstimateF=15, sampleFromX=None,
                  B=None,kernel=None,numberTrainingData=0,Bhist=None,gradWBfunc=None,dimXsteepest=0,
                  XWhist=None,yHist=None,varHist=None,pointsVOI=None,folder=None,projectGradient=None,
@@ -69,6 +69,7 @@ class SBO:
                  transformationDomainX=None,transformationDomainW=None,estimationObjective=None,
                  folderContainerResults=None,scaledAlpha=1.0,xtol=None,functionConditionOpt=None):
        # np.random.seed(randomSeed)
+	self.parallel=parallel
 	if xtol is None:
 	    xtol=1e-8
 	self.functionConditionOpt=functionConditionOpt
@@ -157,8 +158,11 @@ class SBO:
         points=self._VOI._points
         for i in range(m):
             print i
-            self.optVOIParal(i,self.numberParallel)
-            
+	    if self.parallel:
+		self.optVOIParal(i,self.numberParallel)
+	    else:
+		self.optVOInoParal(i)
+
             #####
             n1=self._n1
             n2=self._dimW
@@ -173,13 +177,16 @@ class SBO:
             args2['start']=self.sampleFromX(1)
            # misc.AnOptWrapper(self,**args2)
             print i
-            self.optAnParal(i,self.numberParallel)
+	    if self.parallel:
+		self.optAnParal(i,self.numberParallel)
+	    else:
+		self.optAnnoParal(i)
             print i
         args2={}
         args2['start']=self.sampleFromX(1)
         args2['i']=m
       #  misc.AnOptWrapper(self,**args2)
-        self.optAnParal(m,self.numberParallel)
+    #    self.optAnParal(m,self.numberParallel)
     ###start is a matrix of one row
     ###
     def optimizeVOI(self,start, i):
@@ -199,7 +206,57 @@ class SBO:
         self.optRuns.append(opt)
         xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
         self.optPointsArray.append(xTrans)
-        
+    
+    def optVOInoParal(self,i):
+	n1=self._n1
+	n2=self._dimW
+	Xst=self.sampleFromX(1)
+	wSt=self._simulatorW(1)
+	x1=Xst[0:0+1,:]
+	w1=wSt[0:0+1,:]
+	st=np.concatenate((x1,w1),1)
+	args2={}
+	args2['start']=st
+        args2['i']=i
+           # misc.VOIOptWrapper(self,**args2)
+	self.optRuns.append(misc.VOIOptWrapper(self,**args2))
+	j=0
+	temp=self.optRuns[j].xOpt
+	gradOpt=self.optRuns[j].gradOpt
+	numberIterations=self.optRuns[j].nIterations
+	gradOpt=np.sqrt(np.sum(gradOpt**2))
+	gradOpt=np.array([gradOpt,numberIterations])
+	xTrans=self.transformationDomainX(self.optRuns[j].xOpt[0:1,0:self.dimXsteepest])
+	wTrans=self.transformationDomainW(self.optRuns[j].xOpt[0:1,self.dimXsteepest:self.dimXsteepest+self._dimW])
+	###falta transformar W
+	temp=np.concatenate((xTrans,wTrans),1)
+	self.optRuns=[]
+	self.optPointsArray=[]
+	self._XWhist=np.vstack([self._XWhist,temp])
+	self._VOI._PointsHist=self._XWhist
+	self._VOI._GP._Xhist=self._XWhist
+	y,var=self._infSource(temp,self._numberSamples)
+	self._yHist=np.vstack([self._yHist,y])
+	self._VOI._yHist=self._yHist
+	self._VOI._GP._yHist=self._yHist
+	self._varianceObservations=np.append(self._varianceObservations,var)
+	self._VOI._noiseHist=self._varianceObservations
+	self._VOI._GP._noiseHist=self._varianceObservations
+	with open(os.path.join(self.path,'%d'%self.randomSeed+"varHist.txt"), "a") as f:
+	    var=np.array(var).reshape(1)
+	    np.savetxt(f,var)
+	with open(os.path.join(self.path,'%d'%self.randomSeed+"yhist.txt"), "a") as f:
+	    y=np.array(y).reshape(1)
+	    np.savetxt(f,y)
+	with open(os.path.join(self.path,'%d'%self.randomSeed+"XWHist.txt"), "a") as f:
+	    np.savetxt(f,temp)
+	with open(os.path.join(self.path,'%d'%self.randomSeed+"optVOIgrad.txt"), "a") as f:
+	    np.savetxt(f,gradOpt)
+
+        self.optRuns=[]
+        self.optPointsArray=[]
+
+
     def optVOIParal(self,i,nStart,numProcesses=None):
         try:
             n1=self._n1
@@ -299,6 +356,38 @@ class SBO:
         xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
         self.optPointsArray.append(xTrans)
     
+    
+    def optAnnoParal(self,i):
+	n1=self._n1
+	Xst=self.sampleFromX(1)
+	args2={}
+	args2['start']=Xst[0:0+1,:]
+	args2['i']=i
+	self.optRuns.append(misc.AnOptWrapper(self,**args2))
+	j = 0
+	temp=self.optRuns[j].xOpt
+	tempGrad=self.optRuns[j].gradOpt
+	tempGrad=np.sqrt(np.sum(tempGrad**2))
+	tempGrad=np.array([tempGrad,self.optRuns[j].nIterations])
+	xTrans=self.transformationDomainX(self.optRuns[j].xOpt[0:1,0:self.dimXsteepest])
+    #    temp2=self.
+	self._solutions.append(xTrans)
+	with open(os.path.join(self.path,'%d'%self.randomSeed+"optimalSolutions.txt"), "a") as f:
+	    np.savetxt(f,xTrans)
+	with open(os.path.join(self.path,'%d'%self.randomSeed+"optimalValues.txt"), "a") as f:
+	    result,var=self.estimationObjective(xTrans[0,:])
+	    res=np.append(result,var)
+	    np.savetxt(f,res)
+	with open(os.path.join(self.path,'%d'%self.randomSeed+"optAngrad.txt"), "a") as f:
+	    np.savetxt(f,tempGrad)
+	self.optRuns=[]
+	self.optPointsArray=[]
+            
+        self.optRuns=[]
+        self.optPointsArray=[]
+     
+
+    
     def optAnParal(self,i,nStart,numProcesses=None):
         try:
             n1=self._n1
@@ -356,8 +445,10 @@ class SBO:
         self.optPointsArray=[]
 
     def trainModel(self,numStarts,**kwargs):
-        self._k.train(scaledAlpha=self.scaledAlpha,numStarts=numStarts,**kwargs)
-        
+	if self.parallel:
+	    self._k.train(scaledAlpha=self.scaledAlpha,numStarts=numStarts,**kwargs)
+	else:
+	    self._k.trainnoParallel(scaledAlpha=self.scaledAlpha,**kwargs)
         f=open(os.path.join(self.path,'%d'%self.randomSeed+"hyperparameters.txt"),'w')
         f.write(str(self._k.getParamaters()))
         f.close()

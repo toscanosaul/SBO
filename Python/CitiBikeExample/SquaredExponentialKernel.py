@@ -58,9 +58,6 @@ class SEK:
             variance=self.variance
             
         if X2 is None:
-            #print "point"
-            #print X
-            #print alpha
             #print self.scaleAlpha
             X=X*alpha/self.scaleAlpha
             Xsq=np.sum(np.square(X), 1)
@@ -182,7 +179,21 @@ class SEK:
         opt.run(f=self.minuslogLikelihoodParameters,df=self.minusGradLogLikelihoodParameters)
         self.optRuns.append(opt)
         self.optPointsArray.append(opt.xOpt)
-        
+    
+    
+    def trainnoParallel(self,scaledAlpha,**kwargs):
+        dim=self.dimension
+        alpha=np.random.randn(dim)
+        variance=np.random.rand(1)
+        st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),[0.0]))
+        args2={}
+        args2['start']=st
+        job=misc.kernOptWrapper(self,**args2)
+        temp=job.xOpt
+        self.alpha=np.sqrt(np.exp(np.array(temp[0:self.dimension])))
+        self.variance=np.exp(np.array(temp[self.dimension]))
+        self.mu=np.array(temp[self.dimension+1])
+
     
     ###Train the hyperparameters using MLE
     ###noise is an array. X is a matrix y is an array
@@ -201,7 +212,7 @@ class SEK:
                 st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),[0.0]))
                 args2={}
                 args2['start']=st
-       #         misc.kernOptWrapper(self,**args2)
+              #  misc.kernOptWrapper(self,**args2)
                # print args2
                # print self.minuslogLikelihoodParameters(st)
 
