@@ -465,7 +465,7 @@ def optVOInoParal(sboObj,i):
     args2['start']=st
     args2['i']=i
        # misc.VOIOptWrapper(self,**args2)
-    sboObj.optRuns.append(optimizeAn(sboObj,**args2))
+    sboObj.optRuns.append(optimizeVOI(sboObj,**args2))
     j=0
     temp=sboObj.optRuns[j].xOpt
     gradOpt=sboObj.optRuns[j].gradOpt
