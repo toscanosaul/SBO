@@ -427,9 +427,10 @@ def optimizeAn(sboObj,start,i,L,logProduct):
     opt.constraintB=sboObj._constraintB
     tempN=i+sboObj.numberTraining
 
-    print "logprod"
-    print logProduct
+
     def g(x,grad,onlyGradient=False):
+        print "logprod"
+        print logProduct
         return sboObj.functionGradientAscentAn(x,grad,sboObj,i,L,onlyGradient=onlyGradient,
                                                logproductExpectations=logProduct)
     
