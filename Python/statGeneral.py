@@ -85,24 +85,30 @@ class SBOGP(GaussianProcess):
     ##n is the time where aN is computed
     ##Output: aN and its gradient if gradient=True
     ##Other parameters are defined in Vn
-    def aN_grad(self,x,L,n,gradient=True):
-        y2=self._yHist[0:n+self._numberTraining]-self._k.mu
-        muStart=self._k.mu
+    def aN_grad(self,x,L,n,gradient=True,onlyGradient=False):
         n1=self.n1
         n2=self.n2
+        muStart=self._k.mu
+        y2=self._yHist[0:n+self._numberTraining]-self._k.mu
         B=np.zeros(n+self._numberTraining)
         for i in xrange(n+self._numberTraining):
             B[i]=self.B(x,self._Xhist[i,:],self.n1,self.n2)
+        
         inv1=linalg.solve_triangular(L,y2,lower=True)
+        
+        if onlyGradient:
+            gradXB=self.gradXBforAn(x,n,B,self,self._Xhist[0:n+self._numberTraining,0:n1])
+            temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
+            gradAn=np.dot(inv1.transpose(),temp4)
+            return gradAn
+        
+        
         inv2=linalg.solve_triangular(L,B.transpose(),lower=True)
         aN=muStart+np.dot(inv2.transpose(),inv1)
         if gradient==True:
-           # gradXB=self._gradXBfunc(x,self,BN,keep)
-          #  gradXB=np.zeros((n1,n+self.histSaved))
             gradXB=self.gradXBforAn(x,n,B,self,self._Xhist[0:n+self._numberTraining,0:n1])
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
-            temp5=linalg.solve_triangular(L,y2,lower=True)
-            gradAn=np.dot(temp5.transpose(),temp4)
+            gradAn=np.dot(inv1.transpose(),temp4)
             return aN,gradAn
         else:
             return aN
