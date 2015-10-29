@@ -326,8 +326,7 @@ def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False,logproductExpecta
         L2=np.concatenate((t,s))
         grad2=np.dot(temp,L2)
         return grad2
-    print "logprod in gradient An"
-    print logproductExpectations
+
     temp=SBO._VOI._GP.aN_grad(x,L,i,gradient=grad,logproductExpectations=logproductExpectations)
     if grad==False:
         return temp
@@ -430,8 +429,6 @@ def optimizeAn(sboObj,start,i,L,logProduct):
 
 
     def g(x,grad,onlyGradient=False):
-        print "logprod"
-        print logProduct
         return sboObj.functionGradientAscentAn(x,grad,sboObj,i,L,onlyGradient=onlyGradient,
                                                logproductExpectations=logProduct)
     
