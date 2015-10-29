@@ -99,7 +99,7 @@ def sampleFromX(n):
 parallel=False
 yTrain=np.zeros([0,1])
 NoiseTrain=np.zeros(0)
-
+ind=1300
 def readTrainingData(n,directory):
     XWtrain=np.loadtxt(os.path.join(directory,"%d"%ind+"XWHist.txt"))[0:n,:]
     yTrain=np.loadtxt(os.path.join(directory,"%d"%ind+"yhist.txt"))[0:n]
