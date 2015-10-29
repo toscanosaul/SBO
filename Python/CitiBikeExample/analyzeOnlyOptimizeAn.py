@@ -321,7 +321,6 @@ def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False):
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L=np.concatenate((t,s))
-        
         temp=SBO._VOI._GP.aN_grad(x,L,i,grad,onlyGradient)
         grad2=np.dot(temp,L)
         return grad2
@@ -412,8 +411,8 @@ def optimizeAn(sboObj,start,i):
     tempN=i+sboObj.numberTraining
     A=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
     L=np.linalg.cholesky(A)
-    def g(x,grad):
-        return sboObj.functionGradientAscentAn(x,grad,sboObj,i,L)
+    def g(x,grad,onlyGradient=False):
+        return sboObj.functionGradientAscentAn(x,grad,sboObj,i,L,onlyGradient=onlyGradient)
     opt.run(f=g)
     sboObj.optRuns.append(opt)
     xTrans=sboObj.transformationDomainX(opt.xOpt[0:1,0:sboObj.dimXsteepest])
