@@ -360,7 +360,7 @@ class SBO:
 	A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
 	L=np.linalg.cholesky(A)
 	######computeLogProduct....only makes sense for the SEK, the function should be optional
-	logProduct=self.computeLogProductExpectationsForAn(self._XWhist[0:tempN,n1:sboObj._dimW+n1],
+	logProduct=self.computeLogProductExpectationsForAn(self._XWhist[0:tempN,n1:self._dimW+n1],
                                                          tempN)
 	Xst=self.sampleFromX(1)
 	args2={}
@@ -400,7 +400,7 @@ class SBO:
 	    A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
 	    L=np.linalg.cholesky(A)
 	    ######computeLogProduct....only makes sense for the SEK, the function should be optional
-	    logProduct=self.computeLogProductExpectationsForAn(self._XWhist[0:tempN,n1:sboObj._dimW+n1],
+	    logProduct=self.computeLogProductExpectationsForAn(self._XWhist[0:tempN,n1:self._dimW+n1],
 							       tempN)
          #   dim=self.dimension
             jobs = []
