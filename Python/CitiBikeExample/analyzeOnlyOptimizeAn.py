@@ -362,6 +362,7 @@ def estimationObjective(x):
 
 def computeLogProductExpectationsForAn(W,N):
     logproductExpectations=np.zeros(N)
+    parameterLamb=parameterSetsPoisson
     for i in xrange(N):
         logproductExpectations[i]=0.0
         for j in xrange(n2):
