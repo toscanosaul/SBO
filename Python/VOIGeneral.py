@@ -57,6 +57,7 @@ class VOISBO(VOI):
             h=hvoi(b,c,keep1) ##Vn
             return h
         ####Gradient
+        bPrev=b
         a=a[keep1]
         b=b[keep1]
         keep=keep[keep1] #indices conserved
@@ -64,6 +65,7 @@ class VOISBO(VOI):
         if M<=1:
             return h,np.zeros(self._dimKernel)
         B=self._GP.Bhist
+        cPrev=c
         c=c[keep1+1]
         c2=np.abs(c[0:M-1])
         evalC=norm.pdf(c2)
@@ -113,7 +115,7 @@ class VOISBO(VOI):
             
         if onlyGradient:
             return result
-        h=hvoi(b,c,keep1) ##Vn
+        h=hvoi(bPrev,cPrev,keep1) ##Vn
         return h,result
                     
                     
