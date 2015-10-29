@@ -150,7 +150,7 @@ def logSumExp(x):
     return y
 
 
-def B(x,XW,n1,n2):
+def B(x,XW,n1,n2,logproductExpectations=None):
     x=np.array(x).reshape((x.shape[0],n1))
     results=np.zeros(x.shape[0])
     parameterLamb=parameterSetsPoisson
@@ -160,11 +160,13 @@ def B(x,XW,n1,n2):
     alpha1=0.5*((kernel.alpha[0:n1])**2)/scaleAlpha**2
     variance0=kernel.variance
     
-    logproductExpectations=0.0
-    for j in xrange(n2):
-        G=poisson(parameterLamb[j])
-        temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[j])**2)),G.args)
-        logproductExpectations+=np.log(temp)
+    if logproductExpectations is None:
+        logproductExpectations=0.0
+        for j in xrange(n2):
+            G=poisson(parameterLamb[j])
+            temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[j])**2)),G.args)
+            logproductExpectations+=np.log(temp)
+            
     for i in xrange(x.shape[0]):
         results[i]=logproductExpectations+np.log(variance0)-np.sum(alpha1*((x[i,:]-X)**2))
     return np.exp(results)
@@ -314,18 +316,18 @@ def functionGradientAscentVn(x,grad,SBO,i):
         return temp
 
 ####the function that steepest ascent will optimize
-def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False):
+def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False,logproductExpectations=None):
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
     if onlyGradient:
-        temp=SBO._VOI._GP.aN_grad(x,L,i,grad,onlyGradient)
+        temp=SBO._VOI._GP.aN_grad(x,L,i,grad,onlyGradient,logproductExpectations)
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L2=np.concatenate((t,s))
         grad2=np.dot(temp,L2)
         return grad2
         
-    temp=SBO._VOI._GP.aN_grad(x,L,i,grad)
+    temp=SBO._VOI._GP.aN_grad(x,L,i,grad,logproductExpectations)
     if grad==False:
         return temp
     else:
@@ -356,13 +358,24 @@ def estimationObjective(x):
     
     return np.mean(result),float(np.var(result))/estimator
 
+##W is a matrix
 
+def computeLogProductExpectationsForAn(W,N):
+    logproductExpectations=np.zeros(N)
+    for i in xrange(N):
+        logproductExpectations[i]=0.0
+        for j in xrange(n2):
+            G=poisson(parameterLamb[j])
+            temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[j])**2)),G.args)
+            logproductExpectations[i]+=np.log(temp)
+    return logproductExpectations
 
 
 
 
 
 l={}
+l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
 l['parallel']=parallel
 l['folderContainerResults']=os.path.join(directory[0],"SBO")
 l['estimationObjective']=estimationObjective
@@ -403,16 +416,20 @@ l['functionConditionOpt']=conditionOpt
 print 'ok'
 sboObj=SB.SBO(**l)
 
-def optimizeAn(sboObj,start,i):
+
+
+def optimizeAn(sboObj,start,i,L,logProduct):
     opt=op.OptSteepestDescent(n1=sboObj.dimXsteepest,projectGradient=sboObj.projectGradient,
                               xStart=start,xtol=sboObj.xtol,stopFunction=sboObj.functionConditionOpt)
     opt.constraintA=sboObj._constraintA
     opt.constraintB=sboObj._constraintB
     tempN=i+sboObj.numberTraining
-    A=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
-    L=np.linalg.cholesky(A)
+
+
     def g(x,grad,onlyGradient=False):
-        return sboObj.functionGradientAscentAn(x,grad,sboObj,i,L,onlyGradient=onlyGradient)
+        return sboObj.functionGradientAscentAn(x,grad,sboObj,i,L,onlyGradient=onlyGradient,
+                                               logproductExpectations=logProduct)
+    
     opt.run(f=g)
     sboObj.optRuns.append(opt)
     xTrans=sboObj.transformationDomainX(opt.xOpt[0:1,0:sboObj.dimXsteepest])
@@ -421,10 +438,18 @@ def optimizeAn(sboObj,start,i):
 
 def optAnnoParal(sboObj,i):
     n1=sboObj._n1
+    tempN=i+sboObj.numberTraining
+    A=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
+    L=np.linalg.cholesky(A)
+    logproduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:self._dimW+n1],
+                                                         tempN)
+
     Xst=sboObj.sampleFromX(1)
     args2={}
     args2['start']=Xst[0:0+1,:]
     args2['i']=i
+    args2['L']=L
+    args2['logProduct']=logProduct
     sboObj.optRuns.append(optimizeAn(sboObj,**args2))
     j = 0
     temp=sboObj.optRuns[j].xOpt
