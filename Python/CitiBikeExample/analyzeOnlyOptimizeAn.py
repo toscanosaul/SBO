@@ -443,7 +443,7 @@ def optAnnoParal(sboObj,i):
     tempN=i+sboObj.numberTraining
     A=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
     L=np.linalg.cholesky(A)
-    logproduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:sboObj._dimW+n1],
+    logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:sboObj._dimW+n1],
                                                          tempN)
 
     Xst=sboObj.sampleFromX(1)
