@@ -85,14 +85,14 @@ class SBOGP(GaussianProcess):
     ##n is the time where aN is computed
     ##Output: aN and its gradient if gradient=True
     ##Other parameters are defined in Vn
-    def aN_grad(self,x,L,n,gradient=True,onlyGradient=False):
+    def aN_grad(self,x,L,n,gradient=True,onlyGradient=False,logproductExpectations=None):
         n1=self.n1
         n2=self.n2
         muStart=self._k.mu
         y2=self._yHist[0:n+self._numberTraining]-self._k.mu
         B=np.zeros(n+self._numberTraining)
         for i in xrange(n+self._numberTraining):
-            B[i]=self.B(x,self._Xhist[i,:],self.n1,self.n2)
+            B[i]=self.B(x,self._Xhist[i,:],self.n1,self.n2,logproductExpectations[i])
         
         inv1=linalg.solve_triangular(L,y2,lower=True)
         
