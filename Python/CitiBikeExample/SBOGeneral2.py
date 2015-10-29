@@ -338,21 +338,16 @@ class SBO:
         self.optRuns=[]
         self.optPointsArray=[]
             
-    def optimizeAn(self,start,i):
+    def optimizeAn(self,start,i,L,logProduct):
         opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,xStart=start,xtol=self.xtol,stopFunction=self.functionConditionOpt)
         opt.constraintA=self._constraintA
         opt.constraintB=self._constraintB
         tempN=i+self.numberTraining
-        A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
-        L=np.linalg.cholesky(A)
-        def g(x,grad):
-            return self.functionGradientAscentAn(x,grad,self,i,L)
-      #  def g(x,grad):
-      #      temp=self._VOI._GP.aN_grad(x,L,i,grad)
-      #      if grad==False:
-      #          return temp
-      #      else:
-      #          return temp[0],temp[1]
+
+        def g(x,grad,onlyGradient=False):
+            return self.functionGradientAscentAn(x,grad,self,i,L,onlyGradient=onlyGradient,
+						 logproductExpectations=logProduct)
+
         opt.run(f=g)
         self.optRuns.append(opt)
         xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
@@ -361,10 +356,18 @@ class SBO:
     
     def optAnnoParal(self,i):
 	n1=self._n1
+	tempN=i+self.numberTraining
+	A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
+	L=np.linalg.cholesky(A)
+	######computeLogProduct....only makes sense for the SEK, the function should be optional
+	logProduct=self.computeLogProductExpectationsForAn(self._XWhist[0:tempN,n1:sboObj._dimW+n1],
+                                                         tempN)
 	Xst=self.sampleFromX(1)
 	args2={}
 	args2['start']=Xst[0:0+1,:]
 	args2['i']=i
+	args2['L']=L
+	args2['logProduct']=logProduct
 	self.optRuns.append(misc.AnOptWrapper(self,**args2))
 	j = 0
 	temp=self.optRuns[j].xOpt
@@ -393,6 +396,12 @@ class SBO:
     def optAnParal(self,i,nStart,numProcesses=None):
         try:
             n1=self._n1
+	    tempN=i+self.numberTraining
+	    A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
+	    L=np.linalg.cholesky(A)
+	    ######computeLogProduct....only makes sense for the SEK, the function should be optional
+	    logProduct=self.computeLogProductExpectationsForAn(self._XWhist[0:tempN,n1:sboObj._dimW+n1],
+							       tempN)
          #   dim=self.dimension
             jobs = []
             pool = mp.Pool(processes=numProcesses)
@@ -404,6 +413,8 @@ class SBO:
                # x1=Xst[j,:]
                 args2['start']=Xst[j:j+1,:]
                 args2['i']=i
+		args2['L']=L
+		args2['logProduct']=logProduct
                 job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=args2)
                 jobs.append(job)
             
