@@ -44,15 +44,17 @@ class VOISBO(VOI):
                        gradXBfunc=self._gradXBfunc,gradXBforAn=gradXBforAn)
 
     ##a,b are the vectors of the paper: a=(a_{n}(x_{i}), b=(sigma^tilde_{n})
-    def evalVOI(self,n,pointNew,a,b,gamma,BN,L,grad=False):
+    def evalVOI(self,n,pointNew,a,b,gamma,BN,L,grad=False,onlyGradient=False):
         #n>=0
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
         n1=self._dimKernel-self._dimW
         n2=self._dimW
-        h=hvoi(b,c,keep1) ##Vn
+        
+        
         if grad==False:
+            h=hvoi(b,c,keep1) ##Vn
             return h
         ####Gradient
         a=a[keep1]
@@ -108,14 +110,18 @@ class VOISBO(VOI):
                 tmp2=(.5)*(beta1**(-1.5))*(2.0*np.dot(inv2.T,inv3))*beta2
                 gradient[j]=tmp+tmp2
             result[i+n1]=np.dot(np.diff(gradient),evalC)
-        
-        
+            
+        if onlyGradient:
+            return result
+        h=hvoi(b,c,keep1) ##Vn
         return h,result
                     
                     
-    def VOIfunc(self,n,pointNew,grad):
+    def VOIfunc(self,n,pointNew,grad,onlyGradient=False):
         n1=self._dimKernel-self._dimW
         a,b,gamma,BN,L=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel])
+        if onlyGradient:
+            return self.evalVOI(n,pointNew,a,b,gamma,BN,L,onlyGradient=onlyGradient)
         if grad==False:
             return self.evalVOI(n,pointNew,a,b,gamma,BN,L)
         return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad)
