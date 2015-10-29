@@ -91,6 +91,8 @@ class SBOGP(GaussianProcess):
         muStart=self._k.mu
         y2=self._yHist[0:n+self._numberTraining]-self._k.mu
         B=np.zeros(n+self._numberTraining)
+        print "in stat"
+        print logproductExpectations
         for i in xrange(n+self._numberTraining):
             B[i]=self.B(x,self._Xhist[i,:],self.n1,self.n2,logproductExpectations[i])
         
