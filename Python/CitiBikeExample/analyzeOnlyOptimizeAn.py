@@ -326,7 +326,8 @@ def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False,logproductExpecta
         L2=np.concatenate((t,s))
         grad2=np.dot(temp,L2)
         return grad2
-        
+    print "logprod"
+    print logproductExpectations
     temp=SBO._VOI._GP.aN_grad(x,L,i,grad,logproductExpectations)
     if grad==False:
         return temp
