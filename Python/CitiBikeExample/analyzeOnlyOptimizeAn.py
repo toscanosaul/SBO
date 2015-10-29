@@ -422,7 +422,7 @@ def optAnnoParal(sboObj,i):
     tempGrad=sboObj.optRuns[j].gradOpt
     tempGrad=np.sqrt(np.sum(tempGrad**2))
     tempGrad=np.array([tempGrad,sboObj.optRuns[j].nIterations])
-    xTrans=sboObj.transformationDomainX(sboObj.optRuns[j].xOpt[0:1,0:self.dimXsteepest])
+    xTrans=sboObj.transformationDomainX(sboObj.optRuns[j].xOpt[0:1,0:sboObj.dimXsteepest])
     sboObj._solutions.append(xTrans)
 
 optAnnoParal(sboObj,0)
