@@ -318,11 +318,11 @@ def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False):
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
     if onlyGradient:
+        temp=SBO._VOI._GP.aN_grad(x,L,i,grad,onlyGradient)
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
-        L=np.concatenate((t,s))
-        temp=SBO._VOI._GP.aN_grad(x,L,i,grad,onlyGradient)
-        grad2=np.dot(temp,L)
+        L2=np.concatenate((t,s))
+        grad2=np.dot(temp,L2)
         return grad2
         
     temp=SBO._VOI._GP.aN_grad(x,L,i,grad)
@@ -331,8 +331,8 @@ def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False):
     else:
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
-        L=np.concatenate((t,s))
-        grad2=np.dot(temp[1],L)
+        L2=np.concatenate((t,s))
+        grad2=np.dot(temp[1],L2)
         return temp[0],grad2
 
 dimXsteepest=n1-1
