@@ -19,6 +19,7 @@ import statsmodels.api as sm
 import multiprocessing as mp
 import os
 from scipy.stats import poisson
+import optimization as op
 
 
 directory=[]
