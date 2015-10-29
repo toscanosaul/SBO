@@ -67,8 +67,10 @@ class SBO:
                  constraintA=None,constraintB=None,simulatorW=None,createNewFiles=True,randomSeed=1,
                  functionGradientAscentVn=None,functionGradientAscentAn=None,numberParallel=10,
                  transformationDomainX=None,transformationDomainW=None,estimationObjective=None,
-                 folderContainerResults=None,scaledAlpha=1.0,xtol=None,functionConditionOpt=None):
+                 folderContainerResults=None,scaledAlpha=1.0,xtol=None,functionConditionOpt=None,
+		 computeLogProductExpectationsForAn=None):
        # np.random.seed(randomSeed)
+	self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
 	self.parallel=parallel
 	if xtol is None:
 	    xtol=1e-8
