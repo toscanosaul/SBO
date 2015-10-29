@@ -368,7 +368,7 @@ def computeLogProductExpectationsForAn(W,N):
         logproductExpectations[i]=0.0
         for j in xrange(n2):
             G=poisson(parameterLamb[j])
-            temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[j])**2)),G.args)
+            temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[i,j])**2)),G.args)
             logproductExpectations[i]+=np.log(temp)
     return logproductExpectations
 
