@@ -361,6 +361,7 @@ def estimationObjective(x):
 ##W is a matrix
 
 def computeLogProductExpectationsForAn(W,N):
+    alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
     logproductExpectations=np.zeros(N)
     parameterLamb=parameterSetsPoisson
     for i in xrange(N):
