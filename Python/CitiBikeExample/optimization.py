@@ -178,7 +178,7 @@ class OptSteepestDescent(Optimization):
 		return z
             def gradfLine(x):
 		x=x.reshape((1,len(x)))
-   		f1,df=f(x,grad=True)
+   		df=f(x,grad=True,onlyGradient=True)
                 df=df.reshape((1,x.shape[1]))
 		z=-1.0*df[0,:]
 		return z
