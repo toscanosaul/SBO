@@ -161,6 +161,7 @@ class OptSteepestDescent(Optimization):
         d=self.constraintB
         
         while tolMet==False:
+	    print iter
             iter=iter+1
             oldEval=g1
             oldPoint=X
