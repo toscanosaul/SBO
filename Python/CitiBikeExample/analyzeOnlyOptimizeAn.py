@@ -314,9 +314,18 @@ def functionGradientAscentVn(x,grad,SBO,i):
         return temp
 
 ####the function that steepest ascent will optimize
-def functionGradientAscentAn(x,grad,SBO,i,L):
+def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False):
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
+    if onlyGradient:
+        t=np.diag(np.ones(n1-1))
+        s=-1.0*np.ones((1,n1-1))
+        L=np.concatenate((t,s))
+        
+        temp=SBO._VOI._GP.aN_grad(x,L,i,grad,onlyGradient)
+        grad2=np.dot(temp,L)
+        return grad2
+        
     temp=SBO._VOI._GP.aN_grad(x,L,i,grad)
     if grad==False:
         return temp
@@ -396,7 +405,8 @@ print 'ok'
 sboObj=SB.SBO(**l)
 
 def optimizeAn(sboObj,start,i):
-    opt=op.OptSteepestDescent(n1=sboObj.dimXsteepest,projectGradient=sboObj.projectGradient,xStart=start,xtol=sboObj.xtol,stopFunction=sboObj.functionConditionOpt)
+    opt=op.OptSteepestDescent(n1=sboObj.dimXsteepest,projectGradient=sboObj.projectGradient,
+                              xStart=start,xtol=sboObj.xtol,stopFunction=sboObj.functionConditionOpt)
     opt.constraintA=sboObj._constraintA
     opt.constraintB=sboObj._constraintB
     tempN=i+sboObj.numberTraining
