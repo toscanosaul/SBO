@@ -51,7 +51,8 @@ class VOISBO(VOI):
         keep1=keep1.astype(np.int64)
         n1=self._dimKernel-self._dimW
         n2=self._dimW
-        
+        print "dentroevalVOI"
+        print onlyGradient
         
         if grad==False:
             h=hvoi(b,c,keep1) ##Vn
@@ -130,7 +131,7 @@ class VOISBO(VOI):
             return self.evalVOI(n,pointNew,a,b,gamma,BN,L,onlyGradient=onlyGradient)
         if grad==False:
             return self.evalVOI(n,pointNew,a,b,gamma,BN,L)
-        return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad)
+        return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad=grad)
 
 class EI(VOI):
     def __init__(self,gradXKern,*args,**kargs):
