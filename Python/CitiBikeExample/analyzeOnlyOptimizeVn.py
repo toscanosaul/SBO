@@ -293,13 +293,14 @@ def projectGradientDescent(x,direction,xo):
     return xo+direction*min(alph)
 
 ####we eliminate one variable to optimize the function
-def functionGradientAscentVn(x,grad,SBO,i,L,onlyGradient=False):
+
+def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,onlyGradient=False):
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
     tempX=x[0:1,0:n1-1]
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
-    temp=SBO._VOI.VOIfunc(i,xFinal,L=L,grad=grad,onlyGradient=onlyGradient)
+    temp=SBO._VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,onlyGradient=onlyGradient)
     
 
     if onlyGradient:
@@ -437,15 +438,30 @@ sboObj=SB.SBO(**l)
 
 
 def optimizeVOI(sboObj,start, i):
-    opt=op.OptSteepestDescent(n1=sboObj.dimXsteepest,projectGradient=sboObj.projectGradient,stopFunction=sboObj.functionConditionOpt,xStart=start,xtol=sboObj.xtol)
+    opt=op.OptSteepestDescent(n1=sboObj.dimXsteepest,projectGradient=sboObj.projectGradient,
+                              stopFunction=sboObj.functionConditionOpt,xStart=start,xtol=sboObj.xtol)
     opt.constraintA=sboObj._constraintA
     opt.constraintB=sboObj._constraintB
     tempN=sboObj.numberTraining+i
     A=sboObj._VOI._GP._k.A(sboObj._VOI._GP._Xhist[0:tempN,:],noise=sboObj._VOI._GP._noiseHist[0:tempN])
     L=np.linalg.cholesky(A)
+    
+    m=self._VOI._points.shape[0]
+    for i in xrange(self.histSaved,tempN):
+        temp=self.B(self._VOI._points,sboObj._VOI._GP._Xhist[i,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
+        self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
+        self.histSaved+=1
+    muStart=sboObj._k.mu
+    y=sboObj._yHist
+    temp2=linalg.solve_triangular(L,(self.Bhist).T,lower=True)
+    temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
+    a=muStart+np.dot(temp2.T,temp1)
+
+    
   #  self.functionGradientAscentAn
     def g(x,grad,onlyGradient=False):
-        return sboObj.functionGradientAscentVn(x,grad,sboObj,i,L,onlyGradient=onlyGradient)
+        return sboObj.functionGradientAscentVn(x,grad,sboObj,i,L,temp2=temp2,a=a,
+                                               onlyGradient=onlyGradient)
 
         #temp=self._VOI.VOIfunc(i,x,grad=grad)
         #if grad==True:
