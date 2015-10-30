@@ -229,18 +229,28 @@ def gradWB(new,objVOI,BN,keep):
   #  a=range(n2)
     X=new[0,0:n1]
     W=new[0,n1:n1+n2]
+    
+    productExp=np.zeros(n2)
+    productExp2=np.zeros(n2)
+    
+    for i in xrange(n2):
+        G=poisson(parameterLamb[i])
+        temp=G.dist.expect(lambda z: np.exp(-alpha2[i]*((z-W[i])**2)),G.args)
+        productExp[i]=np.log(temp)
+        temp2=G.dist.expect(lambda z: -2.0*alpha2[i]*(-z+W[i])*np.exp(-alpha2[i]*((z-W[i])**2)),G.args)
+        productExp2[i]=temp2
    
     for i in xrange(n2):
         logproductExpectations=0.0
         a=range(n2)
         del a[i]
         for r in a:
-            G=poisson(parameterLamb[r])
-            temp=G.dist.expect(lambda z: np.exp(-alpha2[r]*((z-W[r])**2)),G.args)
-            logproductExpectations+=np.log(temp)
-        G=poisson(parameterLamb[i])
-        temp=G.dist.expect(lambda z: -2.0*alpha2[i]*(-z+W[i])*np.exp(-alpha2[i]*((z-W[i])**2)),G.args)
-        productExpectations=np.exp(logproductExpectations)*temp
+         #   G=poisson(parameterLamb[r])
+          #  temp=G.dist.expect(lambda z: np.exp(-alpha2[r]*((z-W[r])**2)),G.args)
+            logproductExpectations+=productExp[r]
+       # G=poisson(parameterLamb[i])
+       # temp=G.dist.expect(lambda z: -2.0*alpha2[i]*(-z+W[i])*np.exp(-alpha2[i]*((z-W[i])**2)),G.args)
+        productExpectations=np.exp(logproductExpectations)*productExp2[i]
         for j in xrange(M):
             gradWBarray[j,i]=np.log(variance0)-np.sum(alpha1*((points[keep[j],:]-X)**2))
             gradWBarray[j,i]=np.exp(gradWBarray[j,i])*productExpectations
