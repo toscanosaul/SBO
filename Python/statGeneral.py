@@ -45,6 +45,7 @@ class SBOGP(GaussianProcess):
     def aANDb(self,n,x,xNew,wNew,L):
         x=np.array(x)
         m=x.shape[0]
+        tempN=self._numberTraining+n
         for i in xrange(self.histSaved,tempN):
             print self.histSaved
             temp=self.B(x,self._Xhist[i,:],self.n1,self.n2) ###change my previous function because we have to concatenate X and W
