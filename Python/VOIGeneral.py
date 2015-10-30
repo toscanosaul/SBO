@@ -51,8 +51,6 @@ class VOISBO(VOI):
         keep1=keep1.astype(np.int64)
         n1=self._dimKernel-self._dimW
         n2=self._dimW
-        print "dentroevalVOI"
-        print onlyGradient
         
         if grad==False:
             h=hvoi(b,c,keep1) ##Vn
@@ -115,23 +113,19 @@ class VOISBO(VOI):
             result[i+n1]=np.dot(np.diff(gradient),evalC)
             
         if onlyGradient:
-            print "veamos gradient"
-            print result
             return result
         h=hvoi(bPrev,cPrev,keep1) ##Vn
         return h,result
                     
                     
     def VOIfunc(self,n,pointNew,grad,onlyGradient=False):
-        print "dentrodeVOIFUNC"
-        print onlyGradient
         n1=self._dimKernel-self._dimW
         a,b,gamma,BN,L=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel])
         if onlyGradient:
-            return self.evalVOI(n,pointNew,a,b,gamma,BN,L,onlyGradient=onlyGradient)
+            return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad=True,onlyGradient=onlyGradient)
         if grad==False:
             return self.evalVOI(n,pointNew,a,b,gamma,BN,L)
-        return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad=grad)
+        return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad=True)
 
 class EI(VOI):
     def __init__(self,gradXKern,*args,**kargs):
