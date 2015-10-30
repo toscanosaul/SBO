@@ -188,8 +188,6 @@ def gradXWSigmaOfunc(n,new,objVOI,Xtrain2,Wtrain2):
     alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
     xNew=new[0,0:n1]
     wNew=new[0,n1:n1+n2]
-    print "ok"
-    print n,trainingPoints
     for i in xrange(n+trainingPoints):
         gradXSigma0[i,:]=-2.0*gamma[i]*alpha1*(xNew-Xtrain2[i,:])
         gradWSigma0[i,:]=-2.0*gamma[i]*alpha2*(wNew-Wtrain2[i,:])
@@ -303,8 +301,6 @@ def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,onlyGradient=False):
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
-    print "point"
-    print i
     temp=SBO._VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,onlyGradient=onlyGradient)
     
 
@@ -452,8 +448,8 @@ def optimizeVOI(sboObj,start, i):
     L=np.linalg.cholesky(A)
     
     m=sboObj._VOI._points.shape[0]
-    for i in xrange(sboObj.histSaved,tempN):
-        temp=sboObj.B(sboObj._VOI._points,sboObj._VOI._GP._Xhist[i,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
+    for j in xrange(sboObj.histSaved,tempN):
+        temp=sboObj.B(sboObj._VOI._points,sboObj._VOI._GP._Xhist[j,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
         sboObj.Bhist=np.concatenate((sboObj.Bhist,temp.reshape((m,1))),1)
         sboObj.histSaved+=1
     muStart=sboObj._k.mu
