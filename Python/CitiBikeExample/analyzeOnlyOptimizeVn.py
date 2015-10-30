@@ -301,7 +301,10 @@ def functionGradientAscentVn(x,grad,SBO,i,onlyGradient=False):
     xFinal=np.concatenate((x2,tempW),1)
     temp=SBO._VOI.VOIfunc(i,xFinal,grad=grad,onlyGradient=onlyGradient)
     
+    print "averr"
+    print onlyGradient
     if onlyGradient:
+        print "si entro"
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L=np.concatenate((t,s))
@@ -447,8 +450,6 @@ def optimizeVOI(sboObj,start, i):
     opt.constraintB=sboObj._constraintB
   #  self.functionGradientAscentAn
     def g(x,grad,onlyGradient=False):
-        print "averrrr"
-        print onlyGradient
         return sboObj.functionGradientAscentVn(x,grad,sboObj,i,onlyGradient=onlyGradient)
 
         #temp=self._VOI.VOIfunc(i,x,grad=grad)
