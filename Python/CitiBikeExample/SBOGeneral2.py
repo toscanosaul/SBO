@@ -137,7 +137,8 @@ class SBO:
         with open(os.path.join(self.path,'%d'%randomSeed+"varHist.txt"), "a") as f:
             np.savetxt(f,varHist)
     
-    
+	self.histSaved=0
+	self.Bhist=np.zeros((pointsVOI.shape[0],0))
         
         self._XWhist=XWhist
         self._yHist=yHist
