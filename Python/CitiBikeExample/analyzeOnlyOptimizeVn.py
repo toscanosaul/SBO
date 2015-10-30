@@ -448,7 +448,7 @@ def optimizeVOI(sboObj,start, i):
     
     m=sboObj._VOI._points.shape[0]
     for i in xrange(sboObj.histSaved,tempN):
-        temp=self.B(sboObj._VOI._points,sboObj._VOI._GP._Xhist[i,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
+        temp=sboObj.B(sboObj._VOI._points,sboObj._VOI._GP._Xhist[i,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
         sboObj.Bhist=np.concatenate((sboObj.Bhist,temp.reshape((m,1))),1)
         sboObj.histSaved+=1
     muStart=sboObj._k.mu
