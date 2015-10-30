@@ -446,14 +446,14 @@ def optimizeVOI(sboObj,start, i):
     A=sboObj._VOI._GP._k.A(sboObj._VOI._GP._Xhist[0:tempN,:],noise=sboObj._VOI._GP._noiseHist[0:tempN])
     L=np.linalg.cholesky(A)
     
-    m=self._VOI._points.shape[0]
-    for i in xrange(self.histSaved,tempN):
-        temp=self.B(self._VOI._points,sboObj._VOI._GP._Xhist[i,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
-        self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
-        self.histSaved+=1
+    m=sesboObjlf._VOI._points.shape[0]
+    for i in xrange(sboObj.histSaved,tempN):
+        temp=self.B(sboObj._VOI._points,sboObj._VOI._GP._Xhist[i,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
+        sboObj.Bhist=np.concatenate((sboObj.Bhist,temp.reshape((m,1))),1)
+        sboObj.histSaved+=1
     muStart=sboObj._k.mu
     y=sboObj._yHist
-    temp2=linalg.solve_triangular(L,(self.Bhist).T,lower=True)
+    temp2=linalg.solve_triangular(L,(sboObj.Bhist).T,lower=True)
     temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
     a=muStart+np.dot(temp2.T,temp1)
 
