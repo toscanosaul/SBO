@@ -303,6 +303,8 @@ def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,onlyGradient=False):
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
+    print "point"
+    print i
     temp=SBO._VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,onlyGradient=onlyGradient)
     
 
@@ -346,8 +348,7 @@ def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False,logproductExpecta
         L2=np.concatenate((t,s))
         grad2=np.dot(temp,L2)
         return grad2
-    print "point"
-    print i
+
     temp=SBO._VOI._GP.aN_grad(x,L,i,gradient=grad,logproductExpectations=logproductExpectations)
     if grad==False:
         return temp
