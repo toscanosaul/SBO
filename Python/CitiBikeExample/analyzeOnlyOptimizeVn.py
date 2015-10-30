@@ -299,10 +299,11 @@ def functionGradientAscentVn(x,grad,SBO,i,onlyGradient=False):
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
+    print "afuera voifunc"
+    print onlyGradient
     temp=SBO._VOI.VOIfunc(i,xFinal,grad=grad,onlyGradient=onlyGradient)
     
-    print "averr"
-    print onlyGradient
+
     if onlyGradient:
         print "si entro"
         t=np.diag(np.ones(n1-1))
