@@ -122,6 +122,8 @@ class VOISBO(VOI):
                     
                     
     def VOIfunc(self,n,pointNew,grad,onlyGradient=False):
+        print "dentrodeVOIFUNC"
+        print onlyGradient
         n1=self._dimKernel-self._dimW
         a,b,gamma,BN,L=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel])
         if onlyGradient:
