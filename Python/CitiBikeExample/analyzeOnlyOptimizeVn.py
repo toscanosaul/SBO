@@ -27,7 +27,7 @@ directory=[]
 directory.append(os.path.join("..","CitiBikeExample","Results15AveragingSamples5TrainingPoints","SBO","1300run"))
 
 nTemp=1300
-nTemp2=25
+nTemp2=15
 nTemp3=15
 #except:
 #    nTemp=1
