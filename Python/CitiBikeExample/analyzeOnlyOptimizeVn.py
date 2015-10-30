@@ -440,7 +440,7 @@ def optimizeVOI(sboObj,start, i):
     opt=op.OptSteepestDescent(n1=sboObj.dimXsteepest,projectGradient=sboObj.projectGradient,stopFunction=sboObj.functionConditionOpt,xStart=start,xtol=sboObj.xtol)
     opt.constraintA=sboObj._constraintA
     opt.constraintB=sboObj._constraintB
-    tempN=sboObj._numberTraining+n
+    tempN=sboObj.numberTraining+n
     A=sboObj._k.A(sboObj._Xhist[0:tempN,:],noise=sboObj._noiseHist[0:tempN])
     L=np.linalg.cholesky(A)
   #  self.functionGradientAscentAn
