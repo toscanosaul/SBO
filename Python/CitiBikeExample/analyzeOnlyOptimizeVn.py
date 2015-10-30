@@ -293,13 +293,13 @@ def projectGradientDescent(x,direction,xo):
     return xo+direction*min(alph)
 
 ####we eliminate one variable to optimize the function
-def functionGradientAscentVn(x,grad,SBO,i,onlyGradient=False):
+def functionGradientAscentVn(x,grad,SBO,i,L,onlyGradient=False):
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
     tempX=x[0:1,0:n1-1]
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
-    temp=SBO._VOI.VOIfunc(i,xFinal,grad=grad,onlyGradient=onlyGradient)
+    temp=SBO._VOI.VOIfunc(i,xFinal,L=L,grad=grad,onlyGradient=onlyGradient)
     
 
     if onlyGradient:
@@ -440,9 +440,12 @@ def optimizeVOI(sboObj,start, i):
     opt=op.OptSteepestDescent(n1=sboObj.dimXsteepest,projectGradient=sboObj.projectGradient,stopFunction=sboObj.functionConditionOpt,xStart=start,xtol=sboObj.xtol)
     opt.constraintA=sboObj._constraintA
     opt.constraintB=sboObj._constraintB
+    tempN=sboObj._numberTraining+n
+    A=sboObj._k.A(sboObj._Xhist[0:tempN,:],noise=sboObj._noiseHist[0:tempN])
+    L=np.linalg.cholesky(A)
   #  self.functionGradientAscentAn
     def g(x,grad,onlyGradient=False):
-        return sboObj.functionGradientAscentVn(x,grad,sboObj,i,onlyGradient=onlyGradient)
+        return sboObj.functionGradientAscentVn(x,grad,sboObj,i,L,onlyGradient=onlyGradient)
 
         #temp=self._VOI.VOIfunc(i,x,grad=grad)
         #if grad==True:
