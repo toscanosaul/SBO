@@ -447,6 +447,8 @@ def optimizeVOI(sboObj,start, i):
     opt.constraintB=sboObj._constraintB
   #  self.functionGradientAscentAn
     def g(x,grad,onlyGradient=False):
+        print "averrrr"
+        print onlyGradient
         return sboObj.functionGradientAscentVn(x,grad,sboObj,i,onlyGradient=onlyGradient)
 
         #temp=self._VOI.VOIfunc(i,x,grad=grad)
