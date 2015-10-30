@@ -118,9 +118,9 @@ class VOISBO(VOI):
         return h,result
                     
                     
-    def VOIfunc(self,n,pointNew,grad,onlyGradient=False):
+    def VOIfunc(self,n,pointNew,grad,L,onlyGradient=False):
         n1=self._dimKernel-self._dimW
-        a,b,gamma,BN,L=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel])
+        a,b,gamma,BN=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L)
         if onlyGradient:
             return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad=True,onlyGradient=onlyGradient)
         if grad==False:
