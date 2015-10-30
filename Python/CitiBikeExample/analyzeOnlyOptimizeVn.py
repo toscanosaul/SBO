@@ -299,13 +299,10 @@ def functionGradientAscentVn(x,grad,SBO,i,onlyGradient=False):
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
-    print "afuera voifunc"
-    print onlyGradient
     temp=SBO._VOI.VOIfunc(i,xFinal,grad=grad,onlyGradient=onlyGradient)
     
 
     if onlyGradient:
-        print "si entro"
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L=np.concatenate((t,s))
@@ -315,12 +312,6 @@ def functionGradientAscentVn(x,grad,SBO,i,onlyGradient=False):
         temDiag=np.identity(n2)
         sub=np.concatenate((subMatrix,temDiag))
         L=np.concatenate((L,sub),1)
-        print "gradient"
-        print L
-        print temp
-        print n1
-        print n2
-        print "gradiet hasta aqui"
         grad2=np.dot(temp,L)
         return grad2
         
