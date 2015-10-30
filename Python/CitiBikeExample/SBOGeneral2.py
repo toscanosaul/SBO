@@ -147,6 +147,8 @@ class SBO:
         
         self.optRuns=[]
         self.optPointsArray=[]
+	
+	self.B=B
 
         self._VOI=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=numberTrainingData,
                          gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=Bhist,pointsApproximation=pointsVOI,
