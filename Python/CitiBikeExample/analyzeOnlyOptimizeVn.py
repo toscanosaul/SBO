@@ -311,6 +311,12 @@ def functionGradientAscentVn(x,grad,SBO,i,onlyGradient=False):
         temDiag=np.identity(n2)
         sub=np.concatenate((subMatrix,temDiag))
         L=np.concatenate((L,sub),1)
+        print "gradient"
+        print L
+        print temp
+        print n1
+        print n2
+        print "gradiet hasta aqui"
         grad2=np.dot(temp,L)
         return grad2
         
