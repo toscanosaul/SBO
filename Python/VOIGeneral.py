@@ -138,7 +138,7 @@ class VOISBO(VOI):
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch,B=B,inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient)
         if grad==False:
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B=B)
-        return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch,B=B,grad=True)
+        return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,inv=temp1,scratch=scratch,B=B,grad=True)
 
 class EI(VOI):
     def __init__(self,gradXKern,*args,**kargs):
