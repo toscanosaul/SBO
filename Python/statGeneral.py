@@ -42,24 +42,23 @@ class SBOGP(GaussianProcess):
     #computes a and b from the paper
     ##x is a nxdim(x) matrix of points where a_n and sigma_n are evaluated
     ###computed using n past observations
-    def aANDb(self,n,x,xNew,wNew,L):
+    def aANDb(self,n,x,xNew,wNew,L,temp2,a):
         x=np.array(x)
         m=x.shape[0]
         tempN=self._numberTraining+n
-        for i in xrange(self.histSaved,tempN):
-            print self.histSaved
-            temp=self.B(x,self._Xhist[i,:],self.n1,self.n2) ###change my previous function because we have to concatenate X and W
-            self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
-            self.histSaved+=1
-        B=self.Bhist
+      #  for i in xrange(self.histSaved,tempN):
+      #      temp=self.B(x,self._Xhist[i,:],self.n1,self.n2) ###change my previous function because we have to concatenate X and W
+      #      self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
+      #      self.histSaved+=1
+      #  B=self.Bhist
         BN=np.zeros([m,1])
         n2=self.n2
         BN[:,0]=self.B(x,np.concatenate((xNew,wNew),1),self.n1,n2) #B(x,n+1)
-        muStart=self._k.mu
-        y=self._yHist
-        temp2=linalg.solve_triangular(L,B.T,lower=True)
-        temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
-        a=muStart+np.dot(temp2.T,temp1)
+     #   muStart=self._k.mu
+     #   y=self._yHist
+    #    temp2=linalg.solve_triangular(L,B.T,lower=True)
+    #    temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
+    #    a=muStart+np.dot(temp2.T,temp1)
         n1=self.n1
         n2=self.n2
         past=self._Xhist[0:tempN,:]
