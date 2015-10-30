@@ -44,7 +44,7 @@ class VOISBO(VOI):
                        gradXBfunc=self._gradXBfunc,gradXBforAn=gradXBforAn)
 
     ##a,b are the vectors of the paper: a=(a_{n}(x_{i}), b=(sigma^tilde_{n})
-    def evalVOI(self,n,pointNew,a,b,gamma,BN,L,grad=False,onlyGradient=False):
+    def evalVOI(self,n,pointNew,a,b,gamma,BN,L,B,grad=False,onlyGradient=False):
         #n>=0
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
@@ -63,7 +63,7 @@ class VOISBO(VOI):
         M=len(keep)
         if M<=1:
             return h,np.zeros(self._dimKernel)
-        B=self._GP.Bhist
+      #  B=self._GP.Bhist
         cPrev=c
         c=c[keep1+1]
         c2=np.abs(c[0:M-1])
@@ -80,8 +80,8 @@ class VOISBO(VOI):
      
         
         
-        A=self._k.A(self._PointsHist[0:tempN,:],noise=self._noiseHist[0:tempN])
-        L=np.linalg.cholesky(A)
+      #  A=self._k.A(self._PointsHist[0:tempN,:],noise=self._noiseHist[0:tempN])
+      #  L=np.linalg.cholesky(A)
         gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
         inv3=linalg.solve_triangular(L,gamma,lower=True)
         beta1=(self._GP._k.A(pointNew)-np.dot(inv3.T,inv3))
@@ -118,15 +118,15 @@ class VOISBO(VOI):
         return h,result
                     
                     
-    def VOIfunc(self,n,pointNew,grad,L,temp2,a,onlyGradient=False):
+    def VOIfunc(self,n,pointNew,grad,L,temp2,a,B,onlyGradient=False):
         n1=self._dimKernel-self._dimW
         a,b,gamma,BN=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
                                     temp2=temp2,a=a)
         if onlyGradient:
-            return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad=True,onlyGradient=onlyGradient)
+            return self.evalVOI(n,pointNew,a,b,gamma,BN,L,B=B,grad=True,onlyGradient=onlyGradient)
         if grad==False:
-            return self.evalVOI(n,pointNew,a,b,gamma,BN,L)
-        return self.evalVOI(n,pointNew,a,b,gamma,BN,L,grad=True)
+            return self.evalVOI(n,pointNew,a,b,gamma,BN,L,B=B)
+        return self.evalVOI(n,pointNew,a,b,gamma,BN,L,B=B,grad=True)
 
 class EI(VOI):
     def __init__(self,gradXKern,*args,**kargs):
