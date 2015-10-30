@@ -44,11 +44,9 @@ class VOISBO(VOI):
                        gradXBfunc=self._gradXBfunc,gradXBforAn=gradXBforAn)
 
     ##a,b are the vectors of the paper: a=(a_{n}(x_{i}), b=(sigma^tilde_{n})
-    def evalVOI(self,n,pointNew,a,b,gamma,BN,L,B,grad=False,onlyGradient=False):
+    def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B,inv,aux4,scratch=None,grad=False,onlyGradient=False):
         #n>=0
-        a,b,keep=AffineBreakPointsPrep(a,b)
-        keep1,c=AffineBreakPoints(a,b)
-        keep1=keep1.astype(np.int64)
+
         n1=self._dimKernel-self._dimW
         n2=self._dimW
         
@@ -60,7 +58,7 @@ class VOISBO(VOI):
         a=a[keep1]
         b=b[keep1]
         keep=keep[keep1] #indices conserved
-        M=len(keep)
+        
         if M<=1:
             return h,np.zeros(self._dimKernel)
       #  B=self._GP.Bhist
@@ -83,32 +81,36 @@ class VOISBO(VOI):
       #  A=self._k.A(self._PointsHist[0:tempN,:],noise=self._noiseHist[0:tempN])
       #  L=np.linalg.cholesky(A)
         gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
-        inv3=linalg.solve_triangular(L,gamma,lower=True)
-        beta1=(self._GP._k.A(pointNew)-np.dot(inv3.T,inv3))
+       # inv3=linalg.solve_triangular(L,gamma,lower=True)
+        inv3=inv
+        beta1=(self._GP._k.A(pointNew)-aux4)
         gradient=np.zeros(M)
         result=np.zeros(n1+n2)
 
         for i in xrange(n1):
+            inv2=linalg.solve_triangular(L,gradientGamma[i,0:tempN].transpose(),lower=True)
+            aux5=np.dot(inv2.T,inv3)
             for j in xrange(M):
-               # gradXB[j,i]=-2.0*alpha1[i]*BN[keep[j],0]*(xNew[0,i]-points[keep[j],i])
-                inv1=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
-                inv2=linalg.solve_triangular(L,gradientGamma[i,0:tempN].transpose(),lower=True)
-                tmp=np.dot(inv2.T,inv1)
+           #     inv1=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
+                
+            #    tmp=np.dot(inv2.T,inv1)
+                tmp=np.dot(inv2.T,scratch[j,:]) 
                 tmp=(beta1**(-.5))*(gradXB[j,i]-tmp)
-                beta2=BN[keep[j],:]-np.dot(inv1.T,inv3)
-                tmp2=(.5)*(beta1**(-1.5))*beta2*(2.0*np.dot(inv2.T,inv3))
+                beta2=BN[keep[j],:]-np.dot(scratch[j,:].T,inv3)
+                tmp2=(.5)*(beta1**(-1.5))*beta2*(2.0*aux5)
                 gradient[j]=tmp+tmp2
             result[i]=np.dot(np.diff(gradient),evalC)
             
         for i in xrange(n2):
+            inv2=linalg.solve_triangular(L,gradientGamma[i+n1,0:tempN].transpose(),lower=True)
+            aux5=np.dot(inv2.T,inv3)
             for j in xrange(M):
-               # gradWB[j,i]=BN[keep[j],0]*(alpha2[i]*(mu[i]-wNew[0,i]))/((variance[i]*alpha2[i]+.5))
-                inv1=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
-                inv2=linalg.solve_triangular(L,gradientGamma[i+n1,0:tempN].transpose(),lower=True)
-                tmp=np.dot(inv2.T,inv1)
+             #   inv1=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
+                tmp=np.dot(inv2.T,scratch[j,:])
                 tmp=(beta1**(-.5))*(gradWB[j,i]-tmp)
-                beta2=BN[keep[j],:]-np.dot(inv1.T,inv3)
-                tmp2=(.5)*(beta1**(-1.5))*(2.0*np.dot(inv2.T,inv3))*beta2
+                beta2=BN[keep[j],:]-np.dot(scratch[j,:].T,inv3)
+              #  tmp2=(.5)*(beta1**(-1.5))*(2.0*np.dot(inv2.T,inv3))*beta2
+                tmp2=(.5)*(beta1**(-1.5))*(2.0*aux5)*beta2
                 gradient[j]=tmp+tmp2
             result[i+n1]=np.dot(np.diff(gradient),evalC)
             
@@ -120,13 +122,23 @@ class VOISBO(VOI):
                     
     def VOIfunc(self,n,pointNew,grad,L,temp2,a,B,onlyGradient=False):
         n1=self._dimKernel-self._dimW
-        a,b,gamma,BN=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
+        a,b,gamma,BN,temp1,aux4=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
                                     temp2=temp2,a=a)
+        a,b,keep=AffineBreakPointsPrep(a,b)
+        keep1,c=AffineBreakPoints(a,b)
+        keep1=keep1.astype(np.int64)
+        M=len(keep)
+        nTraining=self._GP._numberTraining
+        tempN=nTraining+n
+        if grad:
+            scratch=np.zeros(M,tempN)
+            for j in xrange(M):
+                scratch[j,:]=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
         if onlyGradient:
-            return self.evalVOI(n,pointNew,a,b,gamma,BN,L,B=B,grad=True,onlyGradient=onlyGradient)
+            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch,B=B,inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient)
         if grad==False:
-            return self.evalVOI(n,pointNew,a,b,gamma,BN,L,B=B)
-        return self.evalVOI(n,pointNew,a,b,gamma,BN,L,B=B,grad=True)
+            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B=B)
+        return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch,B=B,grad=True)
 
 class EI(VOI):
     def __init__(self,gradXKern,*args,**kargs):

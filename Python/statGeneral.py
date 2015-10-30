@@ -67,14 +67,15 @@ class SBOGP(GaussianProcess):
         gamma=np.transpose(self._k.A(new,past))
         temp1=linalg.solve_triangular(L,gamma,lower=True)
         b=(BN-np.dot(temp2.T,temp1))
-        b2=self._k.K(new)-np.dot(temp1.T,temp1)
+        aux4=np.dot(temp1.T,temp1)
+        b2=self._k.K(new)-aux4
         b2=np.clip(b2,0,np.inf)
         try:
             b=b/(np.sqrt(b2))
         except Exception as e:
             print "use a different point x"
             b=np.zeros((len(b),1))
-        return a,b,gamma,BN
+        return a,b,gamma,BN,temp1,aux4
         
     ##x is point where function is evaluated
     ##L is cholesky factorization of An
