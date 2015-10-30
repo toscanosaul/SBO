@@ -179,7 +179,12 @@ class OptSteepestDescent(Optimization):
             def gradfLine(x):
 		x=x.reshape((1,len(x)))
    		df=f(x,grad=True,onlyGradient=True)
+		print "point is"
+		print x
+		print "derivative is"
 		print df
+		print df.shape
+		print x.shape[1]
                 df=df.reshape((1,x.shape[1]))
 		z=-1.0*df[0,:]
 		return z
