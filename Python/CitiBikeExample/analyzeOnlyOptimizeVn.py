@@ -188,6 +188,8 @@ def gradXWSigmaOfunc(n,new,objVOI,Xtrain2,Wtrain2):
     alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
     xNew=new[0,0:n1]
     wNew=new[0,n1:n1+n2]
+    print "ok"
+    print n,trainingPoints
     for i in xrange(n+trainingPoints):
         gradXSigma0[i,:]=-2.0*gamma[i]*alpha1*(xNew-Xtrain2[i,:])
         gradWSigma0[i,:]=-2.0*gamma[i]*alpha2*(wNew-Wtrain2[i,:])
