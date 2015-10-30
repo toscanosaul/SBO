@@ -114,6 +114,8 @@ class VOISBO(VOI):
             result[i+n1]=np.dot(np.diff(gradient),evalC)
             
         if onlyGradient:
+            print "veamos gradient"
+            print result
             return result
         h=hvoi(bPrev,cPrev,keep1) ##Vn
         return h,result
