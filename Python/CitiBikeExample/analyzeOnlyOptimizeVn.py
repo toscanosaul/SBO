@@ -20,6 +20,7 @@ import multiprocessing as mp
 import os
 from scipy.stats import poisson
 import optimization as op
+from scipy import linalg
 
 
 directory=[]
