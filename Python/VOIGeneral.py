@@ -131,7 +131,7 @@ class VOISBO(VOI):
         nTraining=self._GP._numberTraining
         tempN=nTraining+n
         if grad:
-            scratch=np.zeros(M,tempN)
+            scratch=np.zeros((M,tempN))
             for j in xrange(M):
                 scratch[j,:]=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
         if onlyGradient:
