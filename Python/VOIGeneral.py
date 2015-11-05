@@ -123,7 +123,7 @@ class VOISBO(VOI):
         return h,result
                     
                     
-    def VOIfunc(self,n,pointNew,grad,L,temp2,a,B,onlyGradient=False):
+    def VOIfunc(self,n,pointNew,grad,L,temp2,a,B,scratch,onlyGradient=False):
         n1=self._dimKernel-self._dimW
         b,gamma,BN,temp1,aux4=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
                                     temp2=temp2)
@@ -135,9 +135,10 @@ class VOISBO(VOI):
         tempN=nTraining+n
         keep2=keep[keep1]
         if grad:
-            scratch=np.zeros((M,tempN))
+            scratch1=np.zeros((M,tempN))
             for j in xrange(M):
-                scratch[j,:]=linalg.solve_triangular(L,B[keep2[j],:].transpose(),lower=True)
+                #scratch[j,:]=linalg.solve_triangular(L,B[keep2[j],:].transpose(),lower=True)
+                scratch1[j,:]=scratch[keep2[j],:]
         if onlyGradient:
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch,B=B,inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient)
         if grad==False:
