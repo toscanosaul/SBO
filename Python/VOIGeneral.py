@@ -133,10 +133,11 @@ class VOISBO(VOI):
         M=len(keep1)
         nTraining=self._GP._numberTraining
         tempN=nTraining+n
+        keep2=keep[keep1]
         if grad:
             scratch=np.zeros((M,tempN))
             for j in xrange(M):
-                scratch[j,:]=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
+                scratch[j,:]=linalg.solve_triangular(L,B[keep2[j],:].transpose(),lower=True)
         if onlyGradient:
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch,B=B,inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient)
         if grad==False:
