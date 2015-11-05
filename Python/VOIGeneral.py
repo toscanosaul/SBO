@@ -94,7 +94,12 @@ class VOISBO(VOI):
            #     inv1=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
                 
             #    tmp=np.dot(inv2.T,inv1)
-                tmp=np.dot(inv2.T,scratch[j,:]) 
+                tmp=np.dot(inv2.T,scratch[j,:])
+                print "gradXB"
+                print gradXB
+                print "\n"
+                print "M"
+                print M
                 tmp=(beta1**(-.5))*(gradXB[j,i]-tmp)
                 beta2=BN[keep[j],:]-np.dot(scratch[j,:].T,inv3)
                 tmp2=(.5)*(beta1**(-1.5))*beta2*(2.0*aux5)
@@ -138,6 +143,7 @@ class VOISBO(VOI):
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch,B=B,inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient)
         if grad==False:
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B=B)
+      
         return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,inv=temp1,scratch=scratch,B=B,grad=True)
 
 class EI(VOI):
