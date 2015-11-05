@@ -87,11 +87,6 @@ class VOISBO(VOI):
         gradient=np.zeros(M)
         result=np.zeros(n1+n2)
         
-        print "gradXB"
-        print gradXB
-        print "\n"
-        print "M"
-        print M
 
         for i in xrange(n1):
             inv2=linalg.solve_triangular(L,gradientGamma[i,0:tempN].transpose(),lower=True)
@@ -134,7 +129,7 @@ class VOISBO(VOI):
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
-        M=len(keep)
+        M=len(keep1)
         nTraining=self._GP._numberTraining
         tempN=nTraining+n
         if grad:
