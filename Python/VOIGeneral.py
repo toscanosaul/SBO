@@ -44,7 +44,8 @@ class VOISBO(VOI):
                        gradXBfunc=self._gradXBfunc,gradXBforAn=gradXBforAn)
 
     ##a,b are the vectors of the paper: a=(a_{n}(x_{i}), b=(sigma^tilde_{n})
-    def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B,inv,aux4,scratch=None,grad=False,onlyGradient=False):
+    def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B,inv,aux4,
+                scratch=None,grad=False,onlyGradient=False):
         #n>=0
 
         n1=self._dimKernel-self._dimW
@@ -139,7 +140,7 @@ class VOISBO(VOI):
         if onlyGradient:
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch,B=B,inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient)
         if grad==False:
-            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B=B)
+            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B=B,aux4=aux4,inv=temp1)
       
         return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,inv=temp1,scratch=scratch,B=B,grad=True)
 
