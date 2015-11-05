@@ -42,7 +42,7 @@ class SBOGP(GaussianProcess):
     #computes a and b from the paper
     ##x is a nxdim(x) matrix of points where a_n and sigma_n are evaluated
     ###computed using n past observations
-    def aANDb(self,n,x,xNew,wNew,L,temp2,a):
+    def aANDb(self,n,x,xNew,wNew,L,temp2):
         x=np.array(x)
         m=x.shape[0]
         tempN=self._numberTraining+n
@@ -75,7 +75,7 @@ class SBOGP(GaussianProcess):
         except Exception as e:
             print "use a different point x"
             b=np.zeros((len(b),1))
-        return a,b,gamma,BN,temp1,aux4
+        return b,gamma,BN,temp1,aux4
         
     ##x is point where function is evaluated
     ##L is cholesky factorization of An
