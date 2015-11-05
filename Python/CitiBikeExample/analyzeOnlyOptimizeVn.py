@@ -60,7 +60,7 @@ UpperX=numberBikes*np.ones(4)
 dimensionKernel=n1+n2
 nGrid=50
 ####to generate points run poissonGeneratePoints.py
-pointsVOI=np.loadtxt("pointsPoisson.txt")
+pointsVOI=np.loadtxt("pointsPoisson1000.txt")
 
 ####CAMBIAR NOISYf NO DEBE DEPENDERR DE RANDOM SEED!!!
 def noisyF(XW,n):
