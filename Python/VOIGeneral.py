@@ -86,6 +86,12 @@ class VOISBO(VOI):
         beta1=(self._GP._k.A(pointNew)-aux4)
         gradient=np.zeros(M)
         result=np.zeros(n1+n2)
+        
+        print "gradXB"
+        print gradXB
+        print "\n"
+        print "M"
+        print M
 
         for i in xrange(n1):
             inv2=linalg.solve_triangular(L,gradientGamma[i,0:tempN].transpose(),lower=True)
@@ -95,11 +101,7 @@ class VOISBO(VOI):
                 
             #    tmp=np.dot(inv2.T,inv1)
                 tmp=np.dot(inv2.T,scratch[j,:])
-                print "gradXB"
-                print gradXB
-                print "\n"
-                print "M"
-                print M
+
                 tmp=(beta1**(-.5))*(gradXB[j,i]-tmp)
                 beta2=BN[keep[j],:]-np.dot(scratch[j,:].T,inv3)
                 tmp2=(.5)*(beta1**(-1.5))*beta2*(2.0*aux5)
