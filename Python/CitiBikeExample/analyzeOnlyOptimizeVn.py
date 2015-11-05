@@ -305,13 +305,13 @@ def projectGradientDescent(x,direction,xo):
 
 ####we eliminate one variable to optimize the function
 
-def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,B,onlyGradient=False):
+def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,B,scratch,onlyGradient=False):
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
     tempX=x[0:1,0:n1-1]
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
-    temp=SBO._VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,B=B,grad=grad,onlyGradient=onlyGradient)
+    temp=SBO._VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,B=B,grad=grad,scratch=scratch,onlyGradient=onlyGradient)
     
 
     if onlyGradient:
@@ -467,12 +467,15 @@ def optimizeVOI(sboObj,start, i):
     temp2=linalg.solve_triangular(L,(sboObj.Bhist).T,lower=True)
     temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
     a=muStart+np.dot(temp2.T,temp1)
-
+    
+    scratch=np.zeros((m,tempN))
+    for j in xrange(m):
+        scratch[j,:]=linalg.solve_triangular(L,sboObj.Bhist[j,:].transpose(),lower=True)
     
   #  self.functionGradientAscentAn
     def g(x,grad,onlyGradient=False):
         return sboObj.functionGradientAscentVn(x,grad,sboObj,i,L,temp2=temp2,a=a,B=sboObj.Bhist,
-                                               onlyGradient=onlyGradient)
+                                               scratch=scratch,onlyGradient=onlyGradient)
 
         #temp=self._VOI.VOIfunc(i,x,grad=grad)
         #if grad==True:
