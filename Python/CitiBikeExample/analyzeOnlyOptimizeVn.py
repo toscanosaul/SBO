@@ -206,9 +206,6 @@ def gradXB(new,objVOI,BN,keep):
     xNew=new[0,0:n1].reshape((1,n1))
     gradXBarray=np.zeros([len(keep),n1])
     M=len(keep)
-    print "M in gradXB"
-    print M
-    print "\n"
     for i in xrange(n1):
         for j in xrange(M):
             gradXBarray[j,i]=-2.0*alpha1[i]*BN[keep[j],0]*(xNew[0,i]-points[keep[j],i])
