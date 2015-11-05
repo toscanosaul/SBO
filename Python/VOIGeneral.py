@@ -125,8 +125,8 @@ class VOISBO(VOI):
                     
     def VOIfunc(self,n,pointNew,grad,L,temp2,a,B,onlyGradient=False):
         n1=self._dimKernel-self._dimW
-        a,b,gamma,BN,temp1,aux4=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
-                                    temp2=temp2,a=a)
+        b,gamma,BN,temp1,aux4=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
+                                    temp2=temp2)
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
