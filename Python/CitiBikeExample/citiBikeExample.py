@@ -149,7 +149,7 @@ def logSumExp(x):
     return y
 
 
-def B(x,XW,n1,n2):
+def B(x,XW,n1,n2,logproductExpectations=None):
     x=np.array(x).reshape((x.shape[0],n1))
     results=np.zeros(x.shape[0])
     parameterLamb=parameterSetsPoisson
@@ -159,11 +159,13 @@ def B(x,XW,n1,n2):
     alpha1=0.5*((kernel.alpha[0:n1])**2)/scaleAlpha**2
     variance0=kernel.variance
     
-    logproductExpectations=0.0
-    for j in xrange(n2):
-        G=poisson(parameterLamb[j])
-        temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[j])**2)),G.args)
-        logproductExpectations+=np.log(temp)
+    if logproductExpectations is None:
+        logproductExpectations=0.0
+        for j in xrange(n2):
+            G=poisson(parameterLamb[j])
+            temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[j])**2)),G.args)
+            logproductExpectations+=np.log(temp)
+            
     for i in xrange(x.shape[0]):
         results[i]=logproductExpectations+np.log(variance0)-np.sum(alpha1*((x[i,:]-X)**2))
     return np.exp(results)
