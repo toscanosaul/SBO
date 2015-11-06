@@ -105,7 +105,7 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 
 ###################################################
-parallel=True
+parallel=False
 yTrain=np.zeros([0,1])
 NoiseTrain=np.zeros(0)
 
