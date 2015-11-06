@@ -105,7 +105,7 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 
 ###################################################
-parallel=False
+parallel=True
 yTrain=np.zeros([0,1])
 NoiseTrain=np.zeros(0)
 
@@ -290,13 +290,30 @@ def projectGradientDescent(x,direction,xo):
     return xo+direction*min(alph)
 
 ####we eliminate one variable to optimize the function
-def functionGradientAscentVn(x,grad,SBO,i):
+
+def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,B,scratch,onlyGradient=False):
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
     tempX=x[0:1,0:n1-1]
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
-    temp=SBO._VOI.VOIfunc(i,xFinal,grad=grad)
+    temp=SBO._VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,B=B,grad=grad,scratch=scratch,onlyGradient=onlyGradient)
+    
+
+    if onlyGradient:
+        t=np.diag(np.ones(n1-1))
+        s=-1.0*np.ones((1,n1-1))
+        L=np.concatenate((t,s))
+        subMatrix=np.zeros((n2,n1-1))
+        L=np.concatenate((L,subMatrix))
+        subMatrix=np.zeros((n1,n2))
+        temDiag=np.identity(n2)
+        sub=np.concatenate((subMatrix,temDiag))
+        L=np.concatenate((L,sub),1)
+        grad2=np.dot(temp,L)
+        return grad2
+        
+
     if grad==True:
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
@@ -313,17 +330,27 @@ def functionGradientAscentVn(x,grad,SBO,i):
         return temp
 
 ####the function that steepest ascent will optimize
-def functionGradientAscentAn(x,grad,SBO,i,L):
+
+####the function that steepest ascent will optimize
+def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False,logproductExpectations=None):
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
-    temp=SBO._VOI._GP.aN_grad(x,L,i,grad)
+    if onlyGradient:
+        temp=SBO._VOI._GP.aN_grad(x,L,i,grad,onlyGradient,logproductExpectations)
+        t=np.diag(np.ones(n1-1))
+        s=-1.0*np.ones((1,n1-1))
+        L2=np.concatenate((t,s))
+        grad2=np.dot(temp,L2)
+        return grad2
+
+    temp=SBO._VOI._GP.aN_grad(x,L,i,gradient=grad,logproductExpectations=logproductExpectations)
     if grad==False:
         return temp
     else:
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
-        L=np.concatenate((t,s))
-        grad2=np.dot(temp[1],L)
+        L2=np.concatenate((t,s))
+        grad2=np.dot(temp[1],L2)
         return temp[0],grad2
 
 dimXsteepest=n1-1
@@ -347,12 +374,26 @@ def estimationObjective(x):
     
     return np.mean(result),float(np.var(result))/estimator
 
+##W is a matrix
+
+def computeLogProductExpectationsForAn(W,N):
+    alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
+    logproductExpectations=np.zeros(N)
+    parameterLamb=parameterSetsPoisson
+    for i in xrange(N):
+        logproductExpectations[i]=0.0
+        for j in xrange(n2):
+            G=poisson(parameterLamb[j])
+            temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[i,j])**2)),G.args)
+            logproductExpectations[i]+=np.log(temp)
+    return logproductExpectations
 
 
 
 
 nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 l={}
+l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
 l['parallel']=parallel
 l['folderContainerResults']=os.path.join(nameDirectory,"SBO")
 l['estimationObjective']=estimationObjective
