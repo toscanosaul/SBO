@@ -21,7 +21,17 @@ import os
 from scipy.stats import poisson
 import optimization as op
 from scipy import linalg
+import json
 
+exponentialTimes=np.loadtxt(date+"ExponentialTimes.txt")
+with open ('json.json') as data_file:
+    data=json.load(data_file)
+
+f = open(str(4)+"-cluster.txt", 'r')
+cluster=eval(f.read())
+f.close()
+
+bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
 
 directory=[]
 
@@ -68,7 +78,8 @@ def noisyF(XW,n):
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2]
     for i in xrange(n):
-        simulations[i]=g(TimeHours,w,x,nSets,lamb,A,"2014-05")
+        simulations[i]=g(TimeHours,w,x,nSets,lamb,A,"2014-05",exponentialTimes,
+                         data,cluster,bikeData)
     return np.mean(simulations),float(np.var(simulations))/n
 
 
@@ -382,7 +393,8 @@ def estimationObjective(x,N=100):
     W=simulatorW(estimator)
     result=np.zeros(estimator)
     for i in range(estimator):
-        result[i]=g(TimeHours,W[i,:],x,nSets,lamb,A,"2014-05")
+        result[i]=g(TimeHours,W[i,:],x,nSets,lamb,A,"2014-05",exponentialTimes,
+                         data,cluster,bikeData)
     
     return np.mean(result),float(np.var(result))/estimator
 
