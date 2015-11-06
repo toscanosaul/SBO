@@ -514,7 +514,8 @@ def optVOInoParal(sboObj,i):
 
 
 Xst=sboObj.sampleFromX(1)
-print estimationObjective(Xst[0,:])
+tmp=sboObj.transformationDomainX(Xst)
+print estimationObjective(tmp[0,:])
 
 
 optVOInoParal(sboObj,0)
