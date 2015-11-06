@@ -388,7 +388,7 @@ def transformationDomainX(x):
 def transformationDomainW(w):
     return np.round(w)
 
-def estimationObjective(x,N=1000):
+def estimationObjective(x,N=500):
     estimator=N
     W=simulatorW(estimator)
     result=np.zeros(estimator)
