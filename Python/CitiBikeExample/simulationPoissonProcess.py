@@ -61,16 +61,16 @@ def SimulateNt (A,lamb,T):
 ###Starts the Initial configuration of the citibike problem, where X is a vector with the initial configuration of bikes,
 ###and m are the number of groups according to K-means algorithm.
 ###returns a matrix with the number of docks and bikes available
-def startInitialConfiguration (X,m):
-    with open ('json.json') as data_file:
-        data=json.load(data_file)
-    bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
-    f = open(str(m)+"-cluster.txt", 'r')
-    cluster=eval(f.read())
-    f.close()
+def startInitialConfiguration (X,m,data,cluster,bikeData):
+ #   with open ('json.json') as data_file:
+ #       data=json.load(data_file)
+   # bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
+ #   f = open(str(m)+"-cluster.txt", 'r')
+ #   cluster=eval(f.read())
+ #   f.close()
     A=np.zeros((nStations,2))
-    f= open(str(m)+"-initialConfiguration.txt", 'w')
-    f.write("docks"+","+"bickes"+","+"ID"+","+"total"+","+"bikes/total"+","+"latitude"+","+"longitude"+","+"streets")
+  #  f= open(str(m)+"-initialConfiguration.txt", 'w')
+  #  f.write("docks"+","+"bickes"+","+"ID"+","+"total"+","+"bikes/total"+","+"latitude"+","+"longitude"+","+"streets")
     for i in range(m):
         temp=cluster[i]
         setBikes=X[i]/len(temp)
@@ -89,9 +89,9 @@ def startInitialConfiguration (X,m):
             total=nBikes+docks
             A[ind,0]=docks
             A[ind,1]=nBikes
-            f.write("\n")
-            f.write(str(docks)+","+str(nBikes)+","+str(ID)+","+str(total)+","+str(float(nBikes)/(total))+","+lat+","+longt+","+street)
-    f.close()
+          #  f.write("\n")
+          #  f.write(str(docks)+","+str(nBikes)+","+str(ID)+","+str(total)+","+str(float(nBikes)/(total))+","+lat+","+longt+","+street)
+   # f.close()
     return A
 
 ##Find the closest bike station to currentBikeStation with available docks
@@ -116,10 +116,10 @@ def findBikeStation(state,currentBikeStation):
 ##lamb is a list with vectors of the parameters of the poisson processes N(T,(i,j))
 ##A is a list with all the sets considered
 ##date is respect to the data used , and it's a string: yyyy-mm
-def unhappyPeople (T,N,X,m,lamb,A,date):
+def unhappyPeople (T,N,X,m,lamb,A,date,exponentialTimes,data,cluster,bikeData):
     unHappy=0
-    state=startInitialConfiguration(X,m)
-    exponentialTimes=np.loadtxt(date+"ExponentialTimes.txt")
+    state=startInitialConfiguration(X,m,data,cluster,bikeData)
+  #  exponentialTimes=np.loadtxt(date+"ExponentialTimes.txt")
     nSets=len(lamb)
     times=[]
     nTimes=0
@@ -175,7 +175,21 @@ if __name__ == '__main__':
     T=4.0 ##the rate of the PP is per hour, so this is from 7:00 to 11:00
     A,lamb=generateSets(nSets,fil)
     N=np.zeros(nSets)
+    exponentialTimes=np.loadtxt(date+"ExponentialTimes.txt")
     for i in range(nSets):
         N[i]=SimulateNt(A[i],lamb[i],T)
-    print unhappyPeople (T,N,np.array([1500,1500,1500,1500]),m,lamb,A,date)
+        
+    exponentialTimes=np.loadtxt(date+"ExponentialTimes.txt")
+    
+    with open ('json.json') as data_file:
+        data=json.load(data_file)
+    
+    f = open(str(m)+"-cluster.txt", 'r')
+    cluster=eval(f.read())
+    f.close()
+    
+    bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
+    
+    print unhappyPeople (T,N,np.array([1500,1500,1500,1500]),m,lamb,A,date,exponentialTimes,
+                         data,cluster,bikeData)
     #X=PoissonProcess(T,lamb[0],A[0],N[0])
