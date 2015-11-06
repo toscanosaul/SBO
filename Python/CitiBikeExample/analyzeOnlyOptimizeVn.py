@@ -23,7 +23,7 @@ import optimization as op
 from scipy import linalg
 import json
 
-exponentialTimes=np.loadtxt(date+"ExponentialTimes.txt")
+exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
 with open ('json.json') as data_file:
     data=json.load(data_file)
 
