@@ -388,7 +388,7 @@ def transformationDomainX(x):
 def transformationDomainW(w):
     return np.round(w)
 
-def estimationObjective(x,N=100):
+def estimationObjective(x,N=1000):
     estimator=N
     W=simulatorW(estimator)
     result=np.zeros(estimator)
@@ -527,8 +527,8 @@ def optVOInoParal(sboObj,i):
 
 Xst=sboObj.sampleFromX(1)
 tmp=sboObj.transformationDomainX(Xst)
-print estimationObjective(tmp[0,:],1000)
 print estimationObjective(tmp[0,:])
+#print estimationObjective(tmp[0,:])
 
 
 #optVOInoParal(sboObj,0)
