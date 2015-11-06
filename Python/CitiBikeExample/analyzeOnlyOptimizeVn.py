@@ -518,7 +518,7 @@ tmp=sboObj.transformationDomainX(Xst)
 print estimationObjective(tmp[0,:])
 
 
-optVOInoParal(sboObj,0)
+#optVOInoParal(sboObj,0)
 
 
 
