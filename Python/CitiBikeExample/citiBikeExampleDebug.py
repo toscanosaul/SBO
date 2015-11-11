@@ -327,6 +327,9 @@ def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,B,scratch,onlyGradient=False
         sub=np.concatenate((subMatrix,temDiag))
         L=np.concatenate((L,sub),1)
         grad2=np.dot(temp,L)
+	print "onlyGradient Vn"
+	print grad2
+	print "\n"
         return grad2
         
 
@@ -341,8 +344,14 @@ def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,B,scratch,onlyGradient=False
         sub=np.concatenate((subMatrix,temDiag))
         L=np.concatenate((L,sub),1)
         grad2=np.dot(temp[1],L)
+	print "both Gradient Vn"
+	print temp[0],grad2
+	print "\n"
         return temp[0],grad2
     else:
+	print "Vn"
+	print temp
+	print "\n"
         return temp
 
 ####the function that steepest ascent will optimize
