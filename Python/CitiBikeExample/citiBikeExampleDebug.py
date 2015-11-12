@@ -24,7 +24,7 @@ from scipy import linalg
 
 directory=[]
 
-directory.append(os.path.join("..","CitiBikeExample","Results15AveragingSamples5TrainingPoints","SBO","test2run"))
+directory.append(os.path.join("..","CitiBikeExample","ResultsTest15AveragingSamples5TrainingPoints","SBO","test2run"))
 
 exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
 with open ('json.json') as data_file:
@@ -510,11 +510,12 @@ print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
 
+sboObj.optVOInoParal(0)
 
-sboObj.SBOAlg(1,nRepeat=10,Train=False)
+#sboObj.SBOAlg(1,nRepeat=10,Train=False)
 
 def test():
-    sboObj.trainModel(1)
+    #sboObj.trainModel(1)
     
     
     
@@ -522,16 +523,14 @@ def test():
     tempN=trainingPoints
     A2=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
     L=np.linalg.cholesky(A2)
-    print "L"
-    print L
-    print "\n"
-    Xst=np.array([[1500,1500,1500]])
-    logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:sboObj._dimW+n1],
+
+#    Xst=np.array([[1500,1500,1500]])
+ #   logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:sboObj._dimW+n1],
 							     tempN)
 
-    sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,0,L,logproductExpectations=logProduct)
-    sboObj.functionGradientAscentAn(Xst[0:0+1,:],False,sboObj,0,L,logproductExpectations=logProduct)
-    sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,0,L,logproductExpectations=logProduct,onlyGradient=True)
+  #  sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,0,L,logproductExpectations=logProduct)
+  #  sboObj.functionGradientAscentAn(Xst[0:0+1,:],False,sboObj,0,L,logproductExpectations=logProduct)
+  #  sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,0,L,logproductExpectations=logProduct,onlyGradient=True)
     
     
     print "VN"
@@ -564,77 +563,14 @@ def test():
 	scratch[j,:]=linalg.solve_triangular(L,sboObj.Bhist[j,:].transpose(),lower=True)
     
     
-    sboObj.functionGradientAscentVn(st,False,sboObj,0,L,temp2,a,sboObj.Bhist,scratch)
+   # sboObj.functionGradientAscentVn(st,False,sboObj,0,L,temp2,a,sboObj.Bhist,scratch)
     
-    sboObj.functionGradientAscentVn(st,True,sboObj,0,L,temp2,a,sboObj.Bhist,scratch,onlyGradient=True)
+  #  sboObj.functionGradientAscentVn(st,True,sboObj,0,L,temp2,a,sboObj.Bhist,scratch,onlyGradient=True)
     sboObj.functionGradientAscentVn(st,True,sboObj,0,L,temp2,a,sboObj.Bhist,scratch)
     
-    print "second iteration"
-    
-    #####second iteration
-    xTrans=sboObj.transformationDomainX(st[0:1,0:sboObj.dimXsteepest])
-    wTrans=sboObj.transformationDomainW(st[0:1,sboObj.dimXsteepest:sboObj.dimXsteepest+sboObj._dimW])
-    ###falta transformar W
-    temp=np.concatenate((xTrans,wTrans),1)
-    
-    sboObj._XWhist=np.vstack([sboObj._XWhist,temp])
-    sboObj._VOI._PointsHist=sboObj._XWhist
-    sboObj._VOI._GP._Xhist=sboObj._XWhist
-    
-    y,var=sboObj._infSource(temp,sboObj._numberSamples)
-    sboObj._yHist=np.vstack([sboObj._yHist,y])
-    sboObj._VOI._yHist=sboObj._yHist
-    sboObj._VOI._GP._yHist=sboObj._yHist
-    sboObj._varianceObservations=np.append(sboObj._varianceObservations,var)
-    sboObj._VOI._noiseHist=sboObj._varianceObservations
-    sboObj._VOI._GP._noiseHist=sboObj._varianceObservations
-    
-    
-    print "VN"
-    
-    Xst=sboObj.sampleFromX(1)
-    wSt=sboObj._simulatorW(1)
-    x1=Xst[0:0+1,:]
-    w1=wSt[0:0+1,:]
-    tempN=sboObj.numberTraining+1
-    st=np.concatenate((x1,w1),1)
-    
-    
-    A2=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
-    L=np.linalg.cholesky(A2)
-    print "L"
-    print L
-    print "\n"
-    
-    m2=sboObj._VOI._points.shape[0]
-    for j in xrange(sboObj.histSaved,tempN):
-	temp=sboObj.B(sboObj._VOI._points,sboObj._VOI._GP._Xhist[j,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
-	sboObj.Bhist=np.concatenate((sboObj.Bhist,temp.reshape((m2,1))),1)
-	sboObj.histSaved+=1
-    muStart=sboObj._k.mu
-    y=sboObj._yHist
-    temp2=linalg.solve_triangular(L,(sboObj.Bhist).T,lower=True)
-    temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
-    a=muStart+np.dot(temp2.T,temp1)
-    
-    
-    scratch=np.zeros((m2,tempN))
-    for j in xrange(m2):
-	scratch[j,:]=linalg.solve_triangular(L,sboObj.Bhist[j,:].transpose(),lower=True)
-    
-    
-    sboObj.functionGradientAscentVn(st,True,sboObj,1,L,temp2,a,sboObj.Bhist,scratch)
-    
-    print "an2"
-    
-    logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:sboObj._dimW+n1],
-							     tempN)
-    
-    
-    Xst=np.array([[1500,1500,1500]])
-    sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,1,L,logproductExpectations=logProduct)
+  
 
-
+#test()
 #sboObj.SBOAlg(30,nRepeat=10,Train=True)
 
 
