@@ -560,13 +560,11 @@ w1=wSt[0:0+1,:]
 tempN=sboObj.numberTraining+1
 st=np.concatenate((x1,w1),1)
 
-print "st"
-print st
 
-m=sboObj._VOI._points.shape[0]
+m2=sboObj._VOI._points.shape[0]
 for j in xrange(sboObj.histSaved,tempN):
     temp=sboObj.B(sboObj._VOI._points,sboObj._VOI._GP._Xhist[j,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
-    sboObj.Bhist=np.concatenate((sboObj.Bhist,temp.reshape((m,1))),1)
+    sboObj.Bhist=np.concatenate((sboObj.Bhist,temp.reshape((m2,1))),1)
     sboObj.histSaved+=1
 muStart=sboObj._k.mu
 y=sboObj._yHist
@@ -575,8 +573,8 @@ temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 a=muStart+np.dot(temp2.T,temp1)
 
 
-scratch=np.zeros((m,tempN))
-for j in xrange(m):
+scratch=np.zeros((m2,tempN))
+for j in xrange(m2):
     scratch[j,:]=linalg.solve_triangular(L,sboObj.Bhist[j,:].transpose(),lower=True)
 
 
