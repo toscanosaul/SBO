@@ -533,6 +533,8 @@ xTrans=sboObj.transformationDomainX(x1[0:1,0:sboObj.dimXsteepest])
 wTrans=sboObj.transformationDomainW(x1[0:1,sboObj.dimXsteepest:sboObj.dimXsteepest+sboObj._dimW])
 ###falta transformar W
 temp=np.concatenate((xTrans,wTrans),1)
+print temp
+print sboObj._XWhist
 sboObj._XWhist=np.vstack([sboObj._XWhist,temp])
 sboObj._VOI._PointsHist=sboObj._XWhist
 sboObj._VOI._GP._Xhist=sboObj._XWhist
