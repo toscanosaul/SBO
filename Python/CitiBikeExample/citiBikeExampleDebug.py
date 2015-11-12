@@ -476,9 +476,12 @@ print 'ok2'
 
 sboObj.trainModel(1)
 
+
+
+
 tempN=trainingPoints
-A=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
-L=np.linalg.cholesky(A)
+A2=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
+L=np.linalg.cholesky(A2)
 print "L"
 print L
 print "\n"
@@ -560,6 +563,12 @@ w1=wSt[0:0+1,:]
 tempN=sboObj.numberTraining+1
 st=np.concatenate((x1,w1),1)
 
+
+A2=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
+L=np.linalg.cholesky(A2)
+print "L"
+print L
+print "\n"
 
 m2=sboObj._VOI._points.shape[0]
 for j in xrange(sboObj.histSaved,tempN):
