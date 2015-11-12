@@ -33,7 +33,7 @@ class VOI:
         
 
 class VOISBO(VOI):
-    def __init__(self,dimW,gradXBforAn,*args,**kargs):
+    def __init__(self,dimW,*args,**kargs):
         VOI.__init__(self,*args,**kargs)
         self.VOI_name="SBO"
         self._dimW=dimW
