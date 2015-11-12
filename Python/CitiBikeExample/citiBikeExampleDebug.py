@@ -20,6 +20,7 @@ import multiprocessing as mp
 import os
 from scipy.stats import poisson
 import json
+from scipy import linalg
 
 
 exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
