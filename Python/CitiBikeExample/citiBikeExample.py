@@ -433,7 +433,6 @@ l['Objobj']=Objective
 l['miscObj']=misc
 l['optObj']=opt
 l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
-l['projectGradient']=projectGradientDescent
 l['dimensionKernel']=dimensionKernel
 l['numberTrainingData']=trainingPoints
 l['XWhist']=XWtrain
