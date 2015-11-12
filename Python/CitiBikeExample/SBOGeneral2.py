@@ -124,7 +124,7 @@ import optimization as op
 import multiprocessing as mp
 import os
 import misc
-from files import *
+import files as fl
 
 class SBO:
     def __init__(self, fobj,dimensionKernel,noisyF, parallel,
@@ -186,30 +186,13 @@ class SBO:
 	self._VOI=VOIobj
 
 
-    def createNewFilesFunc(self):
-	f=open(os.path.join(self.path,'%d'%self.rs+"hyperparameters.txt"),'w')
-	f.close()
-	f=open(os.path.join(self.path,'%d'%self.rs+"XWHist.txt"),'w')
-	f.close()
-	f=open(os.path.join(self.path,'%d'%self.rs+"yhist.txt"),'w')
-	f.close()
-	f=open(os.path.join(self.path,'%d'%self.rs+"varHist.txt"),'w')
-	f.close()
-	f=open(os.path.join(self.path,'%d'%self.rs+"optimalSolutions.txt"),'w')
-	f.close()
-	f=open(os.path.join(self.path,'%d'%self.rs+"optimalValues.txt"),'w')
-	f.close()
-	f=open(os.path.join(self.path,'%d'%self.rs+"optVOIgrad.txt"),'w')
-	f.close()
-	f=open(os.path.join(self.path,'%d'%self.rs+"optAngrad.txt"),'w')
-	f.close()
       
   
     ##m is the number of iterations to take
     def SBOAlg(self,m,nRepeat=10,Train=True,**kwargs):
 	if self.createNewFiles:
-	    createNewFilesFunc(self.path,self.rs)
-	writeTraining(self)
+	    fl.createNewFilesFunc(self.path,self.rs)
+	fl.writeTraining(self)
         if Train is True:
             self.trainModel(numStarts=nRepeat,**kwargs)
         points=self._VOI._points
@@ -306,7 +289,7 @@ class SBO:
 	args2=self.getParametersOptVoi(i)
 	args2['start']=st
 	self.optRuns.append(misc.VOIOptWrapper(self,**args2))
-	writeNewPointVOI(self,self.optRuns[0])
+	fl.writeNewPointVOI(self,self.optRuns[0])
 
 
     def optVOIParal(self,i,nStart,numProcesses=None):
@@ -348,7 +331,7 @@ class SBO:
                 
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
-	    writeNewPointSBO(self,self.optRuns[j])
+	    fl.writeNewPointSBO(self,self.optRuns[j])
 
         self.optRuns=[]
         self.optPointsArray=[]
@@ -386,7 +369,7 @@ class SBO:
 	args2['L']=L
 	args2['logProduct']=logProduct
 	self.optRuns.append(misc.AnOptWrapper(self,**args2))
-	writeSolution(self,self.optRuns[0])
+	fl.writeSolution(self,self.optRuns[0])
 
             
      
@@ -432,7 +415,7 @@ class SBO:
                 
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
-	    writeSolution(self,self.optRuns[j])
+	    fl.writeSolution(self,self.optRuns[j])
 
         self.optRuns=[]
         self.optPointsArray=[]
