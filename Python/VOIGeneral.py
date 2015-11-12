@@ -37,6 +37,7 @@ class VOISBO(VOI):
         VOI.__init__(self,*args,**kargs)
         self.VOI_name="SBO"
         self._dimW=dimW
+        self.sizeDiscretization=self._points.shape[0]
         self._GP=stat.SBOGP(kernel=self._k,B=self._B,dimNoiseW=dimW,dimPoints=self._dimKernel-dimW,
                        numberPoints=self._points.shape[0],Bhist=self._Bhist,histSaved=self._BhistSaved,
                        Xhist=self._PointsHist, dimKernel=self._dimKernel,
