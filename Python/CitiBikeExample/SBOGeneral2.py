@@ -128,14 +128,12 @@ import files as fl
 
 class SBO:
     def __init__(self, Objobj,dimensionKernel,miscObj,
-                 VOIobj,
-                 B=None,kernel=None,numberTrainingData=0,dimXsteepest=0,
-                 XWhist=None,yHist=None,varHist=None,projectGradient=None,
-                 randomSeed=1,
-                 functionGradientAscentVn=None,functionGradientAscentAn=None,numberParallel=10,
-                 transformationDomainX=None,transformationDomainW=None,
-                 scaledAlpha=1.0,xtol=None,functionConditionOpt=None,
+                 VOIobj,optObj,
+                 B=None,kernel=None,numberTrainingData=0,
+                 XWhist=None,yHist=None,varHist=None,
+                 scaledAlpha=1.0,
 		 computeLogProductExpectationsForAn=None):
+	
 	self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
 	
 	#####
@@ -143,18 +141,25 @@ class SBO:
 	self.randomSeed=miscObj.rs
 	self.rs=miscObj.rs
 	self.path=os.path.join(miscObj.folder,'%d'%self.rs+"run")
-	self.createNewFiles=miscObj.createNewFiles
+	self.createNewFiles=miscObj.create
 	######
-	if xtol is None:
-	    xtol=1e-8
-	self.functionConditionOpt=functionConditionOpt
-	self.xtol=xtol
+
+	self.functionConditionOpt=optObj.functionConditionOpt
+	self.xtol=optObj.xtol
+	self.transformationDomainX=optObj.transformationDomainX
+        self.transformationDomainW=optObj.transformationDomainW
+	self.projectGradient=optObj.projectGradient
+	self.functionGradientAscentAn=optObj.functionGradientAscentAn
+        self.functionGradientAscentVn=optObj.functionGradientAscentVn
+        self.dimXsteepest=optObj.dimXsteepest
+	self.numberParallel=optObj.numberParallel
+        
+	##########
         self.scaledAlpha=scaledAlpha
-        self.transformationDomainX=transformationDomainX
-        self.transformationDomainW=transformationDomainW
+
         
         self.numberTraining=numberTrainingData
-        self.projectGradient=projectGradient
+        
 	####
         self.sampleFromX=Objobj.sampleFromX
 	self.estimationObjective=Objobj.estimationObjective
@@ -164,16 +169,7 @@ class SBO:
 	self._n1=Objobj.dimSeparation
 	self._simulatorW=Objobj.simulatorW
 	####
-        self.functionGradientAscentAn=functionGradientAscentAn
-        self.functionGradientAscentVn=functionGradientAscentVn
-        self.dimXsteepest=dimXsteepest
-        
 
-	
-	
-	
-        self.numberParallel=numberParallel
-	
         if not os.path.exists(self.path):
             os.makedirs(self.path)
         if kernel is None:
