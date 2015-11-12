@@ -38,7 +38,7 @@ bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
 
 
 nTemp=2
-nTemp2=12
+nTemp2=13
 nTemp3=15
 #except:
 #    nTemp=1
