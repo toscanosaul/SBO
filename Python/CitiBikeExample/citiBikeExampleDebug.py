@@ -471,7 +471,22 @@ l['functionConditionOpt']=conditionOpt
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
-sboObj.SBOAlg(1,nRepeat=10,Train=True)
+
+tempN=trainingPoints
+A=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
+L=np.linalg.cholesky(A)
+print "L"
+print L
+print "\n"
+Xst=np.array([[1500,1500,1500]])
+logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:sboObj._dimW+n1],
+                                                         tempN)
+
+
+
+sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,0,L,logproductExpectations=logProduct)
+
+#sboObj.SBOAlg(1,nRepeat=10,Train=True)
 #sboObj.SBOAlg(30,nRepeat=10,Train=True)
 
 
