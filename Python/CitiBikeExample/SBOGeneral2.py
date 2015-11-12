@@ -265,7 +265,7 @@ class SBO:
 	L=np.linalg.cholesky(A)
 	m=self._VOI._points.shape[0]
 	for j in xrange(self.histSaved,tempN):
-	    temp=self.B(self._VOI._points,self._VOI._GP._Xhist[j,:],self._n1,self._dimW) ###change my previous function because we have to concatenate X and W
+	    temp=self.B(self._VOI._points,self._VOI._PointsHist[j,:],self._n1,self._dimW) ###change my previous function because we have to concatenate X and W
 	    self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
 	    self.histSaved+=1
 	muStart=self._k.mu
