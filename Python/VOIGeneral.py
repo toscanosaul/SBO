@@ -140,11 +140,13 @@ class VOISBO(VOI):
                 #scratch[j,:]=linalg.solve_triangular(L,B[keep2[j],:].transpose(),lower=True)
                 scratch1[j,:]=scratch[keep2[j],:]
         if onlyGradient:
-            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch1,B=B,inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient)
+            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch1,B=B,
+                                inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient)
         if grad==False:
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B=B,aux4=aux4,inv=temp1)
       
-        return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,inv=temp1,scratch=scratch1,B=B,grad=True)
+        return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,
+                            inv=temp1,scratch=scratch1,B=B,grad=True)
 
 class EI(VOI):
     def __init__(self,gradXKern,*args,**kargs):
