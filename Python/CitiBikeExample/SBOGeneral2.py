@@ -127,7 +127,7 @@ import misc
 import files as fl
 
 class SBO:
-    def __init__(self, Objobj,dimensionKernel,miscObj,
+    def __init__(self, Objobj,miscObj,
                  VOIobj,optObj,statObj):
 
 
