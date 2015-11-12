@@ -488,6 +488,9 @@ logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:s
 
 
 sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,0,L,logproductExpectations=logProduct)
+sboObj.functionGradientAscentAn(Xst[0:0+1,:],False,sboObj,0,L,logproductExpectations=logProduct)
+sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,0,L,logproductExpectations=logProduct,onlyGradient=True)
+
 
 print "VN"
 
@@ -520,6 +523,9 @@ for j in xrange(m):
     scratch[j,:]=linalg.solve_triangular(L,sboObj.Bhist[j,:].transpose(),lower=True)
 
 
+sboObj.functionGradientAscentVn(st,False,sboObj,0,L,temp2,a,sboObj.Bhist,scratch)
+
+sboObj.functionGradientAscentVn(st,True,sboObj,0,L,temp2,a,sboObj.Bhist,scratch,onlyGradient=True)
 sboObj.functionGradientAscentVn(st,True,sboObj,0,L,temp2,a,sboObj.Bhist,scratch)
 
 #sboObj.SBOAlg(1,nRepeat=10,Train=True)
