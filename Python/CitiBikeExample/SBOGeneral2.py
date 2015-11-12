@@ -205,11 +205,6 @@ class SBO:
         def g(x,grad,onlyGradient=False):
             return self.functionGradientAscentVn(x,grad,self,i,L,temp2,a,B,scratch,onlyGradient=onlyGradient)
 
-            #temp=self._VOI.VOIfunc(i,x,grad=grad)
-            #if grad==True:
-            #    return temp[0],temp[1]
-            #else:
-            #    return temp
         opt.run(f=g)
         self.optRuns.append(opt)
         xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
@@ -248,16 +243,11 @@ class SBO:
 	self.optRuns=[]
         self.optPointsArray=[]
     
-    def optVOInoParal(self,i):
+    
+    def getParametersOptVoi(self,i,st):
 	n1=self._n1
 	n2=self._dimW
-	Xst=self.sampleFromX(1)
-	wSt=self._simulatorW(1)
-	x1=Xst[0:0+1,:]
-	w1=wSt[0:0+1,:]
 	tempN=self.numberTraining+i
-	st=np.concatenate((x1,w1),1)
-	#st=np.array([[ 1500,  1500,  1500,   348,   383,   333,   390]]) ####ELIMINATE!!!!!!!
 	A=self._VOI._GP._k.A(self._VOI._GP._Xhist[0:tempN,:],noise=self._VOI._GP._noiseHist[0:tempN])
 	L=np.linalg.cholesky(A)
 	m=self._VOI._points.shape[0]
@@ -274,15 +264,26 @@ class SBO:
 	scratch=np.zeros((m,tempN))
 	for j in xrange(m):
 	    scratch[j,:]=linalg.solve_triangular(L,self.Bhist[j,:].transpose(),lower=True)
-           # misc.VOIOptWrapper(self,**args2)
 	args2={}
-	args2['start']=st
         args2['i']=i
 	args2['L']=L
 	args2['temp2']=temp2
 	args2['a']=a
 	args2['B']=self.Bhist
 	args2['scratch']=scratch
+	return args2
+    
+    def optVOInoParal(self,i):
+	n1=self._n1
+	n2=self._dimW
+	Xst=self.sampleFromX(1)
+	wSt=self._simulatorW(1)
+	x1=Xst[0:0+1,:]
+	w1=wSt[0:0+1,:]
+	tempN=self.numberTraining+i
+	st=np.concatenate((x1,w1),1)
+	args2=self.getParametersOptVoi(i)
+	args2['start']=st
 	self.optRuns.append(misc.VOIOptWrapper(self,**args2))
 	self.writeNewPoint(self.optRuns[0])
 
@@ -292,47 +293,20 @@ class SBO:
             n1=self._n1
             n2=self._dimW
 	    tempN=self.numberTraining+i
-	    A=self._VOI._GP._k.A(self._VOI._GP._Xhist[0:tempN,:],noise=self._VOI._GP._noiseHist[0:tempN])
-	    L=np.linalg.cholesky(A)
-	    m=self._VOI._points.shape[0]
-	    for j in xrange(self.histSaved,tempN):
-		temp=self.B(self._VOI._points,self._VOI._GP._Xhist[j,:],self._n1,self._dimW) ###change my previous function because we have to concatenate X and W
-		self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
-		self.histSaved+=1
-	    muStart=self._k.mu
-	    y=self._yHist
-	    temp2=linalg.solve_triangular(L,(self.Bhist).T,lower=True)
-	    temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
-	    a=muStart+np.dot(temp2.T,temp1)
-	    
-	    scratch=np.zeros((m,tempN))
-	    for j in xrange(m):
-		scratch[j,:]=linalg.solve_triangular(L,self.Bhist[j,:].transpose(),lower=True)
          #   dim=self.dimension
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             #New
             Xst=self.sampleFromX(nStart)
             wSt=self._simulatorW(nStart)
+	    args2=self.getParametersOptVoi(i)
             ######
             for j in range(nStart):
-             #  np.random.seed(seeds[j])
-               # x1=np.random.uniform(self._constraintA,self._constraintB,(1,n1))
-               # w1=self._simulatorW(1)
-                #x1=self.projectGradient(Xst[j,:]).reshape((1,n1))
-                #w1=wSt[j,:].reshape((1,n2))
                 x1=Xst[j:j+1,:]
                 w1=wSt[j:j+1,:]
                 st=np.concatenate((x1,w1),1)
-              # erint st
-                args2={}
                 args2['start']=st
-                args2['i']=i
-		args2['L']=L
-		args2['temp2']=temp2
-		args2['a']=a
-		args2['B']=self.Bhist
-		args2['scratch']=scratch
+
                 job = pool.apply_async(misc.VOIOptWrapper, args=(self,), kwds=args2)
                 jobs.append(job)
             
