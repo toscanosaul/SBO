@@ -408,7 +408,7 @@ def computeLogProductExpectationsForAn(W,N):
 
 VOIobj=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
                  gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None,pointsApproximation=pointsVOI,
-                 gradXBfunc=gradXBfunc,B=B,PointsHist=XWtrain,gradWBfunc=gradWBfunc,
+                 gradXBfunc=gradXB,B=B,PointsHist=XWtrain,gradWBfunc=gradWB,
                  yHist=yTrain,noiseHist=NoiseTrain,gradXBforAn=gradXBforAn,dimW=dimensionKernel-n1)
 
 
