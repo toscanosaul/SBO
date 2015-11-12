@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+
 def createNewFilesFunc(path,rs):
     f=open(os.path.join(path,'%d'%rs+"hyperparameters.txt"),'w')
     f.close()
