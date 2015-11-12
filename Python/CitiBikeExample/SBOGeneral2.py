@@ -177,7 +177,7 @@ class SBO:
 	self.stat=statObj
 	self.computeLogProductExpectationsForAn=statObj.computeLogProductExpectationsForAn
 	self.scaledAlpha=statObj.scaledAlpha
-        self.numberTraining=statObj._numberTrainin
+        self.numberTraining=statObj._numberTraining
         self._k=statObj._k
 	self.B=statObj.B
 	self._XWhist=statObj._Xhist
