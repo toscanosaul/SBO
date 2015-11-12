@@ -153,37 +153,19 @@ class SBO:
         self.functionGradientAscentVn=functionGradientAscentVn
         self.dimXsteepest=dimXsteepest
         self.estimationObjective=estimationObjective
+	self.rs=randomSeed
 	self.path=os.path.join(folderContainerResults,'%d'%randomSeed+"run")
         self.numberParallel=numberParallel
+	self.createNewFiles=createNewFiles
         if not os.path.exists(self.path):
-#	self.path='%d'%randomSeed+"run"
             os.makedirs(self.path)
-        if createNewFiles is True:
-            f=open(os.path.join(self.path,'%d'%randomSeed+"hyperparameters.txt"),'w')
-            f.close()
-            f=open(os.path.join(self.path,'%d'%randomSeed+"XWHist.txt"),'w')
-            f.close()
-            f=open(os.path.join(self.path,'%d'%randomSeed+"yhist.txt"),'w')
-            f.close()
-            f=open(os.path.join(self.path,'%d'%randomSeed+"varHist.txt"),'w')
-            f.close()
-            f=open(os.path.join(self.path,'%d'%randomSeed+"optimalSolutions.txt"),'w')
-            f.close()
-            f=open(os.path.join(self.path,'%d'%randomSeed+"optimalValues.txt"),'w')
-            f.close()
-            f=open(os.path.join(self.path,'%d'%randomSeed+"optVOIgrad.txt"),'w')
-            f.close()
-            f=open(os.path.join(self.path,'%d'%randomSeed+"optAngrad.txt"),'w')
-            f.close()
         if kernel is None:
             kernel=SK.SEK(dimensionKernel)
-       # if acquisitionFunction is None:
-        #    acquisitionFunction=VOI
+
         self._k=kernel
         self._fobj=fobj
         self._infSource=noisyF ###returns also the noise
         self._numberSamples=numberEstimateF
-        #self._acquisitionFunction=VOI
         self._B=B
         self._solutions=[]
         self._valOpt=[]
@@ -191,13 +173,7 @@ class SBO:
         self._dimension=dimensionKernel
         self._dimW=self._dimension-self._n1
         self._simulatorW=simulatorW
-        with open(os.path.join(self.path,'%d'%randomSeed+"XWHist.txt"), "a") as f:
-            np.savetxt(f,XWhist)
-        with open(os.path.join(self.path,'%d'%randomSeed+"yhist.txt"), "a") as f:
-            np.savetxt(f,yHist)
-        with open(os.path.join(self.path,'%d'%randomSeed+"varHist.txt"), "a") as f:
-            np.savetxt(f,varHist)
-    
+
 	self.histSaved=0
 	self.Bhist=np.zeros((pointsVOI.shape[0],0))
         
@@ -207,14 +183,44 @@ class SBO:
         
         self.optRuns=[]
         self.optPointsArray=[]
-	
 	self.B=B
 	self._VOI=VOIobj
 
 
-
+    def createNewFilesFunc(self):
+	f=open(os.path.join(self.path,'%d'%self.rs+"hyperparameters.txt"),'w')
+	f.close()
+	f=open(os.path.join(self.path,'%d'%self.rs+"XWHist.txt"),'w')
+	f.close()
+	f=open(os.path.join(self.path,'%d'%self.rs+"yhist.txt"),'w')
+	f.close()
+	f=open(os.path.join(self.path,'%d'%self.rs+"varHist.txt"),'w')
+	f.close()
+	f=open(os.path.join(self.path,'%d'%self.rs+"optimalSolutions.txt"),'w')
+	f.close()
+	f=open(os.path.join(self.path,'%d'%self.rs+"optimalValues.txt"),'w')
+	f.close()
+	f=open(os.path.join(self.path,'%d'%self.rs+"optVOIgrad.txt"),'w')
+	f.close()
+	f=open(os.path.join(self.path,'%d'%self.rs+"optAngrad.txt"),'w')
+	f.close()
+    
+    
+    def writeTraining(self):
+	with open(os.path.join(self.path,'%d'%self.rs+"XWHist.txt"), "a") as f:
+            np.savetxt(f,XWhist)
+        with open(os.path.join(self.path,'%d'%self.rs+"yhist.txt"), "a") as f:
+            np.savetxt(f,yHist)
+        with open(os.path.join(self.path,'%d'%self.rs+"varHist.txt"), "a") as f:
+            np.savetxt(f,varHist)
+  
+  
+  
     ##m is the number of iterations to take
     def SBOAlg(self,m,nRepeat=10,Train=True,**kwargs):
+	if self.createNewFiles:
+	    self.createNewFilesFunc()
+	self.writeTraining()
         if Train is True:
             self.trainModel(numStarts=nRepeat,**kwargs)
         points=self._VOI._points
