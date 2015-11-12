@@ -221,7 +221,7 @@ class SBO:
 	w1=wSt[0:0+1,:]
 	tempN=self.numberTraining+i
 	st=np.concatenate((x1,w1),1)
-	st=np.array([[ 1500,  1500,  1500,   348,   383,   333,   390]]) ####ELIMINATE!!!!!!!
+	#st=np.array([[ 1500,  1500,  1500,   348,   383,   333,   390]]) ####ELIMINATE!!!!!!!
 	A=self._VOI._GP._k.A(self._VOI._GP._Xhist[0:tempN,:],noise=self._VOI._GP._noiseHist[0:tempN])
 	L=np.linalg.cholesky(A)
 	m=self._VOI._points.shape[0]
