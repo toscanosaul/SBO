@@ -134,8 +134,11 @@ class SBO:
                  scaledAlpha=1.0,
 		 computeLogProductExpectationsForAn=None):
 	
-	self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
-	self.stat=statObj
+	
+	
+	
+	
+
 	#####
 	self.parallel=miscObj.parallel
 	self.randomSeed=miscObj.rs
@@ -155,10 +158,7 @@ class SBO:
 	self.numberParallel=optObj.numberParallel
         
 	##########
-        self.scaledAlpha=scaledAlpha
 
-        
-        self.numberTraining=numberTrainingData
         
 	####
         self.sampleFromX=Objobj.sampleFromX
@@ -169,29 +169,35 @@ class SBO:
 	self._n1=Objobj.dimSeparation
 	self._simulatorW=Objobj.simulatorW
 	####
-
-        if not os.path.exists(self.path):
+	if not os.path.exists(self.path):
             os.makedirs(self.path)
-        if kernel is None:
-            kernel=SK.SEK(dimensionKernel)
-        self._k=kernel
+
+
+	
+	self.stat=statObj
+	self.computeLogProductExpectationsForAn=statObj.computeLogProductExpectationsForAn
+	self.scaledAlpha=statObj.scaledAlpha
+        self.numberTraining=statObj._numberTrainin
+        self._k=statObj._k
+	self.B=statObj.B
+	self._XWhist=statObj._Xhist
+        self._yHist=statObj._yHist
+        self._varianceObservations=statObj._noiseHist
 
         self._solutions=[]
         self._valOpt=[]
         
-        self._dimension=dimensionKernel
+        self._dimension=statObj._n
         self._dimW=self._dimension-self._n1
         
 	self.histSaved=0
 	self.Bhist=np.zeros((VOIobj.sizeDiscretization,0))
         
-        self._XWhist=XWhist
-        self._yHist=yHist
-        self._varianceObservations=varHist
+
         
         self.optRuns=[]
         self.optPointsArray=[]
-	self.B=B
+	
 	self._VOI=VOIobj
 
 
