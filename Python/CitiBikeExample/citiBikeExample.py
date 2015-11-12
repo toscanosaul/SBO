@@ -10,6 +10,7 @@ import SquaredExponentialKernel as SK
 from grid import *
 import SBOGeneral2 as SB
 import VOIGeneral as VOI
+import statGeneral as stat
 from simulationPoissonProcess import *
 from math import *
 from matplotlib import pyplot as plt
@@ -349,7 +350,7 @@ def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,B,scratch,onlyGradient=False
 ####the function that steepest ascent will optimize
 
 ####the function that steepest ascent will optimize
-def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False,logproductExpectations=None):
+def functionGradientAscentAn(x,grad,stat,i,L,onlyGradient=False,logproductExpectations=None):
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
     if onlyGradient:
@@ -360,7 +361,7 @@ def functionGradientAscentAn(x,grad,SBO,i,L,onlyGradient=False,logproductExpecta
         grad2=np.dot(temp,L2)
         return grad2
 
-    temp=SBO._VOI._GP.aN_grad(x,L,i,gradient=grad,logproductExpectations=logproductExpectations)
+    temp=stat.aN_grad(x,L,i,gradient=grad,logproductExpectations=logproductExpectations)
     if grad==False:
         return temp
     else:
@@ -410,7 +411,7 @@ def computeLogProductExpectationsForAn(W,N):
 VOIobj=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
                  gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None,pointsApproximation=pointsVOI,
                  gradXBfunc=gradXB,B=B,PointsHist=XWtrain,gradWBfunc=gradWB,
-                 yHist=yTrain,noiseHist=NoiseTrain,gradXBforAn=gradXBforAn,dimW=dimensionKernel-n1)
+                 yHist=yTrain,noiseHist=NoiseTrain,dimW=dimensionKernel-n1)
 
 
 Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,simulatorW,estimationObjective)
@@ -426,12 +427,25 @@ def conditionOpt(x):
 opt=inter.opt(3,n1-1,transformationDomainX,transformationDomainW,projectGradientDescent,functionGradientAscentVn,
               functionGradientAscentAn,conditionOpt,1.0)
 
+stat=stat.SBOGP(kernel=kernel,B=B,dimNoiseW=n2,dimPoints=n1,
+                Xhist=XWtrain,dimKernel=n1+n2,yHist=yTrain,noiseHist=NoiseTrain,
+                numberTraining=trainingPoints,gradXBforAn=gradXBforAn,
+                computeLogProductExpectationsForAn=computeLogProductExpectationsForAn)
+
+
+
+
+
+ SBOGP(GaussianProcess):
+    def __init__(self,B,dimNoiseW,dimPoints,numberPoints,gradXBforAn,
+                 Bhist=None,histSaved=0,*args,**kargs):
 
 l={}
 l['VOIobj']=VOIobj
 l['Objobj']=Objective
 l['miscObj']=misc
 l['optObj']=opt
+l['statObj']=stat
 l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
 l['dimensionKernel']=dimensionKernel
 l['numberTrainingData']=trainingPoints

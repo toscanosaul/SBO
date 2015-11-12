@@ -128,14 +128,14 @@ import files as fl
 
 class SBO:
     def __init__(self, Objobj,dimensionKernel,miscObj,
-                 VOIobj,optObj,
+                 VOIobj,optObj,statObj,
                  B=None,kernel=None,numberTrainingData=0,
                  XWhist=None,yHist=None,varHist=None,
                  scaledAlpha=1.0,
 		 computeLogProductExpectationsForAn=None):
 	
 	self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
-	
+	self.stat=statObj
 	#####
 	self.parallel=miscObj.parallel
 	self.randomSeed=miscObj.rs
@@ -352,7 +352,7 @@ class SBO:
         tempN=i+self.numberTraining
 
         def g(x,grad,onlyGradient=False):
-            return self.functionGradientAscentAn(x,grad,self,i,L,onlyGradient=onlyGradient,
+            return self.functionGradientAscentAn(x,grad,self.stat,i,L,onlyGradient=onlyGradient,
 						 logproductExpectations=logProduct)
 
         opt.run(f=g)
