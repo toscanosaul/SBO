@@ -75,7 +75,6 @@ def noisyF(XW,n):
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2]
     for i in xrange(n):
-	print i,x,w
         simulations[i]=g(TimeHours,w,x,nSets,lamb,A,"2014-05",exponentialTimes,
                          data,cluster,bikeData)
     return np.mean(simulations),float(np.var(simulations))/n
@@ -586,6 +585,15 @@ for j in xrange(m2):
 
 
 sboObj.functionGradientAscentVn(st,True,sboObj,1,L,temp2,a,sboObj.Bhist,scratch)
+
+print "an2"
+
+logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:sboObj._dimW+n1],
+                                                         tempN)
+
+
+Xst=np.array([[1500,1500,1500]])
+sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,1,L,logproductExpectations=logProduct)
 
 #sboObj.SBOAlg(1,nRepeat=10,Train=True)
 #sboObj.SBOAlg(30,nRepeat=10,Train=True)
