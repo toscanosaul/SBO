@@ -441,15 +441,15 @@ l['Objobj']=Objective
 l['miscObj']=misc
 l['optObj']=opt
 l['statObj']=stat
-l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
-l['dimensionKernel']=dimensionKernel
-l['numberTrainingData']=trainingPoints
-l['XWhist']=XWtrain
-l['yHist']=yTrain
-l['varHist']=NoiseTrain
-l['kernel']=kernel
-l['B']=B
-l['scaledAlpha']=scaleAlpha
+#l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
+#l['dimensionKernel']=dimensionKernel
+#l['numberTrainingData']=trainingPoints
+#l['XWhist']=XWtrain
+#l['yHist']=yTrain
+#l['varHist']=NoiseTrain
+#l['kernel']=kernel
+#l['B']=B
+#l['scaledAlpha']=scaleAlpha
 
 
 

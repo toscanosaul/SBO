@@ -128,16 +128,8 @@ import files as fl
 
 class SBO:
     def __init__(self, Objobj,dimensionKernel,miscObj,
-                 VOIobj,optObj,statObj,
-                 B=None,kernel=None,numberTrainingData=0,
-                 XWhist=None,yHist=None,varHist=None,
-                 scaledAlpha=1.0,
-		 computeLogProductExpectationsForAn=None):
-	
-	
-	
-	
-	
+                 VOIobj,optObj,statObj):
+
 
 	#####
 	self.parallel=miscObj.parallel
