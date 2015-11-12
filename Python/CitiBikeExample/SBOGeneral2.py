@@ -127,17 +127,24 @@ import misc
 import files as fl
 
 class SBO:
-    def __init__(self, Objobj,dimensionKernel, parallel,
+    def __init__(self, Objobj,dimensionKernel,miscObj,
                  VOIobj,
                  B=None,kernel=None,numberTrainingData=0,dimXsteepest=0,
                  XWhist=None,yHist=None,varHist=None,projectGradient=None,
-                 createNewFiles=True,randomSeed=1,
+                 randomSeed=1,
                  functionGradientAscentVn=None,functionGradientAscentAn=None,numberParallel=10,
                  transformationDomainX=None,transformationDomainW=None,
-                 folderContainerResults=None,scaledAlpha=1.0,xtol=None,functionConditionOpt=None,
+                 scaledAlpha=1.0,xtol=None,functionConditionOpt=None,
 		 computeLogProductExpectationsForAn=None):
 	self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
-	self.parallel=parallel
+	
+	#####
+	self.parallel=miscObj.parallel
+	self.randomSeed=miscObj.randomSeed
+	self.rs=miscObj.randomSeed
+	self.path=os.path.join(miscObj.folder,'%d'%self.rs+"run")
+	self.createNewFiles=miscObj.createNewFiles
+	######
 	if xtol is None:
 	    xtol=1e-8
 	self.functionConditionOpt=functionConditionOpt
@@ -145,7 +152,7 @@ class SBO:
         self.scaledAlpha=scaledAlpha
         self.transformationDomainX=transformationDomainX
         self.transformationDomainW=transformationDomainW
-        self.randomSeed=randomSeed
+        
         self.numberTraining=numberTrainingData
         self.projectGradient=projectGradient
 	####
@@ -163,10 +170,10 @@ class SBO:
         
 
 	
-	self.rs=randomSeed
-	self.path=os.path.join(folderContainerResults,'%d'%randomSeed+"run")
+	
+	
         self.numberParallel=numberParallel
-	self.createNewFiles=createNewFiles
+	
         if not os.path.exists(self.path):
             os.makedirs(self.path)
         if kernel is None:
