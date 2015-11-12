@@ -24,7 +24,7 @@ from scipy import linalg
 
 directory=[]
 
-directory.append(os.path.join("..","CitiBikeExample","ResultsTest15AveragingSamples5TrainingPoints","SBO","test2run"))
+directory.append(os.path.join("..","CitiBikeExample","ResultsTest15AveragingSamples5TrainingPoints","SBO","2run"))
 
 exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
 with open ('json.json') as data_file:
