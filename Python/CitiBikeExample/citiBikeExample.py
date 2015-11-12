@@ -20,6 +20,7 @@ import multiprocessing as mp
 import os
 from scipy.stats import poisson
 import json
+import interfaceSBO as inter
 
 
 exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
@@ -412,40 +413,30 @@ VOIobj=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainin
                  yHist=yTrain,noiseHist=NoiseTrain,gradXBforAn=gradXBforAn,dimW=dimensionKernel-n1)
 
 
+Objective=inter.objective(g,n1,noisyF,numberEstimateF,sampleFromX,simulatorW,estimationObjective)
 
 
 nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 l={}
 l['VOIobj']=VOIobj
+l['Objobj']=Objective
 l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
 l['parallel']=parallel
 l['folderContainerResults']=os.path.join(nameDirectory,"SBO")
-l['estimationObjective']=estimationObjective
 l['transformationDomainW']=transformationDomainW
 l['transformationDomainX']=transformationDomainX
 l['dimXsteepest']=n1-1
 l['functionGradientAscentVn']=functionGradientAscentVn
 l['functionGradientAscentAn']=functionGradientAscentAn
-l['sampleFromX']=sampleFromX
 l['projectGradient']=projectGradientDescent
-l['fobj']=g
 l['dimensionKernel']=dimensionKernel
-l['noisyF']=noisyF
-l['dimSeparation']=n1
 l['numberTrainingData']=trainingPoints
-l['numberEstimateF']=numberSamplesForF
-l['simulatorW']=simulatorW
 l['XWhist']=XWtrain
 l['yHist']=yTrain
 l['varHist']=NoiseTrain
 l['kernel']=kernel
 l['B']=B
-#l['gradXWSigmaOfunc']=gradXWSigmaOfunc
-#l['gradXBfunc']=gradXB
-#l['gradWBfunc']=gradWB
 l['randomSeed']=randomSeed
-l['pointsVOI']=pointsVOI
-#l['gradXBforAn']=gradXBforAn
 l['numberParallel']=3
 l['scaledAlpha']=scaleAlpha
 l['xtol']=1.0

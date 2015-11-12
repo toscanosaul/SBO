@@ -82,7 +82,7 @@ This class takes five class arguments (for details, see [tf]):
 
 
 (*) VOI class:
--pointsVOI: Points of the discretization to compute the VOI.
+#-pointsVOI: Points of the discretization to compute the VOI.
 -VOIobj: VOI object.
 #--gradXWSigmaOfunc: Computes the gradient of Sigma_{0}, which is the covariance of the Gaussian
 		   Process on F.
@@ -127,13 +127,13 @@ import misc
 import files as fl
 
 class SBO:
-    def __init__(self, fobj,dimensionKernel,noisyF, parallel,
-                 VOIobj,dimSeparation=None,numberEstimateF=15, sampleFromX=None,
+    def __init__(self, Objobj,dimensionKernel, parallel,
+                 VOIobj,
                  B=None,kernel=None,numberTrainingData=0,dimXsteepest=0,
-                 XWhist=None,yHist=None,varHist=None,pointsVOI=None,projectGradient=None,
-                 simulatorW=None,createNewFiles=True,randomSeed=1,
+                 XWhist=None,yHist=None,varHist=None,projectGradient=None,
+                 createNewFiles=True,randomSeed=1,
                  functionGradientAscentVn=None,functionGradientAscentAn=None,numberParallel=10,
-                 transformationDomainX=None,transformationDomainW=None,estimationObjective=None,
+                 transformationDomainX=None,transformationDomainW=None,
                  folderContainerResults=None,scaledAlpha=1.0,xtol=None,functionConditionOpt=None,
 		 computeLogProductExpectationsForAn=None):
 	self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
@@ -148,11 +148,21 @@ class SBO:
         self.randomSeed=randomSeed
         self.numberTraining=numberTrainingData
         self.projectGradient=projectGradient
-        self.sampleFromX=sampleFromX
+	####
+        self.sampleFromX=Objobj.sampleFromX
+	self.estimationObjective=Objobj.estimationObjective
+	self._fobj=Objobj.fobj
+        self._infSource=Objobj.noisyF ###returns also the noise
+        self._numberSamples=Objobj.numberEstimateF
+	self._n1=Objobj.dimSeparation
+	self._simulatorW=Objobj.simulatorW
+	####
         self.functionGradientAscentAn=functionGradientAscentAn
         self.functionGradientAscentVn=functionGradientAscentVn
         self.dimXsteepest=dimXsteepest
-        self.estimationObjective=estimationObjective
+        
+
+	
 	self.rs=randomSeed
 	self.path=os.path.join(folderContainerResults,'%d'%randomSeed+"run")
         self.numberParallel=numberParallel
@@ -162,19 +172,15 @@ class SBO:
         if kernel is None:
             kernel=SK.SEK(dimensionKernel)
         self._k=kernel
-        self._fobj=fobj
-        self._infSource=noisyF ###returns also the noise
-        self._numberSamples=numberEstimateF
-        self._B=B
+
         self._solutions=[]
         self._valOpt=[]
-        self._n1=dimSeparation
+        
         self._dimension=dimensionKernel
         self._dimW=self._dimension-self._n1
-        self._simulatorW=simulatorW
-
+        
 	self.histSaved=0
-	self.Bhist=np.zeros((pointsVOI.shape[0],0))
+	self.Bhist=np.zeros((VOIobj.sizeDiscretization,0))
         
         self._XWhist=XWhist
         self._yHist=yHist
