@@ -420,17 +420,19 @@ folder=os.path.join(nameDirectory,"SBO")
 
 misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
 
+def conditionOpt(x):
+    return np.max((np.floor(np.abs(x))))
+
+opt=inter.opt(3,n1-1,transformationDomainX,transformationDomainW,projectGradient,functionGradientAscentVn,
+              functionGradientAscentAn,conditionOpt,1.0)
+
 
 l={}
 l['VOIobj']=VOIobj
 l['Objobj']=Objective
 l['miscObj']=misc
+l['optObj']=opt
 l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
-l['transformationDomainW']=transformationDomainW
-l['transformationDomainX']=transformationDomainX
-l['dimXsteepest']=n1-1
-l['functionGradientAscentVn']=functionGradientAscentVn
-l['functionGradientAscentAn']=functionGradientAscentAn
 l['projectGradient']=projectGradientDescent
 l['dimensionKernel']=dimensionKernel
 l['numberTrainingData']=trainingPoints
@@ -439,13 +441,10 @@ l['yHist']=yTrain
 l['varHist']=NoiseTrain
 l['kernel']=kernel
 l['B']=B
-l['numberParallel']=3
 l['scaledAlpha']=scaleAlpha
-l['xtol']=1.0
 
-def conditionOpt(x):
-    return np.max((np.floor(np.abs(x))))
-l['functionConditionOpt']=conditionOpt
+
+
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
