@@ -25,55 +25,83 @@ Objective class:
 -fobj: The simulator or objective function.
 -dimSeparation: Dimension of w.
 -noisyF: Estimator of the conditional expectation given w, F(x,w)=E[f(x,w,z)|w].
+-numberEstimateF: Observations used to estimate F.
+-sampleFromX: Chooses a point x at random.
+-simulatorW: Simulates a random vector w.
+-estimationObjective: Estimates the expectation of fobj. 
+
 
 
 Statistical Class:
+-kernel: Kernel object for the GP on F.
 -dimensionKernel: Dimension of the kernel.
+-scaledAlpha: Parameter to scale the alpha parameters of the kernel,
+	      alpha/(scaledAlpha^{2})
+-B(x,XW,n1,n2,logproductExpectations=None): Computes
+	\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w),
+	where x can be a vector.
+-numberTrainingData: Number of training data.
+-XWhist: Training points (x,w).
+-yHist: Training observations y.
+-varHist: Noise of the observations of the training data.
+-computeLogProductExpectationsForAn: Computes the vector with the logarithm
+		of the product of the expectations of
+		np.exp(-alpha2[j]*((z-W[i,j])**2))
+		where W[i,:] is a point in the history. 
+
 
 Derivative Class:
--gradXWSigmaOfunc: Gradient of Sigma_{0}, which is the covariance of the Gaussian
+-gradXWSigmaOfunc: Computes the gradient of Sigma_{0}, which is the covariance of the Gaussian
 		   Process on F.
--gradXBfunc: Gradient with respect to x_{n+1} of
-	     B(x_{p},n+1)=\int\Sigma_{0}(x,w,x_{n+1},w_{n+1})dp(w)
-	     and x_{p} is a point in the discretization of the domain of x.
+-gradXBfunc: Computes the gradients with respect to x_{n+1} of
+	     B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
+	     where x_{p} is a point in the discretization of the domain of x.
+-gradWBfunc: Computes the gradients with respect to w_{n+1} of
+	     B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
+	     where x_{p} is a point in the discretization of the domain of x.
+-gradXBforAn: Computes the gradients with respect to x of
+	     B(x,i)=\int\Sigma_{0}(x,w,x_{i},w_{i})dp(w),
+	     where (x_{i},w_{i}) is a point in the history observed.
 	     
--gradXBforAn: 
+Optimization class:
+-numberParallel: Number of starting points for the multistart gradient ascent algorithm.
+-dimXsteepest: Dimension of x when the VOI and a_{n} are optimized. We may want to reduce
+	       the dimension of the original problem.
+-transformationDomainX: Transforms the point x given by the steepest ascent method to the right domain
+			of x.
+-transformationDomainW: Transforms the point w given by the steepest ascent method to the right domain
+			of w.
+-projectGradient: Project a point x to the domain of the problem at each step of the gradient
+		  ascent method if needed.
+-functionGradientAscentVn: Function used for the gradient ascent method. It evaluates the VOI,
+			   when grad and onlyGradient are False; it evaluates the VOI and
+			   computes its derivative when grad is True and onlyGradient is False,
+			   and computes only its gradient when gradient and onlyGradient are both
+			   True. 
+-functionGradientAscentAn: Function used for the gradient ascent method. It evaluates a_{n},
+			   when grad and onlyGradient are False; it evaluates a_{n} and
+			   computes its derivative when grad is True and onlyGradient is False,
+			   and computes only its gradient when gradient and onlyGradient are both
+			   True.
+-functionConditionOpt: Gives the stopping rule for the steepest ascent method, e.g. the function
+			could be the Euclidean norm. 
+-xtol: Tolerance of x for the convergence of the steepest ascent method.
 
 
 
--parallel:
+VOI class:
+-pointsVOI: Points of the discretization to compute the VOI.
 
 
--numberEstimateF:
--sampleFromX:
--B:
--kernel:
--numberTrainingData:
--Bhist:
--gradWBfunc:
--dimXsteepest:
--XWhist
--yHist
--varHist
--pointsVOI
--folder
--projectGradient
--constraintA
--constraintB
--simulatorW
--createNewFiles
--randomSeed
--functionGradientAscentVn
--functionGradientAscentAn
--numberParallel
--transformationDomainX
--transformationDomainW
--estimationObjective
--folderContainerResults
--scaledAlpha=1.0
--xtol=None
--functionConditionOpt
--computeLogProductExpectationsForAn
+General:
+-randomSeed: Random seed used to run the problem. Only needed for the name of the
+	     files with the results.
+-parallel: True if we want to run the multistart gradient ascent algorithm and
+	   train the kernel of the GP in parallel; otherwise, it's false. 
+-folderContainerResults: Direction where the files with the results are saved. 
+-createNewFiles: True if we want to create new files for the results; it's false
+		 otherwise. If we want to add more results to our previos results,
+		 this variable should be false.
 
 """
 
@@ -131,9 +159,9 @@ import misc
 class SBO:
     def __init__(self, fobj,dimensionKernel,noisyF,gradXBfunc,gradXWSigmaOfunc,gradXBforAn, parallel,
                  dimSeparation=None,numberEstimateF=15, sampleFromX=None,
-                 B=None,kernel=None,numberTrainingData=0,Bhist=None,gradWBfunc=None,dimXsteepest=0,
-                 XWhist=None,yHist=None,varHist=None,pointsVOI=None,folder=None,projectGradient=None,
-                 constraintA=None,constraintB=None,simulatorW=None,createNewFiles=True,randomSeed=1,
+                 B=None,kernel=None,numberTrainingData=0,gradWBfunc=None,dimXsteepest=0,
+                 XWhist=None,yHist=None,varHist=None,pointsVOI=None,projectGradient=None,
+                 simulatorW=None,createNewFiles=True,randomSeed=1,
                  functionGradientAscentVn=None,functionGradientAscentAn=None,numberParallel=10,
                  transformationDomainX=None,transformationDomainW=None,estimationObjective=None,
                  folderContainerResults=None,scaledAlpha=1.0,xtol=None,functionConditionOpt=None,
@@ -156,10 +184,7 @@ class SBO:
         self.functionGradientAscentVn=functionGradientAscentVn
         self.dimXsteepest=dimXsteepest
         self.estimationObjective=estimationObjective
-        if folder is None:
-            self.path=os.path.join(folderContainerResults,'%d'%randomSeed+"run")
-        else:
-            self.path=folder+'%d'%randomSeed+"run"
+	self.path=os.path.join(folderContainerResults,'%d'%randomSeed+"run")
         self.numberParallel=numberParallel
         if not os.path.exists(self.path):
 #	self.path='%d'%randomSeed+"run"
@@ -196,8 +221,6 @@ class SBO:
         self._n1=dimSeparation
         self._dimension=dimensionKernel
         self._dimW=self._dimension-self._n1
-        self._constraintA=constraintA
-        self._constraintB=constraintB
         self._simulatorW=simulatorW
         with open(os.path.join(self.path,'%d'%randomSeed+"XWHist.txt"), "a") as f:
             np.savetxt(f,XWhist)
@@ -226,7 +249,6 @@ class SBO:
     ##m is the number of iterations to take
     def SBOAlg(self,m,nRepeat=10,Train=True,**kwargs):
         if Train is True:
-            ###TrainingData is not None
             self.trainModel(numStarts=nRepeat,**kwargs)
         points=self._VOI._points
         for i in range(m):
@@ -266,12 +288,12 @@ class SBO:
     ###start is a matrix of one row
     ###
     def optimizeVOI(self,start, i,L,temp2,a,B,scratch):
-        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,stopFunction=self.functionConditionOpt,xStart=start,xtol=self.xtol)
-        opt.constraintA=self._constraintA
-        opt.constraintB=self._constraintB
-      #  self.functionGradientAscentAn
+        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,
+				  stopFunction=self.functionConditionOpt,xStart=start,
+				  xtol=self.xtol)
         def g(x,grad,onlyGradient=False):
-            return self.functionGradientAscentVn(x,grad,self,i,L,temp2,a,B,scratch,onlyGradient=onlyGradient)
+            return self.functionGradientAscentVn(x,grad,self,i,L,temp2,a,B,
+						 scratch,onlyGradient=onlyGradient)
 
         opt.run(f=g)
         self.optRuns.append(opt)
@@ -401,9 +423,9 @@ class SBO:
         self.optPointsArray=[]
             
     def optimizeAn(self,start,i,L,logProduct):
-        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,xStart=start,xtol=self.xtol,stopFunction=self.functionConditionOpt)
-        opt.constraintA=self._constraintA
-        opt.constraintB=self._constraintB
+        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,
+				  xStart=start,xtol=self.xtol,
+				  stopFunction=self.functionConditionOpt)
         tempN=i+self.numberTraining
 
         def g(x,grad,onlyGradient=False):
@@ -470,10 +492,7 @@ class SBO:
             pool = mp.Pool(processes=numProcesses)
             Xst=self.sampleFromX(nStart)
             for j in range(nStart):
-           #     np.random.seed(seeds[j])
-           #     x1=np.random.uniform(self._constraintA,self._constraintB,(1,n1))
                 args2={}
-               # x1=Xst[j,:]
                 args2['start']=Xst[j:j+1,:]
                 args2['i']=i
 		args2['L']=L
