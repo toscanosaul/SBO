@@ -436,10 +436,6 @@ stat=stat.SBOGP(kernel=kernel,B=B,dimNoiseW=n2,dimPoints=n1,
 
 
 
- SBOGP(GaussianProcess):
-    def __init__(self,B,dimNoiseW,dimPoints,numberPoints,gradXBforAn,
-                 Bhist=None,histSaved=0,*args,**kargs):
-
 l={}
 l['VOIobj']=VOIobj
 l['Objobj']=Objective
