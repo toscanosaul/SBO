@@ -536,6 +536,8 @@ temp=np.concatenate((xTrans,wTrans),1)
 sboObj._XWhist=np.vstack([sboObj._XWhist,temp])
 sboObj._VOI._PointsHist=sboObj._XWhist
 sboObj._VOI._GP._Xhist=sboObj._XWhist
+print temp
+print sboObj._numberSamples
 y,var=sboObj._infSource(temp,sboObj._numberSamples)
 sboObj._yHist=np.vstack([sboObj._yHist,y])
 sboObj._VOI._yHist=sboObj._yHist
