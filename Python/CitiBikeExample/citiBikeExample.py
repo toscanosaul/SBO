@@ -354,7 +354,7 @@ def functionGradientAscentAn(x,grad,stat,i,L,onlyGradient=False,logproductExpect
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
     if onlyGradient:
-        temp=SBO._VOI._GP.aN_grad(x,L,i,grad,onlyGradient,logproductExpectations)
+        temp=stat.aN_grad(x,L,i,grad,onlyGradient,logproductExpectations)
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L2=np.concatenate((t,s))
@@ -431,7 +431,6 @@ stat=stat.SBOGP(kernel=kernel,B=B,dimNoiseW=n2,dimPoints=n1,
                 Xhist=XWtrain,dimKernel=n1+n2,yHist=yTrain,noiseHist=NoiseTrain,
                 numberTraining=trainingPoints,gradXBforAn=gradXBforAn,
                 computeLogProductExpectationsForAn=computeLogProductExpectationsForAn)
-
 
 
 
