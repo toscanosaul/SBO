@@ -41,14 +41,14 @@ def writeNewPointSBO(ALGObj,optim):
     temp=np.concatenate((xTrans,wTrans),1)
     ALGObj._XWhist=np.vstack([ALGObj._XWhist,temp])
     ALGObj._VOI._PointsHist=ALGObj._XWhist
-    ALGObj._VOI._GP._Xhist=ALGObj._XWhist
+   # ALGObj._VOI._GP._Xhist=ALGObj._XWhist
     y,var=ALGObj._infSource(temp,ALGObj._numberSamples)
     ALGObj._yHist=np.vstack([ALGObj._yHist,y])
     ALGObj._VOI._yHist=ALGObj._yHist
-    ALGObj._VOI._GP._yHist=ALGObj._yHist
+    #ALGObj._VOI._GP._yHist=ALGObj._yHist
     ALGObj._varianceObservations=np.append(ALGObj._varianceObservations,var)
     ALGObj._VOI._noiseHist=ALGObj._varianceObservations
-    ALGObj._VOI._GP._noiseHist=ALGObj._varianceObservations
+    #ALGObj._VOI._GP._noiseHist=ALGObj._varianceObservations
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"varHist.txt"), "a") as f:
         var=np.array(var).reshape(1)
         np.savetxt(f,var)
