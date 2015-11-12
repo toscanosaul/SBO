@@ -153,7 +153,7 @@ parallel=False
 
 scaleAlpha=1000.0
 
-ind2=2
+ind=2
 def readTrainingData(n,directory=directory[0]):
     XWtrain=np.loadtxt(os.path.join(directory,"%d"%ind+"XWHist.txt"))[0:n,:]
     yTrain=np.loadtxt(os.path.join(directory,"%d"%ind+"yhist.txt"))[0:n]
