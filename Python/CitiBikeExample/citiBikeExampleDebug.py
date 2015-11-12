@@ -472,7 +472,7 @@ print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
 
-
+sboObj.trainModel(1)
 
 tempN=trainingPoints
 A=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
@@ -487,6 +487,38 @@ logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:s
 
 
 sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,0,L,logproductExpectations=logProduct)
+
+print "VN"
+
+Xst=sboObj.sampleFromX(1)
+wSt=sboObj._simulatorW(1)
+x1=Xst[0:0+1,:]
+w1=wSt[0:0+1,:]
+tempN=sboObj.numberTraining
+st=np.concatenate((x1,w1),1)
+
+print "st"
+print st
+
+m=sboObj._VOI._points.shape[0]
+for j in xrange(sboObj.histSaved,tempN):
+    temp=sboObj.B(sboObj._VOI._points,sboObj._VOI._GP._Xhist[j,:],sboObj._n1,sboObj._dimW) ###change my previous function because we have to concatenate X and W
+    sboObj.Bhist=np.concatenate((sboObj.Bhist,temp.reshape((m,1))),1)
+    sboObj.histSaved+=1
+muStart=sboObj._k.mu
+y=sboObj._yHist
+temp2=linalg.solve_triangular(L,(sboObj.Bhist).T,lower=True)
+temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
+a=muStart+np.dot(temp2.T,temp1)
+
+print "a"
+print a
+
+scratch=np.zeros((m,tempN))
+for j in xrange(m):
+    scratch[j,:]=linalg.solve_triangular(L,sboObj.Bhist[j,:].transpose(),lower=True)
+
+sboObj.functionGradientAscentVn(st,True,sboObj,0,L,a,sboObj.Bhist,scratch)
 
 #sboObj.SBOAlg(1,nRepeat=10,Train=True)
 #sboObj.SBOAlg(30,nRepeat=10,Train=True)
