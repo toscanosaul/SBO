@@ -119,7 +119,7 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 
 ###################################################
-parallel=False
+parallel=True
 yTrain=np.zeros([0,1])
 NoiseTrain=np.zeros(0)
 
@@ -471,6 +471,8 @@ l['functionConditionOpt']=conditionOpt
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
+
+
 
 tempN=trainingPoints
 A=sboObj._k.A(sboObj._XWhist[0:tempN,:],noise=sboObj._varianceObservations[0:tempN])
