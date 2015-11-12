@@ -408,7 +408,7 @@ def computeLogProductExpectationsForAn(W,N):
 
 
 
-nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
+nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 l={}
 l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
 l['parallel']=parallel
@@ -451,6 +451,6 @@ l['functionConditionOpt']=conditionOpt
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
-sboObj.SBOAlg(30,nRepeat=10,Train=True)
+sboObj.SBOAlg(10,nRepeat=10,Train=True)
 
 
