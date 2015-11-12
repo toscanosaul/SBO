@@ -518,7 +518,7 @@ print a
 scratch=np.zeros((m,tempN))
 for j in xrange(m):
     scratch[j,:]=linalg.solve_triangular(L,sboObj.Bhist[j,:].transpose(),lower=True)
-functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,B,scratch,onlyGradient=False)
+
 
 sboObj.functionGradientAscentVn(st,True,sboObj,0,L,temp2,a,sboObj.Bhist,scratch)
 
