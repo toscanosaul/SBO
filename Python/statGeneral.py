@@ -24,7 +24,7 @@ class GaussianProcess:
         
         
 class SBOGP(GaussianProcess):
-    def __init__(self,B,dimNoiseW,dimPoints,numberPoints,gradXBforAn,
+    def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn,
                  *args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
         self.SBOGP_name="SBO"
