@@ -24,18 +24,18 @@ class GaussianProcess:
         
         
 class SBOGP(GaussianProcess):
-    def __init__(self,B,dimNoiseW,dimPoints,numberPoints,gradXBforAn,gradXBfunc=None,
-                 Bhist=None,histSaved=0,*args,**kargs):
+    def __init__(self,B,dimNoiseW,dimPoints,numberPoints,gradXBforAn,
+                 *args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
         self.SBOGP_name="SBO"
         self.n1=dimPoints
         self.n2=dimNoiseW
         self.B=B
-        if Bhist is None:
-            Bhist=np.zeros((numberPoints,0))
-        self.Bhist=Bhist
-        self.histSaved=histSaved
-        self._gradXBfunc=gradXBfunc
+        self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
+      #  if Bhist is None:
+      #      Bhist=np.zeros((numberPoints,0))
+      #  self.Bhist=Bhist
+      #  self.histSaved=histSaved
         self.gradXBforAn=gradXBforAn
         ####Include Ahist, with Lhist
     
