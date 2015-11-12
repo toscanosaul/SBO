@@ -381,7 +381,7 @@ def transformationDomainX(x):
 def transformationDomainW(w):
     return np.round(w)
 
-def estimationObjective(x,N=1000):
+def estimationObjective(x,N=100):
     estimator=N
     W=simulatorW(estimator)
     result=np.zeros(estimator)
@@ -451,6 +451,6 @@ l['functionConditionOpt']=conditionOpt
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
-sboObj.SBOAlg(10,nRepeat=10,Train=True)
+sboObj.SBOAlg(2,nRepeat=10,Train=True)
 
 
