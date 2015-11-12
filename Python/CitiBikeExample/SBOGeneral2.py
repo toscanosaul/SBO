@@ -3,9 +3,58 @@
 """
 Stratified Bayesian Optimization Algorithm.
 
-The class take the following arguments:
+This is a new algorithm for simulation optimization
+problems. Specificially, it's used for the global
+optimization of the expectation of continuos functions
+(respect to some metric), which depend on big random
+vectors. We suppose that a small number of random
+variables have a much stronger effect on the variability.
+In general, the functions are time-consuming to evaluate,
+and the derivatives are unavailable.
 
---
+
+This class take the following arguments:
+
+-fobj: The simulator or objective function.
+-dimensionKernel:
+-noisyF:
+-gradXBfunc:
+-gradXWSigmaOfunc:
+-gradXBforAn:
+-parallel:
+-dimSeparation:
+-trainingData
+-numberEstimateF:
+-sampleFromX:
+-B:
+-kernel:
+-numberTrainingData:
+-Bhist:
+-gradWBfunc:
+-dimXsteepest:
+-XWhist
+-yHist
+-varHist
+-pointsVOI
+-folder
+-projectGradient
+-constraintA
+-constraintB
+-simulatorW
+-createNewFiles
+-randomSeed
+-functionGradientAscentVn
+-functionGradientAscentAn
+-numberParallel
+-transformationDomainX
+-transformationDomainW
+-estimationObjective
+-folderContainerResults
+-scaledAlpha=1.0
+-xtol=None
+-functionConditionOpt
+-computeLogProductExpectationsForAn
+
 """
 
 from math import *
