@@ -1,27 +1,21 @@
 """
 Stratified Bayesian Optimization Algorithm.
 
- 
-
-This is a new algorithm proposed by 
-[Toscano-Palmerin and Frazier][tf]. It's used for
-simulation optimization problems. Specificially,
-it's used for the global optimization of the
-expectation of continuos functions (respect to
-some metric), which depend on big random vectors.
-We suppose that a small number of random variables
-have a much stronger effect on the variability.
-In general, the functions are time-consuming to
-evaluate, and the derivatives are unavailable.
+This is a new algorithm proposed by [Toscano-Palmerin and Frazier][tf].
+It's used for simulation optimization problems. Specificially, it's used
+for the global optimization of the expectation of continuos functions
+(respect to some metric), which depend on big random vectors. We suppose
+that a small number of random variables have a much stronger effect on the
+variability. In general, the functions are time-consuming to evaluate, and
+the derivatives are unavailable.
 
 [tf]: http://toscanosaul.github.io/saul/SBO.pdf
 
 This class take the following arguments:
 
 -fobj: The simulator or objective function.
--noisyF: Estimator of the conditional expectation given
-	the random variables that have a much stronger
-	effect.
+-noisyF: Estimator of the conditional expectation given the random variables that
+	 have a much stronger effect.
 -dimensionKernel:
 
 -gradXBfunc:
