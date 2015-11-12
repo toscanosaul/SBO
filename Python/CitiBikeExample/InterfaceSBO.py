@@ -18,7 +18,7 @@ class objective:
         self.dimSeparation=dimSeparation
         self.noisyF=noisyF
         self.numberEstimateF=numberEstimateF
-        self.SampleFromX=SampleFromX
+        self.sampleFromX=SampleFromX
         self.simulatorW=simulatorW
         self.estimationObjective=estimationObjective
 
