@@ -1,5 +1,5 @@
 """
-Stratified Bayesian Optimization Algorithm.
+Stratified Bayesian Optimization (SBO) Algorithm.
 
 This is a new algorithm proposed by [Toscano-Palmerin and Frazier][tf].
 It's used for simulation optimization problems. Specificially, it's used
@@ -9,20 +9,29 @@ that a small number of random variables have a much stronger effect on the
 variability. In general, the functions are time-consuming to evaluate, and
 the derivatives are unavailable.
 
+In mathematical notation we want to solve the problem:
+
+	max_{x} E[f(x,w,z)]
+
+where the expectation is over w and z, and w is the random vector that have
+a much stronger effect on the variability of f.
+
 [tf]: http://toscanosaul.github.io/saul/SBO.pdf
 
-This class take the following arguments:
+This class takes the following arguments:
 
 -fobj: The simulator or objective function.
--noisyF: Estimator of the conditional expectation given the random variables that
-	 have a much stronger effect.
+-dimSeparation: Dimension of w.
+-noisyF: Estimator of the conditional expectation given w, F(x,w)=E[f(x,w,z)|w].
+
+
 -dimensionKernel:
 
 -gradXBfunc:
 -gradXWSigmaOfunc:
 -gradXBforAn:
 -parallel:
--dimSeparation:
+
 -trainingData
 -numberEstimateF:
 -sampleFromX:
