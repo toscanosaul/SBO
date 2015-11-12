@@ -1,16 +1,17 @@
-#d!/usr/bin/env python
 
-#!/usr/bin/env python
 #Stratified Bayesian Optimization
+"""
+Stratified Bayesian Optimization Algorithm.
+
+The class take the following arguments:
+
+--
+"""
 
 from math import *
-
-
-
 import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 import numpy as np
 from matplotlib import pyplot as plt
-#import GPy
 from numpy import multiply
 from numpy.linalg import inv
 from AffineBreakPoints import *
@@ -18,7 +19,6 @@ from scipy.stats import norm
 from grid import *
 import pylab as plb
 from scipy import linalg
-
 import SquaredExponentialKernel as SK
 import VOIGeneral as VOI
 import statGeneral as stat
@@ -191,7 +191,7 @@ class SBO:
         args2['start']=self.sampleFromX(1)
         args2['i']=m
       #  misc.AnOptWrapper(self,**args2)
-	if parallel:
+	if self.parallel:
 	    self.optAnParal(m,self.numberParallel)
 	else:
 	    self.optAnnoParal(i)
