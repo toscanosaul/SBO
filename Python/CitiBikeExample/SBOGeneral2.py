@@ -244,7 +244,7 @@ class SBO:
         self.optPointsArray=[]
     
     
-    def getParametersOptVoi(self,i,st):
+    def getParametersOptVoi(self,i):
 	n1=self._n1
 	n2=self._dimW
 	tempN=self.numberTraining+i
