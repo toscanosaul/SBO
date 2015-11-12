@@ -75,6 +75,7 @@ def noisyF(XW,n):
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2]
     for i in xrange(n):
+	print i,x,w
         simulations[i]=g(TimeHours,w,x,nSets,lamb,A,"2014-05",exponentialTimes,
                          data,cluster,bikeData)
     return np.mean(simulations),float(np.var(simulations))/n
