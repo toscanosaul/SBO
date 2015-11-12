@@ -155,7 +155,8 @@ class OptSteepestDescent(Optimization):
         iter=0
         X=xStart
         g1=-100
-        
+        print "xstart"
+	print xStart
         n1=self.n1
         c=self.constraintA
         d=self.constraintB
@@ -190,6 +191,8 @@ class OptSteepestDescent(Optimization):
                g1,g2=f(X,grad=True)
 	       return X,g1,g2,iter
             X=X+lineSearch2[0]*g2
+	    print "newX"
+	    print X
             X[0,:]=self.projectGradient(X[0,:],g2[0,:],oldPoint[0,:])
             if self.stopFunction(X[0,:]-oldPoint[0,:])<tol or iter > maxit:
                 tolMet=True
