@@ -413,7 +413,7 @@ VOIobj=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainin
                  yHist=yTrain,noiseHist=NoiseTrain,gradXBforAn=gradXBforAn,dimW=dimensionKernel-n1)
 
 
-Objective=inter.objective(g,n1,noisyF,numberEstimateF,sampleFromX,simulatorW,estimationObjective)
+Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,simulatorW,estimationObjective)
 
 
 nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
