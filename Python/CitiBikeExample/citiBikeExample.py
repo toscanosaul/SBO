@@ -423,7 +423,7 @@ misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
 def conditionOpt(x):
     return np.max((np.floor(np.abs(x))))
 
-opt=inter.opt(3,n1-1,transformationDomainX,transformationDomainW,projectGradient,functionGradientAscentVn,
+opt=inter.opt(3,n1-1,transformationDomainX,transformationDomainW,projectGradientDescent,functionGradientAscentVn,
               functionGradientAscentAn,conditionOpt,1.0)
 
 
