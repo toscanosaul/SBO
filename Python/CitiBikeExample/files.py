@@ -59,8 +59,8 @@ def writeNewPointSBO(ALGObj,optim):
         np.savetxt(f,temp)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"optVOIgrad.txt"), "a") as f:
         np.savetxt(f,gradOpt)
-    self.optRuns=[]
-    self.optPointsArray=[]
+    ALGObj.optRuns=[]
+    ALGObj.optPointsArray=[]
     
 def writeSolution(ALGObj,optim):
     temp=optim.xOpt
@@ -77,5 +77,5 @@ def writeSolution(ALGObj,optim):
         np.savetxt(f,res)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"optAngrad.txt"), "a") as f:
         np.savetxt(f,tempGrad)
-    self.optRuns=[]
-    self.optPointsArray=[]
+    ALGObj.optRuns=[]
+    ALGObj.optPointsArray=[]
