@@ -132,11 +132,12 @@ def unhappyPeople (T,N,X,m,lamb,A,date,exponentialTimes,data,cluster,bikeData):
     print Times
     print len(times)
     print len(times[0][1])
-    print Times[0].shape
+    
 
     k=0
     for i in range(len(times)):
         for j in range(len(times[i][1])):
+            print k,i,j
             Times[k,0]=times[i][1][j]
             Times[k,1]=times[i][0][0]
             Times[k,2]=times[i][0][1]
