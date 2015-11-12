@@ -415,14 +415,17 @@ VOIobj=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainin
 
 Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,simulatorW,estimationObjective)
 
-
 nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
+folder=os.path.join(nameDirectory,"SBO")
+
+misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
+
+
 l={}
 l['VOIobj']=VOIobj
 l['Objobj']=Objective
+l['miscObj']=misc
 l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
-l['parallel']=parallel
-l['folderContainerResults']=os.path.join(nameDirectory,"SBO")
 l['transformationDomainW']=transformationDomainW
 l['transformationDomainX']=transformationDomainX
 l['dimXsteepest']=n1-1
@@ -436,7 +439,6 @@ l['yHist']=yTrain
 l['varHist']=NoiseTrain
 l['kernel']=kernel
 l['B']=B
-l['randomSeed']=randomSeed
 l['numberParallel']=3
 l['scaledAlpha']=scaleAlpha
 l['xtol']=1.0
