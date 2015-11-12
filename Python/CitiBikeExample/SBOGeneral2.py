@@ -140,8 +140,8 @@ class SBO:
 	
 	#####
 	self.parallel=miscObj.parallel
-	self.randomSeed=miscObj.randomSeed
-	self.rs=miscObj.randomSeed
+	self.randomSeed=miscObj.rs
+	self.rs=miscObj.rs
 	self.path=os.path.join(miscObj.folder,'%d'%self.rs+"run")
 	self.createNewFiles=miscObj.createNewFiles
 	######
