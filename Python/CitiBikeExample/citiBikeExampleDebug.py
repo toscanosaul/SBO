@@ -162,7 +162,7 @@ def readTrainingData(n,directory=directory[0]):
     return XWtrain,yTrain,NoiseTrain
 
 
-XWtrain,yTrain,NoiseTrain=readTrainingData(12,directory[0])
+XWtrain,yTrain,NoiseTrain=readTrainingData(nTemp2,directory[0])
 
 kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
