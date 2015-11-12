@@ -131,7 +131,9 @@ def unhappyPeople (T,N,X,m,lamb,A,date,exponentialTimes,data,cluster,bikeData):
     print "citi"
     print Times
     print len(times)
-    print nTimes
+    print len(times[0][1])
+    print Times[0].shape
+
     k=0
     for i in range(len(times)):
         for j in range(len(times[i][1])):
