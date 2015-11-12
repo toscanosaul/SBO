@@ -9,9 +9,9 @@ import numpy as np
 import SquaredExponentialKernel as SK
 from grid import *
 import SBOGeneral2 as SB
+import VOIGeneral as VOI
 from simulationPoissonProcess import *
 from math import *
-#import pylab
 from matplotlib import pyplot as plt
 import scipy.stats as stats
 from scipy.stats import norm
@@ -406,10 +406,17 @@ def computeLogProductExpectationsForAn(W,N):
     return logproductExpectations
 
 
+VOIobj=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
+                 gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None,pointsApproximation=pointsVOI,
+                 gradXBfunc=gradXBfunc,B=B,PointsHist=XWtrain,gradWBfunc=gradWBfunc,
+                 yHist=yTrain,noiseHist=NoiseTrain,gradXBforAn=gradXBforAn,dimW=dimensionKernel-n1)
+
+
 
 
 nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 l={}
+l['VOIobj']=VOIobj
 l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
 l['parallel']=parallel
 l['folderContainerResults']=os.path.join(nameDirectory,"SBO")
@@ -427,20 +434,18 @@ l['noisyF']=noisyF
 l['dimSeparation']=n1
 l['numberTrainingData']=trainingPoints
 l['numberEstimateF']=numberSamplesForF
-l['constraintA']=lowerX
-l['constraintB']=UpperX
 l['simulatorW']=simulatorW
 l['XWhist']=XWtrain
 l['yHist']=yTrain
 l['varHist']=NoiseTrain
 l['kernel']=kernel
 l['B']=B
-l['gradXWSigmaOfunc']=gradXWSigmaOfunc
-l['gradXBfunc']=gradXB
-l['gradWBfunc']=gradWB
+#l['gradXWSigmaOfunc']=gradXWSigmaOfunc
+#l['gradXBfunc']=gradXB
+#l['gradWBfunc']=gradWB
 l['randomSeed']=randomSeed
 l['pointsVOI']=pointsVOI
-l['gradXBforAn']=gradXBforAn
+#l['gradXBforAn']=gradXBforAn
 l['numberParallel']=3
 l['scaledAlpha']=scaleAlpha
 l['xtol']=1.0
