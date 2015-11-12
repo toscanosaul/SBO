@@ -526,7 +526,7 @@ def test():
 
 #    Xst=np.array([[1500,1500,1500]])
  #   logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:sboObj._dimW+n1],
-							     tempN)
+#							     tempN)
 
   #  sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,0,L,logproductExpectations=logProduct)
   #  sboObj.functionGradientAscentAn(Xst[0:0+1,:],False,sboObj,0,L,logproductExpectations=logProduct)
