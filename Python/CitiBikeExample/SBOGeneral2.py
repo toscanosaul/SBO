@@ -9,7 +9,7 @@ that a small number of random variables have a much stronger effect on the
 variability. In general, the functions are time-consuming to evaluate, and
 the derivatives are unavailable.
 
-In mathematical notation we want to solve the problem:
+In mathematical notation, we want to solve the problem:
 
 	max_{x} E[f(x,w,z)]
 
@@ -18,21 +18,34 @@ a much stronger effect on the variability of f.
 
 [tf]: http://toscanosaul.github.io/saul/SBO.pdf
 
-This class takes the following arguments:
+This class takes the following arguments (for details, see [tf]):
 
+
+Objective class:
 -fobj: The simulator or objective function.
 -dimSeparation: Dimension of w.
 -noisyF: Estimator of the conditional expectation given w, F(x,w)=E[f(x,w,z)|w].
 
 
--dimensionKernel:
+Statistical Class:
+-dimensionKernel: Dimension of the kernel.
 
--gradXBfunc:
--gradXWSigmaOfunc:
--gradXBforAn:
+Derivative Class:
+-gradXWSigmaOfunc: Gradient of Sigma_{0}, which is the covariance of the Gaussian
+		   Process on F.
+-gradXBfunc: Gradient with respect to x_{n+1} of
+
+	     B(x_{p},n+1)=\int\Sigma_{0}(x,w,x_{n+1},w_{n+1})dp(w)
+	     
+	     and x_{p} is a point in the discretization of the domain of x.
+	     
+-gradXBforAn: 
+
+
+
 -parallel:
 
--trainingData
+
 -numberEstimateF:
 -sampleFromX:
 -B:
@@ -119,7 +132,7 @@ import misc
 ####trainingData is a dictionary={XWpoints,Ypoints,Noise}, Xpoints is a matrix, Ypoints,Nose are vectors
 class SBO:
     def __init__(self, fobj,dimensionKernel,noisyF,gradXBfunc,gradXWSigmaOfunc,gradXBforAn, parallel,
-                 dimSeparation=None,trainingData=None,numberEstimateF=15, sampleFromX=None,
+                 dimSeparation=None,numberEstimateF=15, sampleFromX=None,
                  B=None,kernel=None,numberTrainingData=0,Bhist=None,gradWBfunc=None,dimXsteepest=0,
                  XWhist=None,yHist=None,varHist=None,pointsVOI=None,folder=None,projectGradient=None,
                  constraintA=None,constraintB=None,simulatorW=None,createNewFiles=True,randomSeed=1,
@@ -201,7 +214,6 @@ class SBO:
         self._XWhist=XWhist
         self._yHist=yHist
         self._varianceObservations=varHist
-        self._trainingData=trainingData
         
         self.optRuns=[]
         self.optPointsArray=[]
