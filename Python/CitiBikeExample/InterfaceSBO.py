@@ -41,3 +41,44 @@ class Miscellaneous:
         self.parallel=parallel
         self.folder=folder
         self.create=create
+        
+        
+"""
+ Optimization class:
+-numberParallel: Number of starting points for the multistart gradient ascent algorithm.
+-dimXsteepest: Dimension of x when the VOI and a_{n} are optimized. We may want to reduce
+	       the dimension of the original problem.
+-transformationDomainX: Transforms the point x given by the steepest ascent method to the right domain
+			of x.
+-transformationDomainW: Transforms the point w given by the steepest ascent method to the right domain
+			of w.
+-projectGradient: Project a point x to the domain of the problem at each step of the gradient
+		  ascent method if needed.
+-functionGradientAscentVn: Function used for the gradient ascent method. It evaluates the VOI,
+			   when grad and onlyGradient are False; it evaluates the VOI and
+			   computes its derivative when grad is True and onlyGradient is False,
+			   and computes only its gradient when gradient and onlyGradient are both
+			   True. 
+-functionGradientAscentAn: Function used for the gradient ascent method. It evaluates a_{n},
+			   when grad and onlyGradient are False; it evaluates a_{n} and
+			   computes its derivative when grad is True and onlyGradient is False,
+			   and computes only its gradient when gradient and onlyGradient are both
+			   True.
+-functionConditionOpt: Gives the stopping rule for the steepest ascent method, e.g. the function
+			could be the Euclidean norm. 
+-xtol: Tolerance of x for the convergence of the steepest ascent method.
+"""
+
+class opt:
+    def __init__(self,numberParallel,dimXsteepest,transformationDomainX,transformationDomainW,
+                 projectGradient,functionGradientAscentVn,functionGradientAscentAn,functionConditionOpt,
+                 xtol):
+        self.numberParallel=numberParallel
+        self.dimXsteepest=dimXsteepest
+        self.transformationDomainX=transformationDomainX
+        self.transformationDomainW=transformationDomainW
+        self.projectGradient=projectGradient
+        self.functionGradientAscentVn=functionGradientAscentVn
+        self.functionGradientAscentAn=functionGradientAscentAn
+        self.functionConditionOpt=functionConditionOpt
+        self.xtol=xtol
