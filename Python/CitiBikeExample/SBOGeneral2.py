@@ -34,9 +34,7 @@ Derivative Class:
 -gradXWSigmaOfunc: Gradient of Sigma_{0}, which is the covariance of the Gaussian
 		   Process on F.
 -gradXBfunc: Gradient with respect to x_{n+1} of
-
 	     B(x_{p},n+1)=\int\Sigma_{0}(x,w,x_{n+1},w_{n+1})dp(w)
-	     
 	     and x_{p} is a point in the discretization of the domain of x.
 	     
 -gradXBforAn: 
