@@ -18,7 +18,7 @@ a much stronger effect on the variability of f.
 
 [tf]: http://toscanosaul.github.io/saul/SBO.pdf
 
-This class takes six class arguments (for details, see [tf]):
+This class takes five class arguments (for details, see [tf]):
 
 
 (*) Objective class:
@@ -124,6 +124,7 @@ import optimization as op
 import multiprocessing as mp
 import os
 import misc
+from files import *
 
 class SBO:
     def __init__(self, fobj,dimensionKernel,noisyF, parallel,
@@ -135,7 +136,6 @@ class SBO:
                  transformationDomainX=None,transformationDomainW=None,estimationObjective=None,
                  folderContainerResults=None,scaledAlpha=1.0,xtol=None,functionConditionOpt=None,
 		 computeLogProductExpectationsForAn=None):
-       # np.random.seed(randomSeed)
 	self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
 	self.parallel=parallel
 	if xtol is None:
@@ -203,23 +203,13 @@ class SBO:
 	f.close()
 	f=open(os.path.join(self.path,'%d'%self.rs+"optAngrad.txt"),'w')
 	f.close()
-    
-    
-    def writeTraining(self):
-	with open(os.path.join(self.path,'%d'%self.rs+"XWHist.txt"), "a") as f:
-            np.savetxt(f,self._XWhist)
-        with open(os.path.join(self.path,'%d'%self.rs+"yhist.txt"), "a") as f:
-            np.savetxt(f,self._yHist)
-        with open(os.path.join(self.path,'%d'%self.rs+"varHist.txt"), "a") as f:
-            np.savetxt(f,self._varianceObservations)
-  
-  
+      
   
     ##m is the number of iterations to take
     def SBOAlg(self,m,nRepeat=10,Train=True,**kwargs):
 	if self.createNewFiles:
-	    self.createNewFilesFunc()
-	self.writeTraining()
+	    createNewFilesFunc(self.path,self.rs)
+	writeTraining(self)
         if Train is True:
             self.trainModel(numStarts=nRepeat,**kwargs)
         points=self._VOI._points
@@ -271,39 +261,8 @@ class SBO:
         self.optRuns.append(opt)
         xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
         self.optPointsArray.append(xTrans)
-	
-    def writeNewPoint(self,optim):
-	temp=optim.xOpt
-	gradOpt=optim.gradOpt
-	numberIterations=optim.nIterations
-	gradOpt=np.sqrt(np.sum(gradOpt**2))
-	gradOpt=np.array([gradOpt,numberIterations])
-	xTrans=self.transformationDomainX(optim.xOpt[0:1,0:self.dimXsteepest])
-	wTrans=self.transformationDomainW(optim.xOpt[0:1,self.dimXsteepest:self.dimXsteepest+self._dimW])
-	###falta transformar W
-	temp=np.concatenate((xTrans,wTrans),1)
-	self._XWhist=np.vstack([self._XWhist,temp])
-	self._VOI._PointsHist=self._XWhist
-	self._VOI._GP._Xhist=self._XWhist
-	y,var=self._infSource(temp,self._numberSamples)
-	self._yHist=np.vstack([self._yHist,y])
-	self._VOI._yHist=self._yHist
-	self._VOI._GP._yHist=self._yHist
-	self._varianceObservations=np.append(self._varianceObservations,var)
-	self._VOI._noiseHist=self._varianceObservations
-	self._VOI._GP._noiseHist=self._varianceObservations
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"varHist.txt"), "a") as f:
-	    var=np.array(var).reshape(1)
-	    np.savetxt(f,var)
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"yhist.txt"), "a") as f:
-	    y=np.array(y).reshape(1)
-	    np.savetxt(f,y)
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"XWHist.txt"), "a") as f:
-	    np.savetxt(f,temp)
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"optVOIgrad.txt"), "a") as f:
-	    np.savetxt(f,gradOpt)
-	self.optRuns=[]
-        self.optPointsArray=[]
+
+
     
     
     def getParametersOptVoi(self,i):
@@ -347,7 +306,7 @@ class SBO:
 	args2=self.getParametersOptVoi(i)
 	args2['start']=st
 	self.optRuns.append(misc.VOIOptWrapper(self,**args2))
-	self.writeNewPoint(self.optRuns[0])
+	writeNewPointVOI(self,self.optRuns[0])
 
 
     def optVOIParal(self,i,nStart,numProcesses=None):
@@ -389,7 +348,7 @@ class SBO:
                 
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
-	    self.writeNewPoint(self.optRuns[j])
+	    writeNewPointSBO(self,self.optRuns[j])
 
         self.optRuns=[]
         self.optPointsArray=[]
@@ -409,24 +368,7 @@ class SBO:
         xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
         self.optPointsArray.append(xTrans)
     
-    def writeSolution(self,optim):
-	temp=optim.xOpt
-	tempGrad=optim.gradOpt
-	tempGrad=np.sqrt(np.sum(tempGrad**2))
-	tempGrad=np.array([tempGrad,optim.nIterations])
-	xTrans=self.transformationDomainX(optim.xOpt[0:1,0:self.dimXsteepest])
-    #    temp2=self.
-	self._solutions.append(xTrans)
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"optimalSolutions.txt"), "a") as f:
-	    np.savetxt(f,xTrans)
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"optimalValues.txt"), "a") as f:
-	    result,var=self.estimationObjective(xTrans[0,:])
-	    res=np.append(result,var)
-	    np.savetxt(f,res)
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"optAngrad.txt"), "a") as f:
-	    np.savetxt(f,tempGrad)
-	self.optRuns=[]
-	self.optPointsArray=[]
+
 	
 	
     def optAnnoParal(self,i):
@@ -444,7 +386,7 @@ class SBO:
 	args2['L']=L
 	args2['logProduct']=logProduct
 	self.optRuns.append(misc.AnOptWrapper(self,**args2))
-	self.writeSolution(self.optRuns[0])
+	writeSolution(self,self.optRuns[0])
 
             
      
@@ -490,7 +432,7 @@ class SBO:
                 
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
-	    self.writeSolution(self.optRuns[j])
+	    writeSolution(self,self.optRuns[j])
 
         self.optRuns=[]
         self.optPointsArray=[]
