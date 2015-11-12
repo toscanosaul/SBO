@@ -289,7 +289,7 @@ class SBO:
 	args2=self.getParametersOptVoi(i)
 	args2['start']=st
 	self.optRuns.append(misc.VOIOptWrapper(self,**args2))
-	fl.writeNewPointVOI(self,self.optRuns[0])
+	fl.writeNewPointSBO(self,self.optRuns[0])
 
 
     def optVOIParal(self,i,nStart,numProcesses=None):
