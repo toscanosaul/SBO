@@ -529,8 +529,8 @@ sboObj.functionGradientAscentVn(st,True,sboObj,0,L,temp2,a,sboObj.Bhist,scratch)
 print "second iteration"
 
 #####second iteration
-xTrans=sboObj.transformationDomainX(st[0:1,0:sboObj.dimXsteepest])
-wTrans=sboObj.transformationDomainW(st[0:1,sboObj.dimXsteepest:sboObj.dimXsteepest+sboObj._dimW])
+xTrans=sboObj.transformationDomainX(x1[0:1,0:sboObj.dimXsteepest])
+wTrans=sboObj.transformationDomainW(x1[0:1,sboObj.dimXsteepest:sboObj.dimXsteepest+sboObj._dimW])
 ###falta transformar W
 temp=np.concatenate((xTrans,wTrans),1)
 sboObj._XWhist=np.vstack([sboObj._XWhist,temp])
