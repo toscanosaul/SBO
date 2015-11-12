@@ -161,7 +161,6 @@ class SBO:
             os.makedirs(self.path)
         if kernel is None:
             kernel=SK.SEK(dimensionKernel)
-
         self._k=kernel
         self._fobj=fobj
         self._infSource=noisyF ###returns also the noise
@@ -208,11 +207,11 @@ class SBO:
     
     def writeTraining(self):
 	with open(os.path.join(self.path,'%d'%self.rs+"XWHist.txt"), "a") as f:
-            np.savetxt(f,XWhist)
+            np.savetxt(f,self._XWhist)
         with open(os.path.join(self.path,'%d'%self.rs+"yhist.txt"), "a") as f:
-            np.savetxt(f,yHist)
+            np.savetxt(f,self._yHist)
         with open(os.path.join(self.path,'%d'%self.rs+"varHist.txt"), "a") as f:
-            np.savetxt(f,varHist)
+            np.savetxt(f,self._varianceObservations)
   
   
   
