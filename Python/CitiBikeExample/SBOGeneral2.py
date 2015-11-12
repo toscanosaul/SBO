@@ -18,10 +18,10 @@ a much stronger effect on the variability of f.
 
 [tf]: http://toscanosaul.github.io/saul/SBO.pdf
 
-This class takes the following arguments (for details, see [tf]):
+This class takes six class arguments (for details, see [tf]):
 
 
-Objective class:
+(*) Objective class:
 -fobj: The simulator or objective function.
 -dimSeparation: Dimension of w.
 -noisyF: Estimator of the conditional expectation given w, F(x,w)=E[f(x,w,z)|w].
@@ -32,7 +32,7 @@ Objective class:
 
 
 
-Statistical Class:
+(*) Statistical Class:
 -kernel: Kernel object for the GP on F.
 -dimensionKernel: Dimension of the kernel.
 -scaledAlpha: Parameter to scale the alpha parameters of the kernel,
@@ -47,23 +47,15 @@ Statistical Class:
 -computeLogProductExpectationsForAn: Computes the vector with the logarithm
 		of the product of the expectations of
 		np.exp(-alpha2[j]*((z-W[i,j])**2))
-		where W[i,:] is a point in the history. 
-
-
-Derivative Class:
--gradXWSigmaOfunc: Computes the gradient of Sigma_{0}, which is the covariance of the Gaussian
-		   Process on F.
--gradXBfunc: Computes the gradients with respect to x_{n+1} of
-	     B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
-	     where x_{p} is a point in the discretization of the domain of x.
--gradWBfunc: Computes the gradients with respect to w_{n+1} of
-	     B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
-	     where x_{p} is a point in the discretization of the domain of x.
+		where W[i,:] is a point in the history.
 -gradXBforAn: Computes the gradients with respect to x of
 	     B(x,i)=\int\Sigma_{0}(x,w,x_{i},w_{i})dp(w),
 	     where (x_{i},w_{i}) is a point in the history observed.
-	     
-Optimization class:
+
+
+
+
+(*) Optimization class:
 -numberParallel: Number of starting points for the multistart gradient ascent algorithm.
 -dimXsteepest: Dimension of x when the VOI and a_{n} are optimized. We may want to reduce
 	       the dimension of the original problem.
@@ -89,11 +81,20 @@ Optimization class:
 
 
 
-VOI class:
+(*) VOI class:
 -pointsVOI: Points of the discretization to compute the VOI.
+-VOIobj: VOI object.
+#--gradXWSigmaOfunc: Computes the gradient of Sigma_{0}, which is the covariance of the Gaussian
+		   Process on F.
+#-gradXBfunc: Computes the gradients with respect to x_{n+1} of
+	     B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
+	     where x_{p} is a point in the discretization of the domain of x.
+#-gradWBfunc: Computes the gradients with respect to w_{n+1} of
+	     B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
+	     where x_{p} is a point in the discretization of the domain of x.
 
 
-General:
+(*) Miscellaneous class:
 -randomSeed: Random seed used to run the problem. Only needed for the name of the
 	     files with the results.
 -parallel: True if we want to run the multistart gradient ascent algorithm and
@@ -125,9 +126,9 @@ import os
 import misc
 
 class SBO:
-    def __init__(self, fobj,dimensionKernel,noisyF,gradXBfunc,gradXWSigmaOfunc,gradXBforAn, parallel,
-                 dimSeparation=None,numberEstimateF=15, sampleFromX=None,
-                 B=None,kernel=None,numberTrainingData=0,gradWBfunc=None,dimXsteepest=0,
+    def __init__(self, fobj,dimensionKernel,noisyF, parallel,
+                 VOIobj,dimSeparation=None,numberEstimateF=15, sampleFromX=None,
+                 B=None,kernel=None,numberTrainingData=0,dimXsteepest=0,
                  XWhist=None,yHist=None,varHist=None,pointsVOI=None,projectGradient=None,
                  simulatorW=None,createNewFiles=True,randomSeed=1,
                  functionGradientAscentVn=None,functionGradientAscentAn=None,numberParallel=10,
@@ -208,11 +209,9 @@ class SBO:
         self.optPointsArray=[]
 	
 	self.B=B
+	self._VOI=VOIobj
 
-        self._VOI=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=numberTrainingData,
-                         gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=Bhist,pointsApproximation=pointsVOI,
-                         gradXBfunc=gradXBfunc,B=B,PointsHist=XWhist,gradWBfunc=gradWBfunc,
-                         yHist=yHist,noiseHist=varHist,gradXBforAn=gradXBforAn,dimW=self._dimW)
+
 
     ##m is the number of iterations to take
     def SBOAlg(self,m,nRepeat=10,Train=True,**kwargs):
