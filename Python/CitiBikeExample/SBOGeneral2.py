@@ -1,5 +1,3 @@
-
-#Stratified Bayesian Optimization
 """
 Stratified Bayesian Optimization Algorithm.
 
@@ -16,8 +14,11 @@ and the derivatives are unavailable.
 This class take the following arguments:
 
 -fobj: The simulator or objective function.
+-noisyF: Estimator of the conditional expectation given
+	the random variables that have a much stronger
+	effect.
 -dimensionKernel:
--noisyF:
+
 -gradXBfunc:
 -gradXWSigmaOfunc:
 -gradXBforAn:
