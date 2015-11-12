@@ -124,38 +124,6 @@ import multiprocessing as mp
 import os
 import misc
 
-####WRITE THE DOCUMENTATION
-
-#f is the function to optimize
-#alpha1,alpha2,sigma0 are the parameters of the covariance matrix of the gaussian process
-#alpha1,alpha2 should be vectors
-#muStart is the mean of the gaussian process (assumed is constant)
-#sigma, mu are the parameters of the distribution of w1\inR^d1
-#n1,n2 are the dimensions of x and w1, resp.
-
-#c,d are the vectors where the grid is built
-#l is the size of the grid
-
-
-####X,W are column vectors
-###Gaussian kernel: Variance same than in paper. LengthScale is 1/2alpha. Input as [alpha1,alpha2,...]
-####Set ARD=True. 
-##wStart:start the steepest at that point
-###N(w1,sigmaW2) parameters of w2|w1
-###mPrior samples for the prior
-
-####include conditional dist and density. choose kernels
-###python docstring
-###RESTART AT ANY STAGE (STREAM)
-###Variance(x,w,x,w)=1 (prior)
-
-####kernel should receive only matrices as input.
-####B(x,X,W) is a function that computes B(x,i). X=X[i,:],W[i,:]. x is a matrix where each row is a point to be evaluated
-
-####checar multidimensional!!! Poisson already works
-
-####E(fobj)
-####trainingData is a dictionary={XWpoints,Ypoints,Noise}, Xpoints is a matrix, Ypoints,Nose are vectors
 class SBO:
     def __init__(self, fobj,dimensionKernel,noisyF,gradXBfunc,gradXWSigmaOfunc,gradXBforAn, parallel,
                  dimSeparation=None,numberEstimateF=15, sampleFromX=None,
