@@ -22,6 +22,9 @@ from scipy.stats import poisson
 import json
 from scipy import linalg
 
+directory=[]
+
+directory.append(os.path.join("..","CitiBikeExample","Results15AveragingSamples5TrainingPoints","SBO","test2run"))
 
 exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
 with open ('json.json') as data_file:
@@ -110,46 +113,80 @@ def sampleFromX(n):
 
 ####Prior Data
 #randomIndexes=np.random.random_integers(0,pointsVOI.shape[0]-1,trainingPoints)
-tempX=sampleFromX(trainingPoints)
-tempFour=numberBikes-np.sum(tempX,1)
-tempFour=tempFour.reshape((trainingPoints,1))
-Xtrain=np.concatenate((tempX,tempFour),1)
-Wtrain=simulatorW(trainingPoints)
-XWtrain=np.concatenate((Xtrain,Wtrain),1)
+#tempX=sampleFromX(trainingPoints)
+#tempFour=numberBikes-np.sum(tempX,1)
+#tempFour=tempFour.reshape((trainingPoints,1))
+#Xtrain=np.concatenate((tempX,tempFour),1)
+#Wtrain=simulatorW(trainingPoints)
+#XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 
 
 ###################################################
-parallel=True
-yTrain=np.zeros([0,1])
-NoiseTrain=np.zeros(0)
+parallel=False
+#yTrain=np.zeros([0,1])
+#NoiseTrain=np.zeros(0)
 
 
 
-if parallel:
-    jobs = []
-    pool = mp.Pool()
-    for i in xrange(trainingPoints):
-        job = pool.apply_async(noisyF,(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF))
-        jobs.append(job)
-    
-    pool.close()  # signal that no more data coming in
-    pool.join()  # wait for all the tasks to complete
-    for j in range(trainingPoints):
-        temp=jobs[j].get()
-        yTrain=np.vstack([yTrain,temp[0]])
-        NoiseTrain=np.append(NoiseTrain,temp[1])
-else:
-    for i in xrange(trainingPoints):
-        temp=noisyF(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF)
-        yTrain=np.vstack([yTrain,temp[0]])
-        NoiseTrain=np.append(NoiseTrain,temp[1])
+#if parallel:
+#    jobs = []
+#    pool = mp.Pool()
+#    for i in xrange(trainingPoints):
+#        job = pool.apply_async(noisyF,(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF))
+#        jobs.append(job)
+#    
+#    pool.close()  # signal that no more data coming in
+#    pool.join()  # wait for all the tasks to complete
+#    for j in range(trainingPoints):
+#        temp=jobs[j].get()
+#        yTrain=np.vstack([yTrain,temp[0]])
+#        NoiseTrain=np.append(NoiseTrain,temp[1])
+#else:
+#    for i in xrange(trainingPoints):
+#        temp=noisyF(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF)
+#        yTrain=np.vstack([yTrain,temp[0]])
+#        NoiseTrain=np.append(NoiseTrain,temp[1])
 
 
 #########
 
 scaleAlpha=1000.0
+
+ind2=2
+def readTrainingData(n,directory=directory[0]):
+    XWtrain=np.loadtxt(os.path.join(directory,"%d"%ind+"XWHist.txt"))[0:n,:]
+    yTrain=np.loadtxt(os.path.join(directory,"%d"%ind+"yhist.txt"))[0:n]
+    yTrain=yTrain.reshape((n,1))
+    NoiseTrain=np.loadtxt(os.path.join(directory,"%d"%ind+"varHist.txt"))[0:n]
+    return XWtrain,yTrain,NoiseTrain
+
+
+XWtrain,yTrain,NoiseTrain=readTrainingData(12,directory[0])
+
 kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
+
+def readKernelParam(file1,dimKernel):
+    f=open(file1, 'r')
+    v=f.read()
+    val=v.split(':')
+    temp=val[1].split(",")
+    alpha=np.zeros(dimKernel)
+    alpha[0]=float(temp[0].split("[")[1])
+    for i in range(dimKernel-2):
+        alpha[i+1]=float(temp[i+1])
+    alpha[dimKernel-1]=float(temp[dimKernel-1].split("]")[0])
+    variance=float(val[2].split(",")[0])
+    mu=float(val[3].split("(")[1].split(')')[0])
+    return alpha,variance,mu
+
+alpha,variance,mu=readKernelParam(os.path.join(directory[0],"2hyperparameters.txt"),n1+n2)
+
+kernel.variance=variance
+kernel.mu=mu
+kernel.alpha=np.sqrt(2.0*(scaleAlpha*alpha))
+
+
 
 #########
 
@@ -595,7 +632,7 @@ logProduct=sboObj.computeLogProductExpectationsForAn(sboObj._XWhist[0:tempN,n1:s
 Xst=np.array([[1500,1500,1500]])
 sboObj.functionGradientAscentAn(Xst[0:0+1,:],True,sboObj,1,L,logproductExpectations=logProduct)
 
-#sboObj.SBOAlg(1,nRepeat=10,Train=True)
+sboObj.SBOAlg(1,nRepeat=10,Train=False)
 #sboObj.SBOAlg(30,nRepeat=10,Train=True)
 
 
