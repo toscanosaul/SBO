@@ -37,12 +37,43 @@ class VOISBO(VOI):
         VOI.__init__(self,*args,**kargs)
         self.VOI_name="SBO"
         self._dimW=dimW
+        self.n2=dimW
+        self.n1=self._dimKernel-dimW
         self.sizeDiscretization=self._points.shape[0]
-        self._GP=stat.SBOGP(kernel=self._k,B=self._B,dimNoiseW=dimW,dimPoints=self._dimKernel-dimW,
-                       numberPoints=self._points.shape[0],Bhist=self._Bhist,histSaved=self._BhistSaved,
-                       Xhist=self._PointsHist, dimKernel=self._dimKernel,
-                       yHist=self._yHist,noiseHist=self._noiseHist,numberTraining=self._numberTraining,
-                       gradXBfunc=self._gradXBfunc,gradXBforAn=gradXBforAn)
+       # self._GP=stat.SBOGP(kernel=self._k,B=self._B,dimNoiseW=dimW,dimPoints=self._dimKernel-dimW,
+       #                numberPoints=self._points.shape[0],Bhist=self._Bhist,histSaved=self._BhistSaved,
+       #                Xhist=self._PointsHist, dimKernel=self._dimKernel,
+       #                yHist=self._yHist,noiseHist=self._noiseHist,numberTraining=self._numberTraining,
+       #                gradXBfunc=self._gradXBfunc,gradXBforAn=gradXBforAn)
+        
+    #computes a and b from the paper
+    ##x is a nxdim(x) matrix of points where a_n and sigma_n are evaluated
+    ###computed using n past observations
+    def aANDb(self,n,x,xNew,wNew,L,temp2):
+        x=np.array(x)
+        m=x.shape[0]
+        tempN=self._numberTraining+n
+        BN=np.zeros([m,1])
+        n2=self.n2
+        BN[:,0]=self._B(x,np.concatenate((xNew,wNew),1),self.n1,n2) #B(x,n+1)
+ 
+        n1=self.n1
+        n2=self.n2
+        past=self._PointsHist[0:tempN,:]
+        new=np.concatenate((xNew,wNew),1).reshape((1,n1+n2))
+
+        gamma=np.transpose(self._k.A(new,past))
+        temp1=linalg.solve_triangular(L,gamma,lower=True)
+        b=(BN-np.dot(temp2.T,temp1))
+        aux4=np.dot(temp1.T,temp1)
+        b2=self._k.K(new)-aux4
+        b2=np.clip(b2,0,np.inf)
+        try:
+            b=b/(np.sqrt(b2))
+        except Exception as e:
+            print "use a different point x"
+            b=np.zeros((len(b),1))
+        return b,gamma,BN,temp1,aux4
 
     ##a,b are the vectors of the paper: a=(a_{n}(x_{i}), b=(sigma^tilde_{n})
     def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B,inv,aux4,
@@ -69,7 +100,7 @@ class VOISBO(VOI):
         c2=np.abs(c[0:M-1])
         evalC=norm.pdf(c2)
         
-        nTraining=self._GP._numberTraining
+        nTraining=self._numberTraining
         tempN=nTraining+n
         gradXSigma0,gradWSigma0=self._gradXWSigmaOfunc(n,pointNew,self,self._PointsHist[0:tempN,0:n1],self._PointsHist[0:tempN,n1:n1+n2])
      #   gradWSigma0=temp[:,n1:n1+n2]
@@ -85,7 +116,7 @@ class VOISBO(VOI):
         gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
        # inv3=linalg.solve_triangular(L,gamma,lower=True)
         inv3=inv
-        beta1=(self._GP._k.A(pointNew)-aux4)
+        beta1=(self._k.A(pointNew)-aux4)
         gradient=np.zeros(M)
         result=np.zeros(n1+n2)
         
@@ -126,13 +157,13 @@ class VOISBO(VOI):
                     
     def VOIfunc(self,n,pointNew,grad,L,temp2,a,B,scratch,onlyGradient=False):
         n1=self._dimKernel-self._dimW
-        b,gamma,BN,temp1,aux4=self._GP.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
+        b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
                                     temp2=temp2)
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
         M=len(keep1)
-        nTraining=self._GP._numberTraining
+        nTraining=self._numberTraining
         tempN=nTraining+n
         keep2=keep[keep1]
         if grad:
