@@ -173,7 +173,7 @@ class SBO:
     def SBOAlg(self,m,nRepeat=10,Train=True,**kwargs):
 	
 	if self.misc.create: #Create files for the results
-	    fl.createNewFilesFunc(self.path,self.rs) 
+	    fl.createNewFilesFunc(self.path,self.misc.rs) 
 	fl.writeTraining(self) #Write training data
         if Train is True:
             self.trainModel(numStarts=nRepeat,**kwargs) #Train model
