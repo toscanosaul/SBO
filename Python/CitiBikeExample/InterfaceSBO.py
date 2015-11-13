@@ -82,3 +82,10 @@ class opt:
         self.functionGradientAscentAn=functionGradientAscentAn
         self.functionConditionOpt=functionConditionOpt
         self.xtol=xtol
+        
+        
+class data:
+    def __init__(self,Xhist,yHist,varHist):
+        self.Xhist=Xhist
+        self.yHist=yHist
+        self.varHist=varHist
