@@ -14,14 +14,13 @@ class VOI:
     ###B(x,x_1),...B(x,x_n), B is the function to compute those
     def __init__(self,numberTraining,gradXWSigmaOfunc=None,Bhist=None,pointsApproximation=None,
                  gradXBfunc=None,B=None,gradWBfunc=None):
-       # self._k=kernel
         self._points=pointsApproximation
         self._gradXWSigmaOfunc=gradXWSigmaOfunc
         self._gradXBfunc=gradXBfunc
         self._gradWBfunc=gradWBfunc
         self._Bhist=Bhist
         self._B=B
-        self._dimKernel=dimKernel
+      #  self._dimKernel=dimKernel
         self._gradXBfunc=gradXBfunc
         self._numberTraining=numberTraining
         
@@ -30,12 +29,12 @@ class VOI:
         
 
 class VOISBO(VOI):
-    def __init__(self,dimW,*args,**kargs):
+    def __init__(self,dimW,dimX,*args,**kargs):
         VOI.__init__(self,*args,**kargs)
         self.VOI_name="SBO"
         self._dimW=dimW
         self.n2=dimW
-        self.n1=self._dimKernel-dimW
+        self.n1=n1
         self.sizeDiscretization=self._points.shape[0]
         
     #computes a and b from the paper
@@ -52,7 +51,6 @@ class VOISBO(VOI):
  
         n1=self.n1
         n2=self.n2
-       # past=self._PointsHist[0:tempN,:]
         new=np.concatenate((xNew,wNew),1).reshape((1,n1+n2))
 
         gamma=np.transpose(kernel.A(new,past))
@@ -73,8 +71,8 @@ class VOISBO(VOI):
                 scratch=None,grad=False,onlyGradient=False):
         #n>=0
 
-        n1=self._dimKernel-self._dimW
-        n2=self._dimW
+        n1=self.n1
+        n2=self.n2
         
         if grad==False:
             h=hvoi(b,c,keep1) ##Vn
@@ -86,7 +84,7 @@ class VOISBO(VOI):
         keep=keep[keep1] #indices conserved
         
         if M<=1:
-            return h,np.zeros(self._dimKernel)
+            return h,np.zeros(n1+n2)
       #  B=self._GP.Bhist
         cPrev=c
         c=c[keep1+1]
@@ -140,8 +138,8 @@ class VOISBO(VOI):
                     
                     
     def VOIfunc(self,n,pointNew,grad,L,temp2,a,scratch,kern,XW,B,onlyGradient=False):
-        n1=self._dimKernel-self._dimW
-        b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
+        n1=self.n1
+        b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
                                     temp2=temp2,past=XW,kernel=kern,B=B)
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
