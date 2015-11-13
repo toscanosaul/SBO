@@ -49,7 +49,7 @@ class VOISBO(VOI):
     #computes a and b from the paper
     ##x is a nxdim(x) matrix of points where a_n and sigma_n are evaluated
     ###computed using n past observations
-    def aANDb(self,n,x,xNew,wNew,L,temp2):
+    def aANDb(self,n,x,xNew,wNew,L,temp2,past):
         x=np.array(x)
         m=x.shape[0]
         tempN=self._numberTraining+n
@@ -59,7 +59,7 @@ class VOISBO(VOI):
  
         n1=self.n1
         n2=self.n2
-        past=self._PointsHist[0:tempN,:]
+       # past=self._PointsHist[0:tempN,:]
         new=np.concatenate((xNew,wNew),1).reshape((1,n1+n2))
 
         gamma=np.transpose(self._k.A(new,past))
@@ -151,7 +151,7 @@ class VOISBO(VOI):
     def VOIfunc(self,n,pointNew,grad,L,temp2,a,scratch,kern,XW,onlyGradient=False):
         n1=self._dimKernel-self._dimW
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
-                                    temp2=temp2)
+                                    temp2=temp2,past=XW)
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
