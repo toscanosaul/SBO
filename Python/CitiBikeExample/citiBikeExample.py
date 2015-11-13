@@ -1,10 +1,31 @@
 #!/usr/bin/env python
 
+"""
+We consider a queuing simulation based on New York City's Bike system,
+in which system users may remove an available bike from a station at one
+location within the city, and ride it to a station with an available dock
+in some other location within the city. The optimization problem that we
+consider is the allocation of a constrained number of bikes (6000) to available
+docks within the city at the start of rush hour, so as to minimize, in simulation,
+the expected number of potential trips in which the rider could not find an
+available bike at their preferred origination station, or could not find an
+available dock at their preferred destination station.We call such trips
+"negatively affected trips".
+
+To use the SBO algorithm, we need to create 4 objets:
+
+Objobj: 
+miscObj: Miscellaneous object (See InterfaceSBO).
+VOIobj: Value of Information function object (See VOIGeneral).
+optObj: Opt object (See InterfaceSBO)
+statObj: SBOGP object (See statGeneral).
+dataObj: Data object (See InterfaceSBO).
+
+"""
+
 
 import sys
 sys.path.append("..")
-#sys.path.insert(0, '/Users/saultoscano/Documents/research/optimal_globalization/repositoryOnlyForCluster/cluster/SBONew')
-
 import numpy as np
 import SquaredExponentialKernel as SK
 from grid import *
@@ -24,6 +45,8 @@ import json
 import InterfaceSBO as inter
 
 
+
+
 exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
 with open ('json.json') as data_file:
     data=json.load(data_file)
@@ -38,10 +61,6 @@ bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
 nTemp=int(sys.argv[1])
 nTemp2=int(sys.argv[2])
 nTemp3=int(sys.argv[3])
-#except:
-#    nTemp=1
-#    nTemp2=10
-#    nTemp3=10
 
 randomSeed=nTemp
 np.random.seed(randomSeed)
@@ -408,6 +427,7 @@ def computeLogProductExpectationsForAn(W,N):
     return logproductExpectations
 
 
+
 VOIobj=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
                  gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None,pointsApproximation=pointsVOI,
                  gradXBfunc=gradXB,B=B,PointsHist=XWtrain,gradWBfunc=gradWB,
@@ -441,16 +461,7 @@ l['Objobj']=Objective
 l['miscObj']=misc
 l['optObj']=opt
 l['statObj']=stat
-#l['computeLogProductExpectationsForAn']=computeLogProductExpectationsForAn
-#l['dimensionKernel']=dimensionKernel
-#l['numberTrainingData']=trainingPoints
-#l['XWhist']=XWtrain
-#l['yHist']=yTrain
-#l['varHist']=NoiseTrain
-#l['kernel']=kernel
-#l['B']=B
-#l['scaledAlpha']=scaleAlpha
-
+l['dataObj']=dataObj
 
 
 print 'ok'
