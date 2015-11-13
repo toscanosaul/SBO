@@ -148,7 +148,7 @@ class VOISBO(VOI):
         return h,result
                     
                     
-    def VOIfunc(self,n,pointNew,grad,L,temp2,a,B,scratch,kern,XW,onlyGradient=False):
+    def VOIfunc(self,n,pointNew,grad,L,temp2,a,scratch,kern,XW,onlyGradient=False):
         n1=self._dimKernel-self._dimW
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
                                     temp2=temp2)
