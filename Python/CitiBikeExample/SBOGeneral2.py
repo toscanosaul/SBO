@@ -250,8 +250,8 @@ class SBO:
     def optVOInoParal(self,i):
 	n1=self._n1
 	n2=self._dimW
-	Xst=self.opt.sampleFromX(1)
-	wSt=self.opt.simulatorW(1)
+	Xst=self.Obj.sampleFromX(1)
+	wSt=self.Obj.simulatorW(1)
 	x1=Xst[0:0+1,:]
 	w1=wSt[0:0+1,:]
 	tempN=self.numberTraining+i
@@ -269,8 +269,8 @@ class SBO:
 	    tempN=self.numberTraining+i
             jobs = []
             pool = mp.Pool(processes=numProcesses)
-            Xst=self.opt.sampleFromX(nStart)
-            wSt=self.opt.simulatorW(nStart)
+            Xst=self.Obj.sampleFromX(nStart)
+            wSt=self.Obj.simulatorW(nStart)
 	    args2=self.getParametersOptVoi(i)
             for j in range(nStart):
                 x1=Xst[j:j+1,:]
@@ -321,7 +321,7 @@ class SBO:
 	######computeLogProduct....only makes sense for the SEK, the function should be optional
 	logProduct=self.stat.computeLogProductExpectationsForAn(self.dataObj.Xhist[0:tempN,n1:self._dimW+n1],
                                                          tempN,self.stat._k)
-	Xst=self.opt.sampleFromX(1)
+	Xst=self.Obj.sampleFromX(1)
 	args2={}
 	args2['start']=Xst[0:0+1,:]
 	args2['i']=i
@@ -347,7 +347,7 @@ class SBO:
 	    
             jobs = []
             pool = mp.Pool(processes=numProcesses)
-            Xst=self.sampleFromX(nStart)
+            Xst=self.Obj.sampleFromX(nStart)
             for j in range(nStart):
                 args2['start']=Xst[j:j+1,:]
                 job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=args2)
