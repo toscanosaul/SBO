@@ -154,6 +154,8 @@ We define the miscellaneous object.
 """
 parallel=False
 
+trainingPoints=nTemp2
+
 nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 folder=os.path.join(nameDirectory,"SBO")
 
@@ -162,8 +164,6 @@ misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
 """
 We define the data object.
 """
-
-trainingPoints=nTemp2
 
 """
 Generate the training data
