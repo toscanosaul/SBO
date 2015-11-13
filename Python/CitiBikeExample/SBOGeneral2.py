@@ -152,7 +152,7 @@ class SBO:
 	self.Obj=Objobj
 	
 	self._n1=Objobj.dimSeparation
-	self._dimW=self._dimension-self._n1
+	self._dimW=self.stat.dimNoiseW
 	self.numberTraining=statObj._numberTraining
 	
 	self.histSaved=0 #Number of B(x_{p},i) computed for all x_{p}
