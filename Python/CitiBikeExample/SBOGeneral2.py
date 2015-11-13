@@ -351,7 +351,8 @@ class SBO:
         tempN=i+self.numberTraining
 
         def g(x,grad,onlyGradient=False):
-            return self.functionGradientAscentAn(x,grad,self.stat,i,self.dataObj,L,onlyGradient=onlyGradient,
+	    print self.dataObj
+            return self.functionGradientAscentAn(x,grad,self.stat,i,L,self.dataObj,onlyGradient=onlyGradient,
 						 logproductExpectations=logProduct)
 
         opt.run(f=g)
