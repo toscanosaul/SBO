@@ -145,123 +145,74 @@ class SBO:
                  VOIobj,optObj,statObj,dataObj):
 
 	self.dataObj=dataObj
-	#####
-	self.parallel=miscObj.parallel
-	self.randomSeed=miscObj.rs
-	self.rs=miscObj.rs
-	self.path=os.path.join(miscObj.folder,'%d'%self.rs+"run")
-	self.createNewFiles=miscObj.create
-	######
-
-	self.functionConditionOpt=optObj.functionConditionOpt
-	self.xtol=optObj.xtol
-	self.transformationDomainX=optObj.transformationDomainX
-        self.transformationDomainW=optObj.transformationDomainW
-	self.projectGradient=optObj.projectGradient
-	self.functionGradientAscentAn=optObj.functionGradientAscentAn
-        self.functionGradientAscentVn=optObj.functionGradientAscentVn
-        self.dimXsteepest=optObj.dimXsteepest
-	self.numberParallel=optObj.numberParallel
-        
-	##########
-
-        
-	####
-        self.sampleFromX=Objobj.sampleFromX
-	self.estimationObjective=Objobj.estimationObjective
-	self._fobj=Objobj.fobj
-        self._infSource=Objobj.noisyF ###returns also the noise
-        self._numberSamples=Objobj.numberEstimateF
-	self._n1=Objobj.dimSeparation
-	self._simulatorW=Objobj.simulatorW
-	####
-	if not os.path.exists(self.path):
-            os.makedirs(self.path)
-
-
-	
 	self.stat=statObj
-	self.computeLogProductExpectationsForAn=statObj.computeLogProductExpectationsForAn
-	self.scaledAlpha=statObj.scaledAlpha
-        self.numberTraining=statObj._numberTraining
-	self.B=statObj.B
-
-        self._solutions=[]
-        self._valOpt=[]
-        
-        self._dimension=statObj._n
-        self._dimW=self._dimension-self._n1
-        
-	self.histSaved=0
-	self.Bhist=np.zeros((VOIobj.sizeDiscretization,0))
-        
-
-        
-        self.optRuns=[]
-        self.optPointsArray=[]
-	
 	self._VOI=VOIobj
+	self.opt=optObj
+	self.misc.miscObj
+	self.Obj=Objobj
+	
+	self._n1=Objobj.dimSeparation
+	self._dimW=self._dimension-self._n1
+	self.numberTraining=statObj._numberTraining
+	
+	self.histSaved=0 #Number of B(x_{p},i) computed for all x_{p}
+			 #in the discretization
+	#Matrix with the computations B(x_{p},i)
+	self.Bhist=np.zeros((VOIobj.sizeDiscretization,0))
+	
+	self.optRuns=[]
+        self.optPointsArray=[]
+	self._solutions=[]
+        self._valOpt=[]
+	
+	self.path=os.path.join(miscObj.folder,'%d'%self.misc.rs+"run")
+	if not os.path.exists():
+	    os.makedirs(self.path)
 
-
-      
-  
     ##m is the number of iterations to take
     def SBOAlg(self,m,nRepeat=10,Train=True,**kwargs):
-	if self.createNewFiles:
-	    fl.createNewFilesFunc(self.path,self.rs)
-	fl.writeTraining(self)
+	
+	if self.misc.create: #Create files for the results
+	    fl.createNewFilesFunc(self.path,self.rs) 
+	fl.writeTraining(self) #Write training data
         if Train is True:
-            self.trainModel(numStarts=nRepeat,**kwargs)
+            self.trainModel(numStarts=nRepeat,**kwargs) #Train model
         points=self._VOI._points
         for i in range(m):
             print i
-	    if self.parallel:
-		self.optVOIParal(i,self.numberParallel)
+	    #Optimize VOI
+	    if self.misc.parallel:
+		self.optVOIParal(i,self.opt.numberParallel) 
 	    else:
 		self.optVOInoParal(i)
 
-            #####
-            n1=self._n1
-            n2=self._dimW
-            Xst=self.sampleFromX(1)
-            wSt=self._simulatorW(1)
-            st=np.concatenate((Xst,wSt),1)
-            args2={}
-            args2['start']=st
-            args2['i']=i
-           # misc.VOIOptWrapper(self,**args2)
-            ####
-            args2['start']=self.sampleFromX(1)
-           # misc.AnOptWrapper(self,**args2)
             print i
-	    if self.parallel:
-		self.optAnParal(i,self.numberParallel)
+	    #Otimize a_{n}
+	    if self.misc.parallel:
+		self.optAnParal(i,self.opt.numberParallel)
 	    else:
 		self.optAnnoParal(i)
             print i
-        args2={}
-        args2['start']=self.sampleFromX(1)
-        args2['i']=m
-      #  misc.AnOptWrapper(self,**args2)
+	#Optimize a_{n}
 	if self.parallel:
-	    self.optAnParal(m,self.numberParallel)
+	    self.optAnParal(m,self.opt.numberParallel)
 	else:
 	    self.optAnnoParal(i)
-    ###start is a matrix of one row
-    ###
+
     def optimizeVOI(self,start, i,L,temp2,a,B,scratch):
-        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,
-				  stopFunction=self.functionConditionOpt,xStart=start,
-				  xtol=self.xtol)
+        opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
+				  stopFunction=self.opt.functionConditionOpt,xStart=start,
+				  xtol=self.opt.xtol)
+	
         def g(x,grad,onlyGradient=False):
-            return self.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
+            return self.opt.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
 						 scratch=scratch,onlyGradient=onlyGradient,
 						 kern=self.stat._k,XW=self.dataObj.Xhist,
 						 Bfunc=self.stat.B)
 
         opt.run(f=g)
         self.optRuns.append(opt)
-        xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
+        xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
         self.optPointsArray.append(xTrans)
 
 
@@ -299,8 +250,8 @@ class SBO:
     def optVOInoParal(self,i):
 	n1=self._n1
 	n2=self._dimW
-	Xst=self.sampleFromX(1)
-	wSt=self._simulatorW(1)
+	Xst=self.opt.sampleFromX(1)
+	wSt=self.opt.simulatorW(1)
 	x1=Xst[0:0+1,:]
 	w1=wSt[0:0+1,:]
 	tempN=self.numberTraining+i
@@ -316,33 +267,25 @@ class SBO:
             n1=self._n1
             n2=self._dimW
 	    tempN=self.numberTraining+i
-         #   dim=self.dimension
             jobs = []
             pool = mp.Pool(processes=numProcesses)
-            #New
-            Xst=self.sampleFromX(nStart)
-            wSt=self._simulatorW(nStart)
+            Xst=self.opt.sampleFromX(nStart)
+            wSt=self.opt.simulatorW(nStart)
 	    args2=self.getParametersOptVoi(i)
-            ######
             for j in range(nStart):
                 x1=Xst[j:j+1,:]
                 w1=wSt[j:j+1,:]
                 st=np.concatenate((x1,w1),1)
                 args2['start']=st
-
                 job = pool.apply_async(misc.VOIOptWrapper, args=(self,), kwds=args2)
                 jobs.append(job)
-            
             pool.close()  # signal that no more data coming in
             pool.join()  # wait for all the tasks to complete
         except KeyboardInterrupt:
             print "Ctrl+c received, terminating and joining pool."
             pool.terminate()
             pool.join()
-     #   print jobs
-        numStarts=nStart
-     #   print jobs[0].get()
-        for j in range(numStarts):
+        for j in range(nStart):
             try:
                 self.optRuns.append(jobs[j].get())
             except Exception as e:
@@ -351,28 +294,25 @@ class SBO:
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
 	    fl.writeNewPointSBO(self,self.optRuns[j])
-
         self.optRuns=[]
         self.optPointsArray=[]
             
     def optimizeAn(self,start,i,L,logProduct):
-        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,
-				  xStart=start,xtol=self.xtol,
-				  stopFunction=self.functionConditionOpt)
+        opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
+				  xStart=start,xtol=self.opt.xtol,
+				  stopFunction=self.opt.functionConditionOpt)
         tempN=i+self.numberTraining
 
         def g(x,grad,onlyGradient=False):
-            return self.functionGradientAscentAn(x,grad,self.stat,i,L,self.dataObj,onlyGradient=onlyGradient,
-						 logproductExpectations=logProduct)
+            return self.opt.functionGradientAscentAn(x,grad,self.stat,i,L,self.dataObj,
+						     onlyGradient=onlyGradient,
+						     logproductExpectations=logProduct)
 
         opt.run(f=g)
         self.optRuns.append(opt)
-        xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
+        xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
         self.optPointsArray.append(xTrans)
     
-
-	
-	
     def optAnnoParal(self,i):
 	n1=self._n1
 	tempN=i+self.numberTraining
@@ -381,7 +321,7 @@ class SBO:
 	######computeLogProduct....only makes sense for the SEK, the function should be optional
 	logProduct=self.stat.computeLogProductExpectationsForAn(self.dataObj.Xhist[0:tempN,n1:self._dimW+n1],
                                                          tempN,self.stat._k)
-	Xst=self.sampleFromX(1)
+	Xst=self.opt.sampleFromX(1)
 	args2={}
 	args2['start']=Xst[0:0+1,:]
 	args2['i']=i
@@ -390,10 +330,6 @@ class SBO:
 	self.optRuns.append(misc.AnOptWrapper(self,**args2))
 	fl.writeSolution(self,self.optRuns[0])
 
-            
-     
-
-    
     def optAnParal(self,i,nStart,numProcesses=None):
         try:
             n1=self._n1
@@ -403,16 +339,17 @@ class SBO:
 	    ######computeLogProduct....only makes sense for the SEK, the function should be optional
 	    logProduct=self.stat.computeLogProductExpectationsForAn(self.dataObj.Xhist[0:tempN,n1:self._dimW+n1],
 							       tempN)
-         #   dim=self.dimension
+	    
+	    args2={}
+	    args2['i']=i
+	    args2['L']=L
+	    args2['logProduct']=logProduct
+	    
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             Xst=self.sampleFromX(nStart)
             for j in range(nStart):
-                args2={}
                 args2['start']=Xst[j:j+1,:]
-                args2['i']=i
-		args2['L']=L
-		args2['logProduct']=logProduct
                 job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=args2)
                 jobs.append(job)
             
@@ -422,10 +359,8 @@ class SBO:
             print "Ctrl+c received, terminating and joining pool."
             pool.terminate()
             pool.join()
-     
-        numStarts=nStart
-        
-        for j in range(numStarts):
+
+        for j in range(nStart):
             try:
                 self.optRuns.append(jobs[j].get())
             except Exception as e:
@@ -440,11 +375,11 @@ class SBO:
         self.optPointsArray=[]
 
     def trainModel(self,numStarts,**kwargs):
-	if self.parallel:
+	if self.misc.parallel:
 	    self.stat._k.train(scaledAlpha=self.scaledAlpha,numStarts=numStarts,**kwargs)
 	else:
 	    self.stat._k.trainnoParallel(scaledAlpha=self.scaledAlpha,**kwargs)
-        f=open(os.path.join(self.path,'%d'%self.randomSeed+"hyperparameters.txt"),'w')
+        f=open(os.path.join(self.path,'%d'%self.misc.rs+"hyperparameters.txt"),'w')
         f.write(str(self.stat._k.getParamaters()))
         f.close()
        

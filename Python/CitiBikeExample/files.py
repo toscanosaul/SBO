@@ -40,15 +40,9 @@ def writeNewPointSBO(ALGObj,optim):
     wTrans=ALGObj.transformationDomainW(optim.xOpt[0:1,ALGObj.dimXsteepest:ALGObj.dimXsteepest+ALGObj._dimW])
     temp=np.concatenate((xTrans,wTrans),1)
     ALGObj.dataObj.Xhist=np.vstack([ALGObj.dataObj.Xhist,temp])
- #   ALGObj._VOI._PointsHist=ALGObj._XWhist
-  #  ALGObj.stat._Xhist=ALGObj._XWhist
-    y,var=ALGObj._infSource(temp,ALGObj._numberSamples)
+    y,var=ALGObj.Obj.noisyF(temp,ALGObj.Obj.numberEstimateF)
     ALGObj.dataObj.yHist=np.vstack([ALGObj.dataObj.yHist,y])
-  #  ALGObj._VOI._yHist=ALGObj._yHist
-   # ALGObj.stat._yHist=ALGObj._yHist
     ALGObj.dataObj.varHist=np.append(ALGObj.dataObj.varHist,var)
-   # ALGObj._VOI._noiseHist=ALGObj._varianceObservations
-   # ALGObj.stat._noiseHist=ALGObj._varianceObservations
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"varHist.txt"), "a") as f:
         var=np.array(var).reshape(1)
         np.savetxt(f,var)
@@ -67,12 +61,12 @@ def writeSolution(ALGObj,optim):
     tempGrad=optim.gradOpt
     tempGrad=np.sqrt(np.sum(tempGrad**2))
     tempGrad=np.array([tempGrad,optim.nIterations])
-    xTrans=ALGObj.transformationDomainX(optim.xOpt[0:1,0:ALGObj.dimXsteepest])
+    xTrans=ALGObj.opt.transformationDomainX(optim.xOpt[0:1,0:ALGObj.dimXsteepest])
     ALGObj._solutions.append(xTrans)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"optimalSolutions.txt"), "a") as f:
         np.savetxt(f,xTrans)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"optimalValues.txt"), "a") as f:
-        result,var=ALGObj.estimationObjective(xTrans[0,:])
+        result,var=ALGObj.Obj.estimationObjective(xTrans[0,:])
         res=np.append(result,var)
         np.savetxt(f,res)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"optAngrad.txt"), "a") as f:
