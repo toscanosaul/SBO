@@ -267,11 +267,11 @@ class SBO:
             n1=self._n1
             n2=self._dimW
 	    tempN=self.numberTraining+i
-            jobs = []
-            pool = mp.Pool(processes=numProcesses)
             Xst=self.Obj.sampleFromX(nStart)
             wSt=self.Obj.simulatorW(nStart)
 	    args2=self.getParametersOptVoi(i)
+	    jobs = []
+            pool = mp.Pool(processes=numProcesses)
             for j in range(nStart):
                 x1=Xst[j:j+1,:]
                 w1=wSt[j:j+1,:]
@@ -344,10 +344,10 @@ class SBO:
 	    args2['i']=i
 	    args2['L']=L
 	    args2['logProduct']=logProduct
+	    Xst=self.Obj.sampleFromX(nStart)
 	    
             jobs = []
             pool = mp.Pool(processes=numProcesses)
-            Xst=self.Obj.sampleFromX(nStart)
             for j in range(nStart):
                 args2['start']=Xst[j:j+1,:]
                 job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=args2)

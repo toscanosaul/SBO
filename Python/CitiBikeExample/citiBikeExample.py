@@ -9,7 +9,7 @@ consider is the allocation of a constrained number of bikes (6000) to available
 docks within the city at the start of rush hour, so as to minimize, in simulation,
 the expected number of potential trips in which the rider could not find an
 available bike at their preferred origination station, or could not find an
-available dock at their preferred destination station.We call such trips
+available dock at their preferred destination station. We call such trips
 "negatively affected trips".
 
 To use the SBO algorithm, we need to create 6 objets:
