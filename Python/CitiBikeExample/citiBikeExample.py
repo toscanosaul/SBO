@@ -427,7 +427,7 @@ def projectGradientDescent(x,direction,xo):
 	return x
     return xo+direction*min(alph)
 
-def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,B,kern,XW,scratch,onlyGradient=False):
+def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,onlyGradient=False):
     """ Evaluates the VOI and it can compute its derivative. It evaluates the VOI,
         when grad and onlyGradient are False; it evaluates the VOI and computes its
         derivative when grad is True and onlyGradient is False, and computes only its

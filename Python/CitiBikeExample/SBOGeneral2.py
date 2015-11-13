@@ -245,7 +245,7 @@ class SBO:
 				  xtol=self.xtol)
         def g(x,grad,onlyGradient=False):
             return self.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
-						 scratch,onlyGradient=onlyGradient,
+						 scratch=scratch,onlyGradient=onlyGradient,
 						 kern=self.stat._k,XW=self.dataObj.Xhist)
 
         opt.run(f=g)
