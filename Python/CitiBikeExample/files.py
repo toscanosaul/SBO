@@ -23,11 +23,11 @@ def createNewFilesFunc(path,rs):
     
 def writeTraining(ALGObj):
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.rs+"XWHist.txt"), "a") as f:
-        np.savetxt(f,ALGObj._XWhist)
+        np.savetxt(f,ALGObj.dataObj.Xhist)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.rs+"yhist.txt"), "a") as f:
-        np.savetxt(f,ALGObj._yHist)
+        np.savetxt(f,ALGObj.dataObj.yHist)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.rs+"varHist.txt"), "a") as f:
-        np.savetxt(f,ALGObj._varianceObservations)
+        np.savetxt(f,ALGObj.dataObj.varHist)
         
         
 def writeNewPointSBO(ALGObj,optim):
