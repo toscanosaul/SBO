@@ -386,7 +386,7 @@ def gradWB(new,kern,BN,keep,points):
             gradWBarray[j,i]=np.exp(gradWBarray[j,i])*productExpectations
     return gradWBarray
 
-VOIobj=VOI.VOISBO(gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None,
+VOIobj=VOI.VOISBO(gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None, dimX=n1,
                   pointsApproximation=pointsVOI,gradXBfunc=gradXB,
                   gradWBfunc=gradWB,dimW=n2,numberTraining=trainingPoints)
 
