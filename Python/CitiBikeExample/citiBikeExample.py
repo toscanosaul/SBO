@@ -493,7 +493,6 @@ def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,onlyGradient
     else:
         return temp
 
-
 def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logproductExpectations=None):
     """ Evaluates a_{i} and its derivative, which is the expectation of the GP on g(x).
         It evaluates a_{i}, when grad and onlyGradient are False; it evaluates the a_{i}
