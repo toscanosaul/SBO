@@ -12,11 +12,8 @@ from matplotlib import pyplot as plt
 #######
 
 class GaussianProcess:
-    def __init__(self,kernel,dimKernel,dataObj,numberTraining,scaledAlpha=1.0):
+    def __init__(self,kernel,dimKernel,numberTraining,scaledAlpha=1.0):
         self._k=kernel
-        self._Xhist=dataObj.Xhist
-        self._yHist=dataObj.yHist
-        self._noiseHist=dataObj.varHist
         self._numberTraining=numberTraining ##number of points used to train the kernel
         self._n=dimKernel
         self.scaledAlpha=scaledAlpha

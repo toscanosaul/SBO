@@ -8,24 +8,21 @@ from scipy import linalg
 from numpy import linalg as LA
 from scipy.stats import norm
 
+
 class VOI:
     #####x is a nxdim(x) matrix of points where a_n and sigma_n are evaluated
     ###B(x,x_1),...B(x,x_n), B is the function to compute those
-    def __init__(self,kernel,dimKernel,numberTraining,gradXWSigmaOfunc=None,Bhist=None,pointsApproximation=None,
-                 gradXBfunc=None,B=None,gradWBfunc=None,BhistSaved=0):
-        self._k=kernel
+    def __init__(self,numberTraining,gradXWSigmaOfunc=None,Bhist=None,pointsApproximation=None,
+                 gradXBfunc=None,B=None,gradWBfunc=None):
+       # self._k=kernel
         self._points=pointsApproximation
         self._gradXWSigmaOfunc=gradXWSigmaOfunc
         self._gradXBfunc=gradXBfunc
         self._gradWBfunc=gradWBfunc
-     #   self._PointsHist=PointsHist
-    #    self._yHist=yHist
         self._Bhist=Bhist
         self._B=B
         self._dimKernel=dimKernel
-     #   self._noiseHist=noiseHist
         self._gradXBfunc=gradXBfunc
-        self._BhistSaved=BhistSaved
         self._numberTraining=numberTraining
         
     def evalVOI(self,n,pointNew,a,b,grad=False,**args):
@@ -40,33 +37,29 @@ class VOISBO(VOI):
         self.n2=dimW
         self.n1=self._dimKernel-dimW
         self.sizeDiscretization=self._points.shape[0]
-       # self._GP=stat.SBOGP(kernel=self._k,B=self._B,dimNoiseW=dimW,dimPoints=self._dimKernel-dimW,
-       #                numberPoints=self._points.shape[0],Bhist=self._Bhist,histSaved=self._BhistSaved,
-       #                Xhist=self._PointsHist, dimKernel=self._dimKernel,
-       #                yHist=self._yHist,noiseHist=self._noiseHist,numberTraining=self._numberTraining,
-       #                gradXBfunc=self._gradXBfunc,gradXBforAn=gradXBforAn)
         
     #computes a and b from the paper
     ##x is a nxdim(x) matrix of points where a_n and sigma_n are evaluated
     ###computed using n past observations
-    def aANDb(self,n,x,xNew,wNew,L,temp2,past):
+    ##B is the function
+    def aANDb(self,n,x,xNew,wNew,L,temp2,past,kernel,B):
         x=np.array(x)
         m=x.shape[0]
         tempN=self._numberTraining+n
         BN=np.zeros([m,1])
         n2=self.n2
-        BN[:,0]=self._B(x,np.concatenate((xNew,wNew),1),self.n1,n2) #B(x,n+1)
+        BN[:,0]=B(x,np.concatenate((xNew,wNew),1),self.n1,n2) #B(x,n+1)
  
         n1=self.n1
         n2=self.n2
        # past=self._PointsHist[0:tempN,:]
         new=np.concatenate((xNew,wNew),1).reshape((1,n1+n2))
 
-        gamma=np.transpose(self._k.A(new,past))
+        gamma=np.transpose(kernel.A(new,past))
         temp1=linalg.solve_triangular(L,gamma,lower=True)
         b=(BN-np.dot(temp2.T,temp1))
         aux4=np.dot(temp1.T,temp1)
-        b2=self._k.K(new)-aux4
+        b2=kernel.K(new)-aux4
         b2=np.clip(b2,0,np.inf)
         try:
             b=b/(np.sqrt(b2))
@@ -112,7 +105,7 @@ class VOISBO(VOI):
         gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
 
         inv3=inv
-        beta1=(self._k.A(pointNew)-aux4)
+        beta1=(kern.A(pointNew)-aux4)
         gradient=np.zeros(M)
         result=np.zeros(n1+n2)
         
@@ -133,11 +126,9 @@ class VOISBO(VOI):
             inv2=linalg.solve_triangular(L,gradientGamma[i+n1,0:tempN].transpose(),lower=True)
             aux5=np.dot(inv2.T,inv3)
             for j in xrange(M):
-             #   inv1=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
                 tmp=np.dot(inv2.T,scratch[j,:])
                 tmp=(beta1**(-.5))*(gradWB[j,i]-tmp)
                 beta2=BN[keep[j],:]-np.dot(scratch[j,:].T,inv3)
-              #  tmp2=(.5)*(beta1**(-1.5))*(2.0*np.dot(inv2.T,inv3))*beta2
                 tmp2=(.5)*(beta1**(-1.5))*(2.0*aux5)*beta2
                 gradient[j]=tmp+tmp2
             result[i+n1]=np.dot(np.diff(gradient),evalC)
@@ -148,10 +139,10 @@ class VOISBO(VOI):
         return h,result
                     
                     
-    def VOIfunc(self,n,pointNew,grad,L,temp2,a,scratch,kern,XW,onlyGradient=False):
+    def VOIfunc(self,n,pointNew,grad,L,temp2,a,scratch,kern,XW,B,onlyGradient=False):
         n1=self._dimKernel-self._dimW
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
-                                    temp2=temp2,past=XW)
+                                    temp2=temp2,past=XW,kernel=kern,B=B)
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
@@ -162,7 +153,6 @@ class VOISBO(VOI):
         if grad:
             scratch1=np.zeros((M,tempN))
             for j in xrange(M):
-                #scratch[j,:]=linalg.solve_triangular(L,B[keep2[j],:].transpose(),lower=True)
                 scratch1[j,:]=scratch[keep2[j],:]
         if onlyGradient:
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch1,
