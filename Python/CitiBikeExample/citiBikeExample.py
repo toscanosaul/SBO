@@ -325,7 +325,7 @@ def gradXWSigmaOfunc(n,new,kern,Xtrain2,Wtrain2):
         gradWSigma0[i,:]=-2.0*gamma[i]*alpha2*(wNew-Wtrain2[i,:])
     return gradXSigma0,gradWSigma0
 
-####these gradients are evaluated in all set of the points of the discretization (in the approximation)
+
 ###The function is the same for any squared exponential kernel
 def gradXB(new,kern,BN,keep,points):
     """Computes the vector of gradients with respect to x_{n+1} of
