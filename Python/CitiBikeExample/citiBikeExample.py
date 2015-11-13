@@ -307,15 +307,11 @@ def gradXWSigmaOfunc(n,new,kern,Xtrain2,Wtrain2):
           Wtrain2: Past observations of W
           N: Number of observations
     """
-    
     gradXSigma0=np.zeros([n+trainingPoints+1,n1])
     tempN=n+trainingPoints
     past=np.concatenate((Xtrain2,Wtrain2),1)
-   # past=objVOI._PointsHist[0:tempN,:]
     gamma=np.transpose(kern.A(new,past))
-
     alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
-
     gradWSigma0=np.zeros([n+trainingPoints+1,n2])
     alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
     xNew=new[0,0:n1]
@@ -341,8 +337,6 @@ def gradXB(new,kern,BN,keep,points):
               the domain of x.
           points: Discretization of the domain of x
     """
-  #  points=objVOI._points
- #   kern=objVOI._k
     alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
     xNew=new[0,0:n1].reshape((1,n1))
     gradXBarray=np.zeros([len(keep),n1])
@@ -366,7 +360,6 @@ def gradWB(new,kern,BN,keep,points):
               the domain of x.
           points: Discretization of the domain of x
     """
-
     alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
     alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
     variance0=kern.variance
