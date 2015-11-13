@@ -14,16 +14,14 @@ available dock at their preferred destination station.We call such trips
 
 To use the SBO algorithm, we need to create 4 objets:
 
-Objobj: 
+Objobj: Objective object (See InterfaceSBO).
 miscObj: Miscellaneous object (See InterfaceSBO).
 VOIobj: Value of Information function object (See VOIGeneral).
-optObj: Opt object (See InterfaceSBO)
+optObj: Opt object (See InterfaceSBO).
 statObj: SBOGP object (See statGeneral).
 dataObj: Data object (See InterfaceSBO).
 
 """
-
-
 import sys
 sys.path.append("..")
 import numpy as np
@@ -44,7 +42,35 @@ from scipy.stats import poisson
 import json
 import InterfaceSBO as inter
 
+##################
 
+nTemp=int(sys.argv[1])  #random seed 
+nTemp2=int(sys.argv[2]) #number of training points
+nTemp3=int(sys.argv[3]) #number of samples to estimate F
+
+randomSeed=nTemp
+np.random.seed(randomSeed)
+
+##############
+
+n1=4
+n2=4
+numberSamplesForF=nTemp3
+
+
+"""
+We define the variables needed for the queuing simulation. 
+"""
+
+g=unhappyPeople  #Simulator
+
+fil="2014-05PoissonParameters.txt"
+nSets=4
+A,lamb=generateSets(nSets,fil)
+
+parameterSetsPoisson=np.zeros(n2)
+for j in xrange(n2):
+    parameterSetsPoisson[j]=np.sum(lamb[j])
 
 
 exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
@@ -57,40 +83,20 @@ f.close()
 
 bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
 
-
-nTemp=int(sys.argv[1])
-nTemp2=int(sys.argv[2])
-nTemp3=int(sys.argv[3])
-
-randomSeed=nTemp
-np.random.seed(randomSeed)
-
-g=unhappyPeople
-
-n1=4
-n2=4
-numberSamplesForF=nTemp3
-fil="2014-05PoissonParameters.txt"
-nSets=4
-A,lamb=generateSets(nSets,fil)
-#####
-parameterSetsPoisson=np.zeros(n2)
-for j in xrange(n2):
-    parameterSetsPoisson[j]=np.sum(lamb[j])
-####
-
 TimeHours=4.0
-trainingPoints=nTemp2
 numberBikes=6000
-lowerX=100*np.ones(4)
-UpperX=numberBikes*np.ones(4)
-dimensionKernel=n1+n2
-nGrid=50
-####to generate points run poissonGeneratePoints.py
-pointsVOI=np.loadtxt("pointsPoisson.txt")
 
-####CAMBIAR NOISYf NO DEBE DEPENDERR DE RANDOM SEED!!!
+"""
+We define the objective object
+"""
+
 def noisyF(XW,n):
+    """Estimate F(x,w)=E(f(x,w,z)|w)
+      
+       Args:
+          XW: Vector (x,w)
+          n: Number of samples to estimate F
+    """
     simulations=np.zeros(n)
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2]
@@ -98,26 +104,13 @@ def noisyF(XW,n):
         simulations[i]=g(TimeHours,w,x,nSets,lamb,A,"2014-05",exponentialTimes,
                          data,cluster,bikeData)
     return np.mean(simulations),float(np.var(simulations))/n
-####borrar
-def noisyF2(XW,n,seed):
-    np.random.seed(seed)
-    return np.random.uniform(0,1)
-######borrar
 
-
-
-#####work this
-def simulatorW(n):
-    wPrior=np.zeros((n,n2))
-    for i in range(n2):
-        wPrior[:,i]=np.random.poisson(parameterSetsPoisson[i],n)
-    return wPrior
-
-
-
-
-###Used to select a starting point for gradient ascent
 def sampleFromX(n):
+    """Chooses n points in the domain of x at random
+      
+       Args:
+          n: Number of points chosen
+    """
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
     if n>1:
         temp=np.random.dirichlet(np.ones(n1),n-1)
@@ -126,6 +119,55 @@ def sampleFromX(n):
     	temp=np.floor(temp)
 	aux1=np.concatenate((aux1,temp),0)
     return aux1
+
+def simulatorW(n):
+    """Simulate n vectors w
+      
+       Args:
+          n: Number of vectors simulated
+    """
+    wPrior=np.zeros((n,n2))
+    for i in range(n2):
+        wPrior[:,i]=np.random.poisson(parameterSetsPoisson[i],n)
+    return wPrior
+
+def estimationObjective(x,N=100):
+    """Estimate g(x)=E(f(x,w,z))
+      
+       Args:
+          x
+          N: number of samples used to estimate g(x)
+    """
+    estimator=N
+    W=simulatorW(estimator)
+    result=np.zeros(estimator)
+    for i in range(estimator):
+        result[i]=g(TimeHours,W[i,:],x,nSets,lamb,A,"2014-05",exponentialTimes,
+                         data,cluster,bikeData)
+    
+    return np.mean(result),float(np.var(result))/estimator
+
+Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,simulatorW,estimationObjective)
+
+
+
+
+
+
+trainingPoints=nTemp2
+
+dimensionKernel=n1+n2
+pointsVOI=np.loadtxt("pointsPoisson.txt")
+
+
+
+
+
+
+
+
+
+
 
 
 ####Prior Data
@@ -402,15 +444,6 @@ def transformationDomainX(x):
 def transformationDomainW(w):
     return np.round(w)
 
-def estimationObjective(x,N=100):
-    estimator=N
-    W=simulatorW(estimator)
-    result=np.zeros(estimator)
-    for i in range(estimator):
-        result[i]=g(TimeHours,W[i,:],x,nSets,lamb,A,"2014-05",exponentialTimes,
-                         data,cluster,bikeData)
-    
-    return np.mean(result),float(np.var(result))/estimator
 
 ##W is a matrix
 
@@ -434,12 +467,12 @@ VOIobj=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainin
                  yHist=yTrain,noiseHist=NoiseTrain,dimW=dimensionKernel-n1)
 
 
-Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,simulatorW,estimationObjective)
+
 
 nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 folder=os.path.join(nameDirectory,"SBO")
 
-misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
+
 
 def conditionOpt(x):
     return np.max((np.floor(np.abs(x))))
