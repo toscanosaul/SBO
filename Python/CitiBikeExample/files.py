@@ -39,16 +39,16 @@ def writeNewPointSBO(ALGObj,optim):
     xTrans=ALGObj.transformationDomainX(optim.xOpt[0:1,0:ALGObj.dimXsteepest])
     wTrans=ALGObj.transformationDomainW(optim.xOpt[0:1,ALGObj.dimXsteepest:ALGObj.dimXsteepest+ALGObj._dimW])
     temp=np.concatenate((xTrans,wTrans),1)
-    ALGObj._XWhist=np.vstack([ALGObj._XWhist,temp])
-    ALGObj._VOI._PointsHist=ALGObj._XWhist
-    ALGObj.stat._Xhist=ALGObj._XWhist
+    ALGObj.dataObj.Xhist=np.vstack([ALGObj.dataObj.Xhist,temp])
+ #   ALGObj._VOI._PointsHist=ALGObj._XWhist
+  #  ALGObj.stat._Xhist=ALGObj._XWhist
     y,var=ALGObj._infSource(temp,ALGObj._numberSamples)
-    ALGObj._yHist=np.vstack([ALGObj._yHist,y])
-    ALGObj._VOI._yHist=ALGObj._yHist
-    ALGObj.stat._yHist=ALGObj._yHist
-    ALGObj._varianceObservations=np.append(ALGObj._varianceObservations,var)
-    ALGObj._VOI._noiseHist=ALGObj._varianceObservations
-    ALGObj.stat._noiseHist=ALGObj._varianceObservations
+    ALGObj.dataObj.yHist=np.vstack([ALGObj.dataObj.yHist,y])
+  #  ALGObj._VOI._yHist=ALGObj._yHist
+   # ALGObj.stat._yHist=ALGObj._yHist
+    ALGObj.dataObj.varHist=np.append(ALGObj.dataObj.varHist,var)
+   # ALGObj._VOI._noiseHist=ALGObj._varianceObservations
+   # ALGObj.stat._noiseHist=ALGObj._varianceObservations
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"varHist.txt"), "a") as f:
         var=np.array(var).reshape(1)
         np.savetxt(f,var)
