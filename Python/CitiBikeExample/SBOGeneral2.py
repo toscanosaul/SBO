@@ -148,7 +148,7 @@ class SBO:
 	self.stat=statObj
 	self._VOI=VOIobj
 	self.opt=optObj
-	self.misc.miscObj
+	self.misc=miscObj
 	self.Obj=Objobj
 	
 	self._n1=Objobj.dimSeparation
