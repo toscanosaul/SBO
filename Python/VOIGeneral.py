@@ -20,7 +20,6 @@ class VOI:
         self._gradWBfunc=gradWBfunc
         self._Bhist=Bhist
         self._B=B
-      #  self._dimKernel=dimKernel
         self._gradXBfunc=gradXBfunc
         self._numberTraining=numberTraining
         
@@ -34,7 +33,7 @@ class VOISBO(VOI):
         self.VOI_name="SBO"
         self._dimW=dimW
         self.n2=dimW
-        self.n1=n1
+        self.n1=dimX
         self.sizeDiscretization=self._points.shape[0]
         
     #computes a and b from the paper
