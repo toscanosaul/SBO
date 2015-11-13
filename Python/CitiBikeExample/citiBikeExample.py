@@ -441,13 +441,12 @@ def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,onlyGradient
             i: Iteration of the SBO algorithm.
             L: Cholesky decomposition of the matrix A, where A is the covariance
                matrix of the past obsevations (x,w).
-            temp2: y=inv(L)*B.T, where B is a matrix such that B(i,j) is
+            temp2: temp2=inv(L)*B.T, where B is a matrix such that B(i,j) is
                    \int\Sigma_{0}(x_{i},w,x_{j},w_{j})dp(w)
                    where points x_{p} is a point of the discretization of
                    the space of x; and (x_{j},w_{j}) is a past observation.
             a: Vector of the means of the GP on g(x)=E(f(x,w,z)). The means are evaluated on the
                discretization of the space of x.
-          #  B: 
             VOI: VOI object
             kern: kernel
             XW: Past observations
