@@ -12,13 +12,13 @@ available bike at their preferred origination station, or could not find an
 available dock at their preferred destination station.We call such trips
 "negatively affected trips".
 
-To use the SBO algorithm, we need to create 4 objets:
+To use the SBO algorithm, we need to create 6 objets:
 
 Objobj: Objective object (See InterfaceSBO).
 miscObj: Miscellaneous object (See InterfaceSBO).
 VOIobj: Value of Information function object (See VOIGeneral).
 optObj: Opt object (See InterfaceSBO).
-statObj: SBOGP object (See statGeneral).
+statObj: Statistical object (See statGeneral).
 dataObj: Data object (See InterfaceSBO).
 
 """
@@ -87,7 +87,7 @@ TimeHours=4.0
 numberBikes=6000
 
 """
-We define the objective object
+We define the objective object.
 """
 
 def noisyF(XW,n):
@@ -149,29 +149,26 @@ def estimationObjective(x,N=100):
 
 Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,simulatorW,estimationObjective)
 
+"""
+We define the miscellaneous object.
+"""
+parallel=False
 
+nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
+folder=os.path.join(nameDirectory,"SBO")
 
+misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
 
-
+"""
+We define the data object.
+"""
 
 trainingPoints=nTemp2
 
-dimensionKernel=n1+n2
-pointsVOI=np.loadtxt("pointsPoisson.txt")
+"""
+Generate the training data
+"""
 
-
-
-
-
-
-
-
-
-
-
-
-####Prior Data
-#randomIndexes=np.random.random_integers(0,pointsVOI.shape[0]-1,trainingPoints)
 tempX=sampleFromX(trainingPoints)
 tempFour=numberBikes-np.sum(tempX,1)
 tempFour=tempFour.reshape((trainingPoints,1))
@@ -179,14 +176,8 @@ Xtrain=np.concatenate((tempX,tempFour),1)
 Wtrain=simulatorW(trainingPoints)
 XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
-
-
-###################################################
-parallel=False
 yTrain=np.zeros([0,1])
 NoiseTrain=np.zeros(0)
-
-
 
 if parallel:
     jobs = []
@@ -194,9 +185,8 @@ if parallel:
     for i in xrange(trainingPoints):
         job = pool.apply_async(noisyF,(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF))
         jobs.append(job)
-    
-    pool.close()  # signal that no more data coming in
-    pool.join()  # wait for all the tasks to complete
+    pool.close()  
+    pool.join()  
     for j in range(trainingPoints):
         temp=jobs[j].get()
         yTrain=np.vstack([yTrain,temp[0]])
@@ -207,26 +197,31 @@ else:
         yTrain=np.vstack([yTrain,temp[0]])
         NoiseTrain=np.append(NoiseTrain,temp[1])
 
+dataObj=inter.data(XWtrain,yTrain,NoiseTrain)
 
-#########
+"""
+We define the statistical object.
+"""
 
+dimensionKernel=n1+n2
 scaleAlpha=1000.0
 kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
-#########
-
-logFactorial=[np.sum([log(i) for i in range(1,j+1)]) for j in range(1,501)]
-logFactorial.insert(1,0)
-logFactorial=np.array(logFactorial)
-
-#Computes log*sum(exp(x)) for a vector x, but in numerically careful way
-def logSumExp(x):
-    xmax=np.max(np.abs(x))
-    y=xmax+np.log(np.sum(np.exp(x-xmax)))
-    return y
-
-
 def B(x,XW,n1,n2,logproductExpectations=None):
+    """Computes B(x)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
+      
+       Args:
+          x: Vector of points where B is evaluated
+          XW: Point (x,w)
+          n1: Dimension of x
+          n2: Dimension of w
+          logproductExpectations: Vector with the logarithm
+                                  of the product of the
+                                  expectations of
+                                  np.exp(-alpha2[j]*((z-W[i,j])**2))
+                                  where W[i,:] is a point in the history.
+          
+    """
     x=np.array(x).reshape((x.shape[0],n1))
     results=np.zeros(x.shape[0])
     parameterLamb=parameterSetsPoisson
@@ -247,18 +242,79 @@ def B(x,XW,n1,n2,logproductExpectations=None):
         results[i]=logproductExpectations+np.log(variance0)-np.sum(alpha1*((x[i,:]-X)**2))
     return np.exp(results)
 
+###The function is the same for any squared exponential kernel
+def gradXBforAn(x,n,B,kern,X):
+    """Computes the gradient of B(x,i) for i in {1,...,n+nTraining}
+       where nTraining is the number of training points
+      
+       Args:
+          x: Argument of B
+          n: Current iteration of the algorithm
+          B: Vector {B(x,i)} for i in {1,...,n}
+          kern: kernel
+          X: Past observations X[i,:] for i in {1,..,n+nTraining}
+    """
+    gradXB=np.zeros((n1,n+trainingPoints))
+    alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
+    for i in xrange(n+trainingPoints):
+        gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
+    return gradXB
+
+def computeLogProductExpectationsForAn(W,N,kernel):
+    """Computes the logarithm of the product of the
+       expectations of np.exp(-alpha2[j]*((z-W[i,j])**2))
+        where W[i,:] is a point in the history.
+      
+       Args:
+          W: Matrix where each row is a past random vector used W[i,:]
+          N: Number of observations
+          kernel: kernel
+    """
+    alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
+    logproductExpectations=np.zeros(N)
+    parameterLamb=parameterSetsPoisson
+    for i in xrange(N):
+        logproductExpectations[i]=0.0
+        for j in xrange(n2):
+            G=poisson(parameterLamb[j])
+            temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[i,j])**2)),G.args)
+            logproductExpectations[i]+=np.log(temp)
+    return logproductExpectations
+
+stat=stat.SBOGP(kernel=kernel,B=B,dimNoiseW=n2,dimPoints=n1,
+                dimKernel=n1+n2,dataObj=dataObj ,
+                numberTraining=trainingPoints,gradXBforAn=gradXBforAn,
+                computeLogProductExpectationsForAn=computeLogProductExpectationsForAn)
 
 
-####this function is the same for any squared exponential kernel
-def gradXWSigmaOfunc(n,new,objVOI,Xtrain2,Wtrain2):
+"""
+We define the VOI object.
+"""
+
+pointsVOI=np.loadtxt("pointsPoisson.txt") #Discretization of the domain of X
+
+####The function is the same for any squared exponential kernel
+def gradXWSigmaOfunc(n,new,kern,Xtrain2,Wtrain2):
+    """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
+        all the past observations XW[i,]. Sigma_{0} is the covariance of
+        the GP on F.
+        
+       Args:
+          n: Number of iteration
+          new: Point where Sigma_{0} is evaluated
+          kern: Kernel
+          Xtrain2: Past observations of X
+          Wtrain2: Past observations of W
+          N: Number of observations
+    """
+    
     gradXSigma0=np.zeros([n+trainingPoints+1,n1])
-    kern=objVOI._k
     tempN=n+trainingPoints
-    past=objVOI._PointsHist[0:tempN,:]
+   # past=objVOI._PointsHist[0:tempN,:]
     gamma=np.transpose(kern.A(new,past))
 
     alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
-    Xtrain=past[:,0:n1]
+
     gradWSigma0=np.zeros([n+trainingPoints+1,n2])
     alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
     xNew=new[0,0:n1]
@@ -268,15 +324,24 @@ def gradXWSigmaOfunc(n,new,objVOI,Xtrain2,Wtrain2):
         gradWSigma0[i,:]=-2.0*gamma[i]*alpha2*(wNew-Wtrain2[i,:])
     return gradXSigma0,gradWSigma0
 
-
-
-    
-
 ####these gradients are evaluated in all set of the points of the discretization (in the approximation)
-###this function is the same for any squared exponential kernel
-def gradXB(new,objVOI,BN,keep):
-    points=objVOI._points
-    kern=objVOI._k
+###The function is the same for any squared exponential kernel
+def gradXB(new,kern,BN,keep,points):
+    """Computes the vector of gradients with respect to x_{n+1} of
+	B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
+	where x_{p} is a point in the discretization of the domain of x.
+        
+       Args:
+          new: Point (x_{n+1},w_{n+1})
+          kern: Kernel
+          keep: Indexes of the points keeped of the discretization of the domain of x,
+                after using AffineBreakPoints
+          BN: Vector B(x_{p},n+1), where x_{p} is a point in the discretization of
+              the domain of x.
+          points: Discretization of the domain of x
+    """
+  #  points=objVOI._points
+ #   kern=objVOI._k
     alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
     xNew=new[0,0:n1].reshape((1,n1))
     gradXBarray=np.zeros([len(keep),n1])
@@ -286,11 +351,21 @@ def gradXB(new,objVOI,BN,keep):
             gradXBarray[j,i]=-2.0*alpha1[i]*BN[keep[j],0]*(xNew[0,i]-points[keep[j],i])
     return gradXBarray
 
+def gradWB(new,kern,BN,keep,points):
+    """Computes the vector of gradients with respect to w_{n+1} of
+	B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
+	where x_{p} is a point in the discretization of the domain of x.
+        
+       Args:
+          new: Point (x_{n+1},w_{n+1})
+          kern: Kernel
+          keep: Indexes of the points keeped of the discretization of the domain of x,
+                after using AffineBreakPoints
+          BN: Vector B(x_{p},n+1), where x_{p} is a point in the discretization of
+              the domain of x.
+          points: Discretization of the domain of x
+    """
 
-
-def gradWB(new,objVOI,BN,keep):
-    points=objVOI._points
-    kern=objVOI._k
     alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
     alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
     variance0=kern.variance
@@ -298,10 +373,6 @@ def gradWB(new,objVOI,BN,keep):
     gradWBarray=np.zeros([len(keep),n2])
     M=len(keep)
     parameterLamb=parameterSetsPoisson
-   # quantil=int(poisson.ppf(.99999999,max(parameterLamb)))
-   # expec=np.array([i for i in xrange(quantil)])
-   # logproductExpectations=0.0
-  #  a=range(n2)
     X=new[0,0:n1]
     W=new[0,n1:n1+n2]
    
@@ -321,38 +392,26 @@ def gradWB(new,objVOI,BN,keep):
             gradWBarray[j,i]=np.exp(gradWBarray[j,i])*productExpectations
     return gradWBarray
 
-###the same for any squared exponential kernel
-def gradXBforAn(x,n,B,objGP,X):
-    gradXB=np.zeros((n1,n+trainingPoints))
-    kern=objGP._k
-    alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
-    for i in xrange(n+trainingPoints):
-        gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
-    return gradXB
-
-####don't need it: we can use the chain rule
-####reduce dimensions of the problem
-def gradXBforAn2(x,n,B,objGP,X):
-    #x=x.
-    x4=numberBikes-np.sum(x)
-    x2=np.concatenate((x,[[numberBikes-np.sum(x)]]),1)
-    gradXB=np.zeros((n1-1,n+trainingPoints))
-    kern=objGP._k
-    alpha1=0.5*((kern.alpha[0:n1])**2)
-    for i in xrange(n+trainingPoints):
-        gradXB[:,i]=B[i]*(-2.0*alpha1[0:n1-1]*(x-X[i,0:n1-1])+2.0*alpha1[n1]*(x4-X[i,n1-1]))
-    return gradXB
+VOIobj=VOI.VOISBO(kernel=stat._k,dimKernel=dimensionKernel,numberTraining=trainingPoints,
+                 gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None,pointsApproximation=pointsVOI,
+                 gradXBfunc=gradXB,B=B,gradWBfunc=gradWB,dimW=n2)
 
 
+"""
+We define the Opt object.
+"""
 
+dimXsteepest=n1-1 #Dimension of x when the VOI and a_{n} are optimized.
 
-
-
-
-
-###at eatch steept of the gradient ascent method, it will project the point using this function
-##direction is the gradient; xo is the starting point before moving
 def projectGradientDescent(x,direction,xo):
+    """ Project a point x to its domain (which is the simplex)
+        at each step of the gradient ascent method if needed.
+        
+       Args:
+          x: Point that is projected
+          direction: Gradient of the function at xo
+          xo: Starting point at the iteration of the gradient ascent method
+    """
     minx=np.min(x)
     alph=[]
     if (minx < 0):
@@ -368,15 +427,40 @@ def projectGradientDescent(x,direction,xo):
 	return x
     return xo+direction*min(alph)
 
-####we eliminate one variable to optimize the function
-
-def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,B,scratch,onlyGradient=False):
+def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,B,kern,XW,scratch,onlyGradient=False):
+    """ Evaluates the VOI and it can compute its derivative. It evaluates the VOI,
+        when grad and onlyGradient are False; it evaluates the VOI and computes its
+        derivative when grad is True and onlyGradient is False, and computes only its
+        gradient when gradient and onlyGradient are both True.
+    
+        Args:
+            x: VOI is evaluated at (x,numberBikes-sum(x)).Note that we reduce the dimension
+               of the space of x.
+            grad: True if we want to compute the gradient; False otherwise.
+            i: Iteration of the SBO algorithm.
+            L: Cholesky decomposition of the matrix A, where A is the covariance
+               matrix of the past obsevations (x,w).
+            temp2: y=inv(L)*B.T, where B is a matrix such that B(i,j) is
+                   \int\Sigma_{0}(x_{i},w,x_{j},w_{j})dp(w)
+                   where points x_{p} is a point of the discretization of
+                   the space of x; and (x_{j},w_{j}) is a past observation.
+            a: Vector of the means of the GP on g(x)=E(f(x,w,z)). The means are evaluated on the
+               discretization of the space of x.
+          #  B: 
+            VOI: VOI object
+            kern: kernel
+            XW: Past observations
+            scratch: matrix where scratch[i,:] is the solution of the linear system
+                     Ly=B[j,:].transpose() (See above for the definition of B and L)
+            onlyGradient: True if we only want to compute the gradient; False otherwise.
+    """
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
     tempX=x[0:1,0:n1-1]
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
-    temp=SBO._VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,B=B,grad=grad,scratch=scratch,onlyGradient=onlyGradient)
+    temp=VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
+                          kern=kern,XW=XW)
     
 
     if onlyGradient:
@@ -408,14 +492,31 @@ def functionGradientAscentVn(x,grad,SBO,i,L,temp2,a,B,scratch,onlyGradient=False
     else:
         return temp
 
-####the function that steepest ascent will optimize
 
-####the function that steepest ascent will optimize
-def functionGradientAscentAn(x,grad,stat,i,L,onlyGradient=False,logproductExpectations=None):
+def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logproductExpectations=None):
+    """ Evaluates a_{i} and its derivative, which is the expectation of the GP on g(x).
+        It evaluates a_{i}, when grad and onlyGradient are False; it evaluates the a_{i}
+        and computes its derivative when grad is True and onlyGradient is False, and
+        computes only its gradient when gradient and onlyGradient are both True.
+    
+        Args:
+            x: a_{i} is evaluated at (x,numberBikes-sum(x)).Note that we reduce the dimension
+               of the space of x.
+            grad: True if we want to compute the gradient; False otherwise.
+            i: Iteration of the SBO algorithm.
+            L: Cholesky decomposition of the matrix A, where A is the covariance
+               matrix of the past obsevations (x,w).
+            dataObj: Data object.
+            stat: Statistical object.
+            onlyGradient: True if we only want to compute the gradient; False otherwise.
+            logproductExpectations: Vector with the logarithm of the product of the
+                                    expectations of np.exp(-alpha2[j]*((z-W[i,j])**2))
+                                    where W[i,:] is a point in the history.
+    """
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
     if onlyGradient:
-        temp=stat.aN_grad(x,L,i,grad,onlyGradient,logproductExpectations)
+        temp=stat.aN_grad(x,L,i,dataObj,grad,onlyGradient,logproductExpectations)
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L2=np.concatenate((t,s))
@@ -432,62 +533,42 @@ def functionGradientAscentAn(x,grad,stat,i,L,onlyGradient=False,logproductExpect
         grad2=np.dot(temp[1],L2)
         return temp[0],grad2
 
-dimXsteepest=n1-1
-
-##transform the result steepest ascent is getting (x1,x2,x3) to  the right domain of x (x1,x2,x3,x4)
 def transformationDomainX(x):
+    """ Transforms the point x given by the steepest ascent method to
+        the right domain of x.
+        
+       Args:
+          x: Point to be transformed.
+    """
     x4=np.array(numberBikes-np.sum(np.floor(x))).reshape((1,1))
     x=np.concatenate((np.floor(x),x4),1)
     return x
 
-####In this case, we want to transform the result steepest ascent is getting to  the right domain of W
 def transformationDomainW(w):
+    """ Transforms the point w given by the steepest ascent method to
+        the right domain of w.
+        
+       Args:
+          w: Point to be transformed.
+    """
     return np.round(w)
 
-
-##W is a matrix
-
-def computeLogProductExpectationsForAn(W,N):
-    alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
-    logproductExpectations=np.zeros(N)
-    parameterLamb=parameterSetsPoisson
-    for i in xrange(N):
-        logproductExpectations[i]=0.0
-        for j in xrange(n2):
-            G=poisson(parameterLamb[j])
-            temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[i,j])**2)),G.args)
-            logproductExpectations[i]+=np.log(temp)
-    return logproductExpectations
-
-
-
-VOIobj=VOI.VOISBO(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
-                 gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None,pointsApproximation=pointsVOI,
-                 gradXBfunc=gradXB,B=B,PointsHist=XWtrain,gradWBfunc=gradWB,
-                 yHist=yTrain,noiseHist=NoiseTrain,dimW=dimensionKernel-n1)
-
-
-
-
-nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
-folder=os.path.join(nameDirectory,"SBO")
-
-
-
 def conditionOpt(x):
+    """ Gives the stopping rule for the steepest ascent method, e.g.
+        the function could be the Euclidean norm. 
+        
+       Args:
+          x: Point where the condition is evaluated.
+    """
     return np.max((np.floor(np.abs(x))))
 
-opt=inter.opt(3,n1-1,transformationDomainX,transformationDomainW,projectGradientDescent,functionGradientAscentVn,
+opt=inter.opt(3,dimXsteepest,transformationDomainX,transformationDomainW,projectGradientDescent,functionGradientAscentVn,
               functionGradientAscentAn,conditionOpt,1.0)
 
-stat=stat.SBOGP(kernel=kernel,B=B,dimNoiseW=n2,dimPoints=n1,
-                Xhist=XWtrain,dimKernel=n1+n2,yHist=yTrain,noiseHist=NoiseTrain,
-                numberTraining=trainingPoints,gradXBforAn=gradXBforAn,
-                computeLogProductExpectationsForAn=computeLogProductExpectationsForAn)
 
-
-
-
+"""
+We define the SBO object.
+"""
 l={}
 l['VOIobj']=VOIobj
 l['Objobj']=Objective
@@ -500,6 +581,11 @@ l['dataObj']=dataObj
 print 'ok'
 sboObj=SB.SBO(**l)
 print 'ok2'
+
+"""
+We run the SBO algorithm.
+"""
+
 sboObj.SBOAlg(2,nRepeat=10,Train=True)
 
 

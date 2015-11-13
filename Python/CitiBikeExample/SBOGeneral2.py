@@ -128,9 +128,9 @@ import files as fl
 
 class SBO:
     def __init__(self, Objobj,miscObj,
-                 VOIobj,optObj,statObj):
+                 VOIobj,optObj,statObj,dataObj):
 
-
+	self.dataObj=dataObj
 	#####
 	self.parallel=miscObj.parallel
 	self.randomSeed=miscObj.rs
@@ -244,8 +244,9 @@ class SBO:
 				  stopFunction=self.functionConditionOpt,xStart=start,
 				  xtol=self.xtol)
         def g(x,grad,onlyGradient=False):
-            return self.functionGradientAscentVn(x,grad,self,i,L,temp2,a,B,
-						 scratch,onlyGradient=onlyGradient)
+            return self.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
+						 scratch,onlyGradient=onlyGradient,
+						 kern=self.stat._k,XW=self.dataObj.Xhist)
 
         opt.run(f=g)
         self.optRuns.append(opt)
@@ -259,11 +260,11 @@ class SBO:
 	n1=self._n1
 	n2=self._dimW
 	tempN=self.numberTraining+i
-	A=self._VOI._k.A(self._VOI._PointsHist[0:tempN,:],noise=self._VOI._noiseHist[0:tempN])
+	A=self._VOI._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.noiseHist[0:tempN])
 	L=np.linalg.cholesky(A)
 	m=self._VOI._points.shape[0]
 	for j in xrange(self.histSaved,tempN):
-	    temp=self.B(self._VOI._points,self._VOI._PointsHist[j,:],self._n1,self._dimW) ###change my previous function because we have to concatenate X and W
+	    temp=self.B(self._VOI._points,self.dataObj.Xhist[j,:],self._n1,self._dimW) ###change my previous function because we have to concatenate X and W
 	    self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
 	    self.histSaved+=1
 	muStart=self._k.mu
@@ -350,7 +351,7 @@ class SBO:
         tempN=i+self.numberTraining
 
         def g(x,grad,onlyGradient=False):
-            return self.functionGradientAscentAn(x,grad,self.stat,i,L,onlyGradient=onlyGradient,
+            return self.functionGradientAscentAn(x,grad,self.stat,i,self.dataObj,L,onlyGradient=onlyGradient,
 						 logproductExpectations=logProduct)
 
         opt.run(f=g)
@@ -367,8 +368,8 @@ class SBO:
 	A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
 	L=np.linalg.cholesky(A)
 	######computeLogProduct....only makes sense for the SEK, the function should be optional
-	logProduct=self.computeLogProductExpectationsForAn(self._XWhist[0:tempN,n1:self._dimW+n1],
-                                                         tempN)
+	logProduct=self.stat.computeLogProductExpectationsForAn(self.dataObj.Xhist[0:tempN,n1:self._dimW+n1],
+                                                         tempN,self.stat._k)
 	Xst=self.sampleFromX(1)
 	args2={}
 	args2['start']=Xst[0:0+1,:]
@@ -389,7 +390,7 @@ class SBO:
 	    A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
 	    L=np.linalg.cholesky(A)
 	    ######computeLogProduct....only makes sense for the SEK, the function should be optional
-	    logProduct=self.computeLogProductExpectationsForAn(self._XWhist[0:tempN,n1:self._dimW+n1],
+	    logProduct=self.stat.computeLogProductExpectationsForAn(self.dataObj.Xhist[0:tempN,n1:self._dimW+n1],
 							       tempN)
          #   dim=self.dimension
             jobs = []
