@@ -268,7 +268,7 @@ class SBO:
 	    self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
 	    self.histSaved+=1
 	muStart=self._k.mu
-	y=self._yHist
+	y=self.dataObj.yHist
 	temp2=linalg.solve_triangular(L,(self.Bhist).T,lower=True)
 	temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	a=muStart+np.dot(temp2.T,temp1)
