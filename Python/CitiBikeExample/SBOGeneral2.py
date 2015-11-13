@@ -205,10 +205,10 @@ class SBO:
         points=self._VOI._points
         for i in range(m):
             print i
-#	    if self.parallel:
-#		self.optVOIParal(i,self.numberParallel)
-#	    else:
-#		self.optVOInoParal(i)
+	    if self.parallel:
+		self.optVOIParal(i,self.numberParallel)
+	    else:
+		self.optVOInoParal(i)
 
             #####
             n1=self._n1
