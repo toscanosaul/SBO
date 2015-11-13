@@ -166,7 +166,7 @@ class SBO:
         self._valOpt=[]
 	
 	self.path=os.path.join(miscObj.folder,'%d'%self.misc.rs+"run")
-	if not os.path.exists():
+	if not os.path.exists(self.path):
 	    os.makedirs(self.path)
 
     ##m is the number of iterations to take
