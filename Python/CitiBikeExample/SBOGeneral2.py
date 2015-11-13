@@ -170,11 +170,7 @@ class SBO:
 	self.computeLogProductExpectationsForAn=statObj.computeLogProductExpectationsForAn
 	self.scaledAlpha=statObj.scaledAlpha
         self.numberTraining=statObj._numberTraining
-        self._k=statObj._k
 	self.B=statObj.B
-	self._XWhist=statObj._Xhist
-        self._yHist=statObj._yHist
-        self._varianceObservations=statObj._noiseHist
 
         self._solutions=[]
         self._valOpt=[]
@@ -365,7 +361,7 @@ class SBO:
     def optAnnoParal(self,i):
 	n1=self._n1
 	tempN=i+self.numberTraining
-	A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
+	A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
 	L=np.linalg.cholesky(A)
 	######computeLogProduct....only makes sense for the SEK, the function should be optional
 	logProduct=self.stat.computeLogProductExpectationsForAn(self.dataObj.Xhist[0:tempN,n1:self._dimW+n1],
@@ -387,7 +383,7 @@ class SBO:
         try:
             n1=self._n1
 	    tempN=i+self.numberTraining
-	    A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
+	    A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
 	    L=np.linalg.cholesky(A)
 	    ######computeLogProduct....only makes sense for the SEK, the function should be optional
 	    logProduct=self.stat.computeLogProductExpectationsForAn(self.dataObj.Xhist[0:tempN,n1:self._dimW+n1],
@@ -430,11 +426,11 @@ class SBO:
 
     def trainModel(self,numStarts,**kwargs):
 	if self.parallel:
-	    self._k.train(scaledAlpha=self.scaledAlpha,numStarts=numStarts,**kwargs)
+	    self.stat._k.train(scaledAlpha=self.scaledAlpha,numStarts=numStarts,**kwargs)
 	else:
-	    self._k.trainnoParallel(scaledAlpha=self.scaledAlpha,**kwargs)
+	    self.stat._k.trainnoParallel(scaledAlpha=self.scaledAlpha,**kwargs)
         f=open(os.path.join(self.path,'%d'%self.randomSeed+"hyperparameters.txt"),'w')
-        f.write(str(self._k.getParamaters()))
+        f.write(str(self.stat._k.getParamaters()))
         f.close()
        
     
