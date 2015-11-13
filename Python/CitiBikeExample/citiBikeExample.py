@@ -310,6 +310,7 @@ def gradXWSigmaOfunc(n,new,kern,Xtrain2,Wtrain2):
     
     gradXSigma0=np.zeros([n+trainingPoints+1,n1])
     tempN=n+trainingPoints
+    past=np.concatenate((Xtrain2,Wtrain2),1)
    # past=objVOI._PointsHist[0:tempN,:]
     gamma=np.transpose(kern.A(new,past))
 
