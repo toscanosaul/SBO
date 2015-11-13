@@ -260,7 +260,7 @@ class SBO:
 	n1=self._n1
 	n2=self._dimW
 	tempN=self.numberTraining+i
-	A=self._VOI._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.noiseHist[0:tempN])
+	A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
 	L=np.linalg.cholesky(A)
 	m=self._VOI._points.shape[0]
 	for j in xrange(self.histSaved,tempN):
