@@ -18,10 +18,19 @@ a much stronger effect on the variability of f.
 
 [tf]: http://toscanosaul.github.io/saul/SBO.pdf
 
-This class takes five class arguments (for details, see [tf]):
+This class takes six class arguments (for details, see [tf]):
 
 
-(*) Objective class:
+(*) Data class. This class consists of all the history.
+
+-Xhist: Past vectors (x,w).
+-yHist: Past outputs.
+-varHist: Past variances of the outputs.
+
+
+(*) Objective class. This class consits of functions and elements related to the
+objective function f(x,w,z) and distribution of w.
+
 -fobj: The simulator or objective function.
 -dimSeparation: Dimension of w.
 -noisyF: Estimator of the conditional expectation given w, F(x,w)=E[f(x,w,z)|w].
@@ -32,7 +41,9 @@ This class takes five class arguments (for details, see [tf]):
 
 
 
-(*) Statistical Class:
+(*) Statistical Class. This class consits of all the functions and elements
+of the statistical model used.
+
 -kernel: Kernel object for the GP on F.
 -dimensionKernel: Dimension of the kernel.
 -scaledAlpha: Parameter to scale the alpha parameters of the kernel,
@@ -41,21 +52,22 @@ This class takes five class arguments (for details, see [tf]):
 	\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w),
 	where x can be a vector.
 -numberTrainingData: Number of training data.
--XWhist: Training points (x,w).
--yHist: Training observations y.
--varHist: Noise of the observations of the training data.
 -computeLogProductExpectationsForAn: Computes the vector with the logarithm
 		of the product of the expectations of
 		np.exp(-alpha2[j]*((z-W[i,j])**2))
 		where W[i,:] is a point in the history.
 -gradXBforAn: Computes the gradients with respect to x of
 	     B(x,i)=\int\Sigma_{0}(x,w,x_{i},w_{i})dp(w),
-	     where (x_{i},w_{i}) is a point in the history observed.
+	     where (x_{i},w_{i}) is a point in the history.
 
 
 
 
-(*) Optimization class:
+(*) Optimization class. This class consists of functions and variables used in the gradient ascent
+method when optimizing the VOI and the expectation of the GP. This functions allow us to define
+the termination condition for gradient ascent. Moreover, we may want to transform the space of x
+to a more convenient space, e.g. dimension reduction.
+
 -numberParallel: Number of starting points for the multistart gradient ascent algorithm.
 -dimXsteepest: Dimension of x when the VOI and a_{n} are optimized. We may want to reduce
 	       the dimension of the original problem.
@@ -79,27 +91,29 @@ This class takes five class arguments (for details, see [tf]):
 			could be the Euclidean norm. 
 -xtol: Tolerance of x for the convergence of the steepest ascent method.
 
+                 
 
+(*) VOI class. This class consits of the functions and variables related to the VOI.
 
-(*) VOI class:
-#-pointsVOI: Points of the discretization to compute the VOI.
--VOIobj: VOI object.
-#--gradXWSigmaOfunc: Computes the gradient of Sigma_{0}, which is the covariance of the Gaussian
+-pointsApproximation: Points of the discretization to compute the VOI.
+-gradXWSigmaOfunc: Computes the gradient of Sigma_{0}, which is the covariance of the Gaussian
 		   Process on F.
-#-gradXBfunc: Computes the gradients with respect to x_{n+1} of
+-gradXBfunc: Computes the gradients with respect to x_{n+1} of
 	     B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
 	     where x_{p} is a point in the discretization of the domain of x.
-#-gradWBfunc: Computes the gradients with respect to w_{n+1} of
+-gradWBfunc: Computes the gradients with respect to w_{n+1} of
 	     B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
 	     where x_{p} is a point in the discretization of the domain of x.
 
 
-(*) Miscellaneous class:
+(*) Miscellaneous class. Consists of path where the results are saved; the random
+    seed used to run the program; and specifies if the program is run in parallel.
+
 -randomSeed: Random seed used to run the problem. Only needed for the name of the
 	     files with the results.
 -parallel: True if we want to run the multistart gradient ascent algorithm and
 	   train the kernel of the GP in parallel; otherwise, it's false. 
--folderContainerResults: Direction where the files with the results are saved. 
+-folderContainerResults: Path where the files with the results are saved. 
 -createNewFiles: True if we want to create new files for the results; it's false
 		 otherwise. If we want to add more results to our previos results,
 		 this variable should be false.
@@ -242,7 +256,8 @@ class SBO:
         def g(x,grad,onlyGradient=False):
             return self.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
 						 scratch=scratch,onlyGradient=onlyGradient,
-						 kern=self.stat._k,XW=self.dataObj.Xhist)
+						 kern=self.stat._k,XW=self.dataObj.Xhist,
+						 Bfunc=self.stat.B)
 
         opt.run(f=g)
         self.optRuns.append(opt)

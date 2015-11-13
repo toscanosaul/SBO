@@ -28,7 +28,7 @@ class objective:
 	     files with the results.
 -parallel: True if we want to run the multistart gradient ascent algorithm and
 	   train the kernel of the GP in parallel; otherwise, it's false. 
--folder: Direction where the files with the results are saved. 
+-folder: Path where the files with the results are saved. 
 -create: True if we want to create new files for the results; it's false
 		 otherwise. If we want to add more results to our previos results,
 		 this variable should be false.

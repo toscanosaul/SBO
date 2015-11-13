@@ -282,9 +282,9 @@ def computeLogProductExpectationsForAn(W,N,kernel):
     return logproductExpectations
 
 stat=stat.SBOGP(kernel=kernel,B=B,dimNoiseW=n2,dimPoints=n1,
-                dimKernel=n1+n2,dataObj=dataObj ,
-                numberTraining=trainingPoints,gradXBforAn=gradXBforAn,
-                computeLogProductExpectationsForAn=computeLogProductExpectationsForAn)
+                dimKernel=n1+n2, numberTraining=trainingPoints,
+                gradXBforAn=gradXBforAn, computeLogProductExpectationsForAn=
+                computeLogProductExpectationsForAn)
 
 
 """
@@ -386,9 +386,9 @@ def gradWB(new,kern,BN,keep,points):
             gradWBarray[j,i]=np.exp(gradWBarray[j,i])*productExpectations
     return gradWBarray
 
-VOIobj=VOI.VOISBO(kernel=stat._k,dimKernel=dimensionKernel,numberTraining=trainingPoints,
-                 gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None,pointsApproximation=pointsVOI,
-                 gradXBfunc=gradXB,B=B,gradWBfunc=gradWB,dimW=n2)
+VOIobj=VOI.VOISBO(gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None,
+                  pointsApproximation=pointsVOI,gradXBfunc=gradXB,
+                  gradWBfunc=gradWB,dimW=n2,numberTraining=trainingPoints)
 
 
 """
@@ -421,7 +421,7 @@ def projectGradientDescent(x,direction,xo):
 	return x
     return xo+direction*min(alph)
 
-def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,onlyGradient=False):
+def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradient=False):
     """ Evaluates the VOI and it can compute its derivative. It evaluates the VOI,
         when grad and onlyGradient are False; it evaluates the VOI and computes its
         derivative when grad is True and onlyGradient is False, and computes only its
@@ -434,6 +434,7 @@ def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,onlyGradient
             i: Iteration of the SBO algorithm.
             L: Cholesky decomposition of the matrix A, where A is the covariance
                matrix of the past obsevations (x,w).
+            Bfunc: Computes B(x,XW)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
             temp2: temp2=inv(L)*B.T, where B is a matrix such that B(i,j) is
                    \int\Sigma_{0}(x_{i},w,x_{j},w_{j})dp(w)
                    where points x_{p} is a point of the discretization of
@@ -453,7 +454,7 @@ def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,onlyGradient
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
     temp=VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
-                          kern=kern,XW=XW)
+                          kern=kern,XW=XW,B=Bfunc)
     
 
     if onlyGradient:
