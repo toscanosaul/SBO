@@ -63,13 +63,13 @@ def writeSolution(ALGObj,optim):
     tempGrad=np.array([tempGrad,optim.nIterations])
     xTrans=ALGObj.opt.transformationDomainX(optim.xOpt[0:1,0:ALGObj.dimXsteepest])
     ALGObj._solutions.append(xTrans)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"optimalSolutions.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"optimalSolutions.txt"), "a") as f:
         np.savetxt(f,xTrans)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"optimalValues.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"optimalValues.txt"), "a") as f:
         result,var=ALGObj.Obj.estimationObjective(xTrans[0,:])
         res=np.append(result,var)
         np.savetxt(f,res)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.randomSeed+"optAngrad.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"optAngrad.txt"), "a") as f:
         np.savetxt(f,tempGrad)
     ALGObj.optRuns=[]
     ALGObj.optPointsArray=[]
