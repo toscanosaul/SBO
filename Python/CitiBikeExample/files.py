@@ -61,7 +61,7 @@ def writeSolution(ALGObj,optim):
     tempGrad=optim.gradOpt
     tempGrad=np.sqrt(np.sum(tempGrad**2))
     tempGrad=np.array([tempGrad,optim.nIterations])
-    xTrans=ALGObj.opt.transformationDomainX(optim.xOpt[0:1,0:ALGObj.dimXsteepest])
+    xTrans=ALGObj.opt.transformationDomainX(optim.xOpt[0:1,0:ALGObj.opt.dimXsteepest])
     ALGObj._solutions.append(xTrans)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"optimalSolutions.txt"), "a") as f:
         np.savetxt(f,xTrans)
