@@ -263,7 +263,7 @@ class SBO:
 	    temp=self.B(self._VOI._points,self.dataObj.Xhist[j,:],self._n1,self._dimW) ###change my previous function because we have to concatenate X and W
 	    self.Bhist=np.concatenate((self.Bhist,temp.reshape((m,1))),1)
 	    self.histSaved+=1
-	muStart=self._k.mu
+	muStart=self.stat._k.mu
 	y=self.dataObj.yHist
 	temp2=linalg.solve_triangular(L,(self.Bhist).T,lower=True)
 	temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
