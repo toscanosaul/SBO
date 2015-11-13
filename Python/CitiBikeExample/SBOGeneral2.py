@@ -194,7 +194,7 @@ class SBO:
 		self.optAnnoParal(i)
             print i
 	#Optimize a_{n}
-	if self.parallel:
+	if self.misc.parallel:
 	    self.optAnParal(m,self.opt.numberParallel)
 	else:
 	    self.optAnnoParal(i)
