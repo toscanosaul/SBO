@@ -12,11 +12,11 @@ from matplotlib import pyplot as plt
 #######
 
 class GaussianProcess:
-    def __init__(self,kernel,dimKernel,Xhist,yHist,noiseHist,numberTraining,scaledAlpha=1.0):
+    def __init__(self,kernel,dimKernel,dataObj,numberTraining,scaledAlpha=1.0):
         self._k=kernel
-        self._Xhist=Xhist
-        self._yHist=yHist
-        self._noiseHist=noiseHist
+        self._Xhist=dataObj.Xhist
+        self._yHist=dataObj.yHist
+        self._noiseHist=dataObj.noiseHist
         self._numberTraining=numberTraining ##number of points used to train the kernel
         self._n=dimKernel
         self.scaledAlpha=scaledAlpha
@@ -32,12 +32,7 @@ class SBOGP(GaussianProcess):
         self.n2=dimNoiseW
         self.B=B
         self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
-      #  if Bhist is None:
-      #      Bhist=np.zeros((numberPoints,0))
-      #  self.Bhist=Bhist
-      #  self.histSaved=histSaved
         self.gradXBforAn=gradXBforAn
-        ####Include Ahist, with Lhist
     
 
         
@@ -48,19 +43,19 @@ class SBOGP(GaussianProcess):
     ##n is the time where aN is computed
     ##Output: aN and its gradient if gradient=True
     ##Other parameters are defined in Vn
-    def aN_grad(self,x,L,n,gradient=True,onlyGradient=False,logproductExpectations=None):
+    def aN_grad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
         n1=self.n1
         n2=self.n2
         muStart=self._k.mu
-        y2=self._yHist[0:n+self._numberTraining]-self._k.mu
+        y2=dataObj.yHist[0:n+self._numberTraining]-self._k.mu
         B=np.zeros(n+self._numberTraining)
         for i in xrange(n+self._numberTraining):
-            B[i]=self.B(x,self._Xhist[i,:],self.n1,self.n2,logproductExpectations[i])
+            B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,logproductExpectations[i])
         
         inv1=linalg.solve_triangular(L,y2,lower=True)
         
         if onlyGradient:
-            gradXB=self.gradXBforAn(x,n,B,self,self._Xhist[0:n+self._numberTraining,0:n1])
+            gradXB=self.gradXBforAn(x,n,B,self._k,dataObj.Xhist[0:n+self._numberTraining,0:n1])
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
             gradAn=np.dot(inv1.transpose(),temp4)
             return gradAn
@@ -69,7 +64,7 @@ class SBOGP(GaussianProcess):
         inv2=linalg.solve_triangular(L,B.transpose(),lower=True)
         aN=muStart+np.dot(inv2.transpose(),inv1)
         if gradient==True:
-            gradXB=self.gradXBforAn(x,n,B,self,self._Xhist[0:n+self._numberTraining,0:n1])
+            gradXB=self.gradXBforAn(x,n,B,self,dataObj.Xhist[0:n+self._numberTraining,0:n1])
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
             gradAn=np.dot(inv1.transpose(),temp4)
             return aN,gradAn

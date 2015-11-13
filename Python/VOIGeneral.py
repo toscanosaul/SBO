@@ -12,18 +12,18 @@ class VOI:
     #####x is a nxdim(x) matrix of points where a_n and sigma_n are evaluated
     ###B(x,x_1),...B(x,x_n), B is the function to compute those
     def __init__(self,kernel,dimKernel,numberTraining,gradXWSigmaOfunc=None,Bhist=None,pointsApproximation=None,
-                 gradXBfunc=None,B=None,PointsHist=None,yHist=None,noiseHist=None,gradWBfunc=None,BhistSaved=0):
+                 gradXBfunc=None,B=None,gradWBfunc=None,BhistSaved=0):
         self._k=kernel
         self._points=pointsApproximation
         self._gradXWSigmaOfunc=gradXWSigmaOfunc
         self._gradXBfunc=gradXBfunc
         self._gradWBfunc=gradWBfunc
-        self._PointsHist=PointsHist
-        self._yHist=yHist
+     #   self._PointsHist=PointsHist
+    #    self._yHist=yHist
         self._Bhist=Bhist
         self._B=B
         self._dimKernel=dimKernel
-        self._noiseHist=noiseHist
+     #   self._noiseHist=noiseHist
         self._gradXBfunc=gradXBfunc
         self._BhistSaved=BhistSaved
         self._numberTraining=numberTraining
@@ -76,7 +76,7 @@ class VOISBO(VOI):
         return b,gamma,BN,temp1,aux4
 
     ##a,b are the vectors of the paper: a=(a_{n}(x_{i}), b=(sigma^tilde_{n})
-    def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B,inv,aux4,
+    def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,inv,aux4,kern,XW,
                 scratch=None,grad=False,onlyGradient=False):
         #n>=0
 
@@ -102,19 +102,15 @@ class VOISBO(VOI):
         
         nTraining=self._numberTraining
         tempN=nTraining+n
-        gradXSigma0,gradWSigma0=self._gradXWSigmaOfunc(n,pointNew,self,self._PointsHist[0:tempN,0:n1],self._PointsHist[0:tempN,n1:n1+n2])
-     #   gradWSigma0=temp[:,n1:n1+n2]
-        gradXB=self._gradXBfunc(pointNew,self,BN,keep) ##check n
-        gradWB=self._gradWBfunc(pointNew,self,BN,keep)
-    #    gradXB=np.zeros([len(keep1),n1])###ver esto
-     #   gradWB=np.zeros([len(keep1),n2])####falta L
-     
-        
-        
-      #  A=self._k.A(self._PointsHist[0:tempN,:],noise=self._noiseHist[0:tempN])
-      #  L=np.linalg.cholesky(A)
+        gradXSigma0,gradWSigma0=self._gradXWSigmaOfunc(n,pointNew,
+                                                       kern,XW[0:tempN,0:n1],
+                                                       XW[0:tempN,n1:n1+n2])
+
+        gradXB=self._gradXBfunc(pointNew,kern,BN,keep,self._points) ##check n
+        gradWB=self._gradWBfunc(pointNew,kern,BN,keep,self._points)
+
         gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
-       # inv3=linalg.solve_triangular(L,gamma,lower=True)
+
         inv3=inv
         beta1=(self._k.A(pointNew)-aux4)
         gradient=np.zeros(M)
@@ -125,9 +121,6 @@ class VOISBO(VOI):
             inv2=linalg.solve_triangular(L,gradientGamma[i,0:tempN].transpose(),lower=True)
             aux5=np.dot(inv2.T,inv3)
             for j in xrange(M):
-           #     inv1=linalg.solve_triangular(L,B[keep[j],:].transpose(),lower=True)
-                
-            #    tmp=np.dot(inv2.T,inv1)
                 tmp=np.dot(inv2.T,scratch[j,:])
 
                 tmp=(beta1**(-.5))*(gradXB[j,i]-tmp)
@@ -155,7 +148,7 @@ class VOISBO(VOI):
         return h,result
                     
                     
-    def VOIfunc(self,n,pointNew,grad,L,temp2,a,B,scratch,onlyGradient=False):
+    def VOIfunc(self,n,pointNew,grad,L,temp2,a,B,scratch,kern,XW,onlyGradient=False):
         n1=self._dimKernel-self._dimW
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:self._dimKernel],L,
                                     temp2=temp2)
@@ -172,13 +165,16 @@ class VOISBO(VOI):
                 #scratch[j,:]=linalg.solve_triangular(L,B[keep2[j],:].transpose(),lower=True)
                 scratch1[j,:]=scratch[keep2[j],:]
         if onlyGradient:
-            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch1,B=B,
-                                inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient)
+            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,scratch=scratch1,
+                                inv=temp1,aux4=aux4,grad=True,onlyGradient=onlyGradient,
+                                kern=kern,XW=XW)
         if grad==False:
-            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,B=B,aux4=aux4,inv=temp1)
+            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,inv=temp1,
+                                kern=kern,XW=XW)
       
         return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,
-                            inv=temp1,scratch=scratch1,B=B,grad=True)
+                            inv=temp1,scratch=scratch1,grad=True,
+                            kern=kern,XW=XW)
 
 class EI(VOI):
     def __init__(self,gradXKern,*args,**kargs):
