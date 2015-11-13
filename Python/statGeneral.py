@@ -16,7 +16,7 @@ class GaussianProcess:
         self._k=kernel
         self._Xhist=dataObj.Xhist
         self._yHist=dataObj.yHist
-        self._noiseHist=dataObj.noiseHist
+        self._noiseHist=dataObj.varHist
         self._numberTraining=numberTraining ##number of points used to train the kernel
         self._n=dimKernel
         self.scaledAlpha=scaledAlpha
