@@ -141,9 +141,19 @@ import misc
 import files as fl
 
 class SBO:
-    def __init__(self, Objobj,miscObj,
-                 VOIobj,optObj,statObj,dataObj):
-
+    def __init__(self, Objobj,miscObj,VOIobj,optObj,statObj,dataObj):
+        """
+        Class to use the Stratified Bayesian Optimization on a specific
+	problem specified by the Objobj object.
+	
+        Args:
+	    Objobj: Objective object (See InterfaceSBO).
+	    miscObj: Miscellaneous object (See InterfaceSBO).
+	    VOIobj: Value of Information function object (See VOIGeneral).
+	    optObj: Opt object (See InterfaceSBO).
+	    statObj: Statistical object (See statGeneral).
+	    dataObj: Data object (See InterfaceSBO).
+        """
 	self.dataObj=dataObj
 	self.stat=statObj
 	self._VOI=VOIobj
@@ -155,8 +165,8 @@ class SBO:
 	self._dimW=self.stat.n2
 	self.numberTraining=statObj._numberTraining
 	
-	self.histSaved=0 #Number of B(x_{p},i) computed for all x_{p}
-			 #in the discretization
+	#Number of B(x_{p},i) computed for all x_{p} in the discretization
+	self.histSaved=0 
 	#Matrix with the computations B(x_{p},i)
 	self.Bhist=np.zeros((VOIobj.sizeDiscretization,0))
 	
@@ -169,9 +179,15 @@ class SBO:
 	if not os.path.exists(self.path):
 	    os.makedirs(self.path)
 
-    ##m is the number of iterations to take
     def SBOAlg(self,m,nRepeat=10,Train=True,**kwargs):
+        """
+        Run the SBO algorithm until m steps are taken.
 	
+        Args:
+	    m: Number of stepes of the algorithm.
+	    nRepeat: Number of random restarts to optimize the hyperparameters.
+	    Train: True if we want to train the kernel; False otherwise.
+        """
 	if self.misc.create: #Create files for the results
 	    fl.createNewFilesFunc(self.path,self.misc.rs) 
 	fl.writeTraining(self) #Write training data
@@ -185,7 +201,6 @@ class SBO:
 		self.optVOIParal(i,self.opt.numberParallel) 
 	    else:
 		self.optVOInoParal(i)
-
             print i
 	    #Otimize a_{n}
 	    if self.misc.parallel:
@@ -200,6 +215,23 @@ class SBO:
 	    self.optAnnoParal(i)
 
     def optimizeVOI(self,start, i,L,temp2,a,B,scratch):
+	"""
+        Optimize the value of information using gradient ascent.
+	
+        Args:
+	    start: Starting point for the gradient ascent method.
+	    i: Iteration of the algorithm.
+            L: Cholesky decomposition of the matrix A, where A is the covariance
+               matrix of the past obsevations (x,w).
+	    B: Matrix such that B(i,j) is \int\Sigma_{0}(x_{i},w,x_{j},w_{j})dp(w)
+	       where points x_{p} is a point of the discretization of
+               the space of x; and (x_{j},w_{j}) is a past observation.
+            temp2: temp2=inv(L)*B.T.
+            a: Vector of the means of the GP on g(x)=E(f(x,w,z)). The means are evaluated on the
+               discretization of the space of x.
+	    scratch: matrix where scratch[i,:] is the solution of the linear system
+                     Ly=B[j,:].transpose() (See above for the definition of B and L)
+        """
         opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
 				  stopFunction=self.opt.functionConditionOpt,xStart=start,
 				  xtol=self.opt.xtol)
@@ -215,10 +247,14 @@ class SBO:
         xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
         self.optPointsArray.append(xTrans)
 
-
-    
-    
     def getParametersOptVoi(self,i):
+	"""
+        Returns a dictionary with i,L,temp2,a,B, scratch. 
+	This dictionary is used to run optimizeVOI.
+	
+        Args:
+	    i: Iteration of the algorithm.
+        """
 	n1=self._n1
 	n2=self._dimW
 	tempN=self.numberTraining+i
@@ -246,8 +282,14 @@ class SBO:
 	args2['B']=self.Bhist
 	args2['scratch']=scratch
 	return args2
-    
+
     def optVOInoParal(self,i):
+	"""
+	Runs the single-start gradient ascent method to optimize the VOI.
+	
+        Args:
+	    i: Iteration of the algorithm.
+        """
 	n1=self._n1
 	n2=self._dimW
 	Xst=self.Obj.sampleFromX(1)
@@ -261,8 +303,16 @@ class SBO:
 	self.optRuns.append(misc.VOIOptWrapper(self,**args2))
 	fl.writeNewPointSBO(self,self.optRuns[0])
 
-
     def optVOIParal(self,i,nStart,numProcesses=None):
+	"""
+	Runs in parallel the multi-start gradient ascent method
+	to optimize the VOI.
+	It restarts the gradient ascent method nStart times.
+	
+        Args:
+	    i: Iteration of the algorithm.
+	    nStart: Number of restarts of the gradient ascent method.
+        """
         try:
             n1=self._n1
             n2=self._dimW
@@ -296,8 +346,21 @@ class SBO:
 	    fl.writeNewPointSBO(self,self.optRuns[j])
         self.optRuns=[]
         self.optPointsArray=[]
-            
-    def optimizeAn(self,start,i,L,logProduct):
+
+    def optimizeAn(self,start,i,L,logProduct=None):
+	"""
+        Optimize a_{n} using gradient ascent.
+	
+        Args:
+	    start: Starting point for the gradient ascent method.
+	    i: Iteration of the algorithm.
+            L: Cholesky decomposition of the matrix A, where A is the covariance
+               matrix of the past obsevations (x,w).
+	    logProduct: Only used when the SEK is used.
+			Vector with the logarithm of the product of the
+                        expectations of np.exp(-alpha2[j]*((z-W[i,j])**2))
+                        where W[i,:] is a point in the history.
+        """
         opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
 				  xStart=start,xtol=self.opt.xtol,
 				  stopFunction=self.opt.functionConditionOpt)
@@ -313,14 +376,28 @@ class SBO:
         xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
         self.optPointsArray.append(xTrans)
     
-    def optAnnoParal(self,i):
+    def optAnnoParal(self,i,logProd=True):
+	"""
+	Runs the single-start gradient ascent method to optimize a_{i}.
+	
+        Args:
+	    i: Iteration of the algorithm.
+	    logProd: True if we compute the logProduct for optimizeAn;
+		     False otherwise.
+        """
 	n1=self._n1
 	tempN=i+self.numberTraining
+	
 	A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
 	L=np.linalg.cholesky(A)
-	######computeLogProduct....only makes sense for the SEK, the function should be optional
-	logProduct=self.stat.computeLogProductExpectationsForAn(self.dataObj.Xhist[0:tempN,n1:self._dimW+n1],
+	
+	if logProd:
+	    tempX=self.dataObj.Xhist[0:tempN,n1:self._dimW+n1]
+	    logProduct=self.stat.computeLogProductExpectationsForAn(tempx,
                                                          tempN,self.stat._k)
+	else:
+	    logProduct=None
+
 	Xst=self.Obj.sampleFromX(1)
 	args2={}
 	args2['start']=Xst[0:0+1,:]
@@ -330,16 +407,30 @@ class SBO:
 	self.optRuns.append(misc.AnOptWrapper(self,**args2))
 	fl.writeSolution(self,self.optRuns[0])
 
-    def optAnParal(self,i,nStart,numProcesses=None):
+    def optAnParal(self,i,nStart,logProd=True,numProcesses=None):
+	"""
+	Runs in parallel the multi-start gradient ascent method
+	to optimize a_{i}.
+	It restarts the gradient ascent method nStart times.
+        Args:
+	    i: Iteration of the algorithm.
+	    nStart: Number of restarts of the gradient ascent method.
+	    logProd: True if we compute the logProduct for optimizeAn;
+		     False otherwise.
+        """
         try:
             n1=self._n1
 	    tempN=i+self.numberTraining
 	    A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
 	    L=np.linalg.cholesky(A)
-	    ######computeLogProduct....only makes sense for the SEK, the function should be optional
-	    logProduct=self.stat.computeLogProductExpectationsForAn(self.dataObj.Xhist[0:tempN,n1:self._dimW+n1],
-							       tempN)
 	    
+	    if logProd:
+		tempX=self.dataObj.Xhist[0:tempN,n1:self._dimW+n1]
+		logProduct=self.stat.computeLogProductExpectationsForAn(tempX,
+							       tempN)
+	    else:
+		logProduct=None
+
 	    args2={}
 	    args2['i']=i
 	    args2['L']=L
@@ -352,7 +443,6 @@ class SBO:
                 args2['start']=Xst[j:j+1,:]
                 job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=args2)
                 jobs.append(job)
-            
             pool.close()  # signal that no more data coming in
             pool.join()  # wait for all the tasks to complete
         except KeyboardInterrupt:
@@ -375,6 +465,13 @@ class SBO:
         self.optPointsArray=[]
 
     def trainModel(self,numStarts,**kwargs):
+	"""
+	Trains the hyperparameters of the kernel.
+	
+        Args:
+	    numStarts: Number of random restarts to optimize
+		       the hyperparameters.
+        """
 	if self.misc.parallel:
 	    self.stat._k.train(scaledAlpha=self.scaledAlpha,numStarts=numStarts,**kwargs)
 	else:
@@ -382,8 +479,4 @@ class SBO:
         f=open(os.path.join(self.path,'%d'%self.misc.rs+"hyperparameters.txt"),'w')
         f.write(str(self.stat._k.getParamaters()))
         f.close()
-       
-    
 
-    
- 
