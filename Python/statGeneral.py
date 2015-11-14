@@ -46,8 +46,13 @@ class SBOGP(GaussianProcess):
         muStart=self._k.mu
         y2=dataObj.yHist[0:n+self._numberTraining]-self._k.mu
         B=np.zeros(n+self._numberTraining)
-        for i in xrange(n+self._numberTraining):
-            B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,logproductExpectations[i])
+        
+        if logproductExpectations is None:
+            for i in xrange(n+self._numberTraining):
+                B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2)
+        else:
+            for i in xrange(n+self._numberTraining):
+                B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,logproductExpectations[i])
         
         inv1=linalg.solve_triangular(L,y2,lower=True)
         
