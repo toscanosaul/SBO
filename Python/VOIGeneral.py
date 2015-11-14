@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+"""
+This file defines several Value of Information functions (VOI).
+It includes the VOI used for SBO; the Knowledge Gradient;
+Expected Improvement and Probability Improvement.
+"""
+
 import numpy as np
 from math import *
 from AffineBreakPoints import *
@@ -8,19 +14,14 @@ from scipy import linalg
 from numpy import linalg as LA
 from scipy.stats import norm
 
-
 class VOI:
-    #####x is a nxdim(x) matrix of points where a_n and sigma_n are evaluated
-    ###B(x,x_1),...B(x,x_n), B is the function to compute those
-    def __init__(self,numberTraining,gradXWSigmaOfunc=None,Bhist=None,pointsApproximation=None,
-                 gradXBfunc=None,B=None,gradWBfunc=None):
-        self._points=pointsApproximation
-        self._gradXWSigmaOfunc=gradXWSigmaOfunc
-        self._gradXBfunc=gradXBfunc
-        self._gradWBfunc=gradWBfunc
-        self._Bhist=Bhist
-        self._B=B
-        self._gradXBfunc=gradXBfunc
+    def __init__(self,numberTraining):
+        """
+        This class defines the Value of Information Function.
+        
+        Arguments:
+            -numberTraining: Numer of training data.
+        """
         self._numberTraining=numberTraining
         
     def evalVOI(self,n,pointNew,a,b,grad=False,**args):
@@ -28,19 +29,95 @@ class VOI:
         
 
 class VOISBO(VOI):
-    def __init__(self,dimW,dimX,*args,**kargs):
+    def __init__(self,dimW,dimX,gradXBfunc,gradWBfunc,
+                 pointsApproximation,gradXWSigmaOfunc,
+                 *args,**kargs):
+        """
+        Value of Information used for SBO.
+        
+        Arguments:
+            -dimW: Dimension of the vectorial space of w.
+            -dimX: Dimension of the vectorial space of x.
+            -pointsApproximation: Points used to approximate the VOI.
+            -gradXBfunc: Computes the gradients with respect to x_{n+1} of
+                         B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
+                         where x_{p} is a point in the discretization
+                         of the domain of x. Its arguments are:
+                            -new: Point (x_{n+1},w_{n+1})
+                            -kern: Kernel
+                            -keep: Indexes of the points keeped of the
+                                   discretization of the domain of x,
+                                   after using AffineBreakPoints
+                             -BN: Vector B(x_{p},n+1), where x_{p} is
+                                  a point in the discretization of
+                                  the domain of x.
+                             -points: Discretization of the domain of x
+            -gradWBfunc: Computes the gradients with respect to w_{n+1} of
+                         B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
+                         where x_{p} is a point in the discretization of
+                         the domain of x. Its arguments are:
+                            -new: Point (x_{n+1},w_{n+1})
+                            -kern: Kernel
+                            -keep: Indexes of the points keeped of the
+                                   discretization of the domain of x,
+                                   after using AffineBreakPoints
+                            -BN: Vector B(x_{p},n+1), where x_{p} is a point
+                                 in the discretization of the domain of x.
+                            -points: Discretization of the domain of x
+            -gradXWSigmaOfunc: Computes the gradient of Sigma_{0}, which is
+                               the covariance of the GP on F.
+                               Its arguments are:
+                                -n: Number of iteration
+                                -new: Point where Sigma_{0} is evaluated
+                                -kern: Kernel
+                                -Xtrain2: Past observations of X
+                                -Wtrain2: Past observations of W
+                                -N: Number of observations
+        """
         VOI.__init__(self,*args,**kargs)
         self.VOI_name="SBO"
         self._dimW=dimW
         self.n2=dimW
         self.n1=dimX
+        self._gradXBfunc=gradXBfunc
+        self._gradWBfunc=gradWBfunc
+        self._gradXWSigmaOfunc=gradXWSigmaOfunc
+        self._points=pointsApproximation
         self.sizeDiscretization=self._points.shape[0]
         
-    #computes a and b from the paper
-    ##x is a nxdim(x) matrix of points where a_n and sigma_n are evaluated
-    ###computed using n past observations
-    ##B is the function
     def aANDb(self,n,x,xNew,wNew,L,temp2,past,kernel,B):
+        """
+        Output:
+            -b:Vector of posterior variances of G(x)=E[f(x,w,z)] if
+               we choose (xNew,wNew) at this iteration. The variances
+               are evaluated at all the points of x.
+            -gamma: Vector of Sigma_{0}(x_{i},w_{i},xNew,wNew) where
+                    (x_{i},w_{i}) are the past observations.
+            -BN: Vector B(x_{p},n+1), where x_{p} is a point
+                 in the discretization of the domain of x.
+            -temp1: Solution to the system Ly=gamma, where L
+                    is the Cholesky decomposition of A.
+            -aux4: Square of the norm of temp1.
+        
+        Args:
+            -n: Iteration of the algorithm
+            -x: nxdim(x) matrix where b is evaluated.
+            -(xNew,wNew): The candidate point to be chosen at iteration n.
+            -L: Cholesky decomposition of the matrix A, where A is the covariance
+                matrix of the past obsevations (x,w).
+            -temp2:temp2=inv(L)*B.T, where B is a matrix such that B(i,j) is
+                   \int\Sigma_{0}(x_{i},w,x_{j},w_{j})dp(w)
+                   where points x_{p} is a point of the discretization of
+                   the space of x; and (x_{j},w_{j}) is a past observation.
+            -past: Past observations.
+            -kernel: kernel.
+            -B: Computes B(x,XW)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
+                Its arguments are:
+                    -x: Vector of points where B is evaluated
+                    -XW: Point (x,w)
+                    -n1: Dimension of x
+                    -n2: Dimension of w
+        """
         x=np.array(x)
         m=x.shape[0]
         tempN=self._numberTraining+n
@@ -68,15 +145,12 @@ class VOISBO(VOI):
     ##a,b are the vectors of the paper: a=(a_{n}(x_{i}), b=(sigma^tilde_{n})
     def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,inv,aux4,kern,XW,
                 scratch=None,grad=False,onlyGradient=False):
-        #n>=0
-
         n1=self.n1
         n2=self.n2
         
         if grad==False:
             h=hvoi(b,c,keep1) ##Vn
             return h
-        ####Gradient
         bPrev=b
         a=a[keep1]
         b=b[keep1]
@@ -84,7 +158,7 @@ class VOISBO(VOI):
         
         if M<=1:
             return h,np.zeros(n1+n2)
-      #  B=self._GP.Bhist
+
         cPrev=c
         c=c[keep1+1]
         c2=np.abs(c[0:M-1])
@@ -96,7 +170,7 @@ class VOISBO(VOI):
                                                        kern,XW[0:tempN,0:n1],
                                                        XW[0:tempN,n1:n1+n2])
 
-        gradXB=self._gradXBfunc(pointNew,kern,BN,keep,self._points) ##check n
+        gradXB=self._gradXBfunc(pointNew,kern,BN,keep,self._points)
         gradWB=self._gradWBfunc(pointNew,kern,BN,keep,self._points)
 
         gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
@@ -106,13 +180,11 @@ class VOISBO(VOI):
         gradient=np.zeros(M)
         result=np.zeros(n1+n2)
         
-
         for i in xrange(n1):
             inv2=linalg.solve_triangular(L,gradientGamma[i,0:tempN].transpose(),lower=True)
             aux5=np.dot(inv2.T,inv3)
             for j in xrange(M):
                 tmp=np.dot(inv2.T,scratch[j,:])
-
                 tmp=(beta1**(-.5))*(gradXB[j,i]-tmp)
                 beta2=BN[keep[j],:]-np.dot(scratch[j,:].T,inv3)
                 tmp2=(.5)*(beta1**(-1.5))*beta2*(2.0*aux5)
@@ -132,9 +204,8 @@ class VOISBO(VOI):
             
         if onlyGradient:
             return result
-        h=hvoi(bPrev,cPrev,keep1) ##Vn
+        h=hvoi(bPrev,cPrev,keep1) 
         return h,result
-                    
                     
     def VOIfunc(self,n,pointNew,grad,L,temp2,a,scratch,kern,XW,B,onlyGradient=False):
         n1=self.n1
