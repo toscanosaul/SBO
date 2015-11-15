@@ -73,12 +73,6 @@ class SBOGP(GaussianProcess):
                                                    N: Number of observations
                                                    kernel: kernel
         """
-        self.SBOGP_name="SBO"
-        self.n1=dimPoints
-        self.n2=dimNoiseW
-        self.B=B
-        self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
-        self.gradXBforAn=gradXBforAn
 
     def aN_grad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
         """
@@ -131,7 +125,7 @@ class SBOGP(GaussianProcess):
         else:
             return aN
         
-    ####particular to this problem
+    ####Check
     def plotAn(self,i,L,points,seed):
         m=points.shape[0]
         z=np.zeros(m)
