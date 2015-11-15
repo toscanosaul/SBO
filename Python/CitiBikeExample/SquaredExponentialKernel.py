@@ -18,14 +18,6 @@ from optimization import getOptimizationMethod
 from scipy import array, linalg, dot
 from nearest_correlation import nearcorr
 
-
-######add a super class of this, to be able to optimize any object
-
-
-###exp(-0.5*sum (alpha_i**2 *(x_i-y_i)**2))
-##n is the dimension of the kernel
-##the kernel is with alpha^2
-####optimize respect to log(variance)
 class SEK:
     def __init__(self,n,scaleAlpha=None,nRestarts=10,X=None,y=None,
                  noise=None,optName='bfgs'):
