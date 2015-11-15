@@ -285,7 +285,7 @@ def computeLogProductExpectationsForAn(W,N,kernel):
 stat=stat.SBOGP(kernel=kernel,B=B,dimNoiseW=n2,dimPoints=n1,
                 dimKernel=n1+n2, numberTraining=trainingPoints,
                 gradXBforAn=gradXBforAn, computeLogProductExpectationsForAn=
-                computeLogProductExpectationsForAn,scaledAlpha=scaledAlpha)
+                computeLogProductExpectationsForAn,scaledAlpha=scaleAlpha)
 
 
 """
