@@ -473,7 +473,7 @@ class SBO:
 		       the hyperparameters.
         """
 	if self.misc.parallel:
-	    self.stat._k.train(scaledAlpha=self.scaledAlpha,numStarts=numStarts,**kwargs)
+	    self.stat._k.train(scaledAlpha=self.stat.scaledAlpha,numStarts=numStarts,**kwargs)
 	else:
 	    self.stat._k.trainnoParallel(scaledAlpha=self.stat.scaledAlpha,**kwargs)
         f=open(os.path.join(self.path,'%d'%self.misc.rs+"hyperparameters.txt"),'w')
