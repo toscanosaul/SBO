@@ -171,7 +171,6 @@ class OptSteepestDescent(Optimization):
     
     #we are optimizing in X+alpha*g2
     ##guarantee that the point is in the compact set ?
-    
     def goldenSectionLineSearch (self,fns,tol,maxtry,X,g2):
          # Compute the limits for the Golden Section search
         ar=np.array([0,2*tol,4*tol])
