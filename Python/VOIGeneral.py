@@ -101,7 +101,7 @@ class VOISBO(VOI):
         
     def aANDb(self,n,x,xNew,wNew,L,temp2,past,kernel,B):
         """
-        Output:
+        Output: A tuple with:
             -b:Vector of posterior variances of G(x)=E[f(x,w,z)] if
                we choose (xNew,wNew) at this iteration. The variances
                are evaluated at all the points of x.
