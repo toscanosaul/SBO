@@ -91,7 +91,7 @@ class OptBFGS(Optimization):
 class OptSteepestDescent(Optimization):
     def __init__(self,stopFunction,n1,maxIters=1e3,xtol=None,
 		 projectGradient=None, *args, **kwargs):
-        Optimization.__init__(self,*args,**kwargs)
+        Optimization.__init__(self,**kwargs)
 	"""
 	Gradient Ascent algorithm.
 	
