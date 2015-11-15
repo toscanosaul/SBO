@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
+"""
+This file defines the kernels. We can optimize the hyperparameters,
+compute the log-likelihood and the matrix A from the paper [tf].
+"""
+
 import numpy as np
-#from scipy.spatial.distance import cdist
 from scipy import linalg
 from LBFGS import *
 from scipy.optimize import fmin_l_bfgs_b
-#from tdot import tdot
 from matrixComputations import tripleProduct,inverseComp
 from scipy.stats import multivariate_normal
 import multiprocessing as mp
@@ -24,7 +27,21 @@ from nearest_correlation import nearcorr
 ##the kernel is with alpha^2
 ####optimize respect to log(variance)
 class SEK:
-    def __init__(self,n,scaleAlpha=None,nRestarts=10,X=None,y=None,xStart=None,noise=None,optName='bfgs'):
+    def __init__(self,n,scaleAlpha=None,nRestarts=10,X=None,y=None,
+                 noise=None,optName='bfgs'):
+        """
+        Defines the squared exponential kernel,
+            variance*exp(-0.5*sum (alpha_i/scaleAlpha)**2 *(x_i-y_i)**2))
+        
+        Args:
+            -n: Dimension of the domain of the kernel.
+            -scaleAlpha: The hyperparameters of the kernel are scaled by
+                         alpha/(scaledAlpha^{2}).
+            -nRestarts: Number of restarts to optimze the hyperparameters.
+            -X: Training data.
+            -y: Outputs of the training data.
+            -noise: Noise of the outputs.
+        """
         if scaleAlpha is None:
             scaleAlpha=1.0
         self.scaleAlpha=scaleAlpha
@@ -33,7 +50,7 @@ class SEK:
         self.variance=[1.0]
         self.mu=[0.0]
         self.optimizationMethod=optName
-        ####observations for the prior
+
         self.X=X
         self.y=y
         self.noise=noise
@@ -42,26 +59,35 @@ class SEK:
         self.restarts=nRestarts
         
     def getParamaters(self):
+        """
+        Returns a dictionary with the hyperparameters and the mean
+        of the GP.
+        """
         dic={}
         dic['alphaPaper']=0.5*(self.alpha**2)/self.scaleAlpha
         dic['variance']=self.variance
         dic['mu']=self.mu
         return dic
 
-
-    
-    ###X,X2 are numpy matrices
     def K(self, X, X2=None,alpha=None,variance=None):
+        """
+        Computes the covariance matrix cov(X[i,:],X2[j,:]).
+        
+        Args:
+            X: Matrix where each row is a point.
+            X2: Matrix where each row is a point.
+            alpha: It's the scaled alpha.
+            Variance: Sigma hyperparameter.
+            
+        """
         if alpha is None:
             alpha=self.alpha
         if variance is None:
             variance=self.variance
             
         if X2 is None:
-            #print self.scaleAlpha
             X=X*alpha/self.scaleAlpha
             Xsq=np.sum(np.square(X), 1)
-         #   r=-2.*tdot(X) + (Xsq[:, None] + Xsq[None, :])
             r=-2.*np.dot(X, X.T) + (Xsq[:, None] + Xsq[None, :])
             r = np.clip(r, 0, np.inf)
             return variance*np.exp(-0.5*r)
@@ -72,17 +98,38 @@ class SEK:
             r = np.clip(r, 0, np.inf)
             return variance*np.exp(-0.5*r)
     
-    ###Computes the covariance matrix A on the points X, and adds the noise of each observation
     def A(self,X,X2=None,noise=None,alpha=None,variance=None):
+        """
+        Computes the covariance matrix A on the points X, and adds
+        the noise of each observation.
+        
+        Args:
+            X: Matrix where each row is a point.
+            X2: Matrix where each row is a point.
+            noise: Noise of the observations.
+            alpha: Hyperparameters of the kernel.
+            Variance: Sigma hyperparameter.
+        """
         if noise is None:
             K=self.K(X,X2,alpha=alpha,variance=variance)
         else:
             K=self.K(X,X2,alpha=alpha,variance=variance)+np.diag(noise)
         return K
     
-    ##X is a matrix
-    ###gradient respect to log(var),log(alpha**2)
     def logLikelihood(self,X,y,noise=None,alpha=None,variance=None,mu=None,gradient=False):
+        """
+        Computes the log-likelihood and its gradient. The gradient is respect to  log(var)
+        and log(alpha**2).
+        
+        Args:
+            -X: Matrix with the training data.
+            -y: Output of the training data.
+            -noise: Noise of the outputs.
+            -alpha: Hyperparameters of the kernel
+            -variance: Hyperparameter of the kernel.
+            -mu: Mean parameter of the GP.
+            -gradient: True if we want the gradient; False otherwise.
+        """
         if alpha is None:
             alpha=self.alpha
         if variance is None:
@@ -103,9 +150,6 @@ class SEK:
                 return logLike
             gradient=np.zeros(self.dimension+2)
             
-            ###0 to n-1, gradient respect to alpha
-            ###n, gradient respect to log(variance)
-            ###n+1,gradient respect to mu
             temp=np.dot(alp[:,None],alp[None,:])
             K2=self.A(X,alpha=alpha,variance=variance)
             for i in range(self.dimension):
@@ -123,7 +167,7 @@ class SEK:
             gradient[self.dimension+1]=0.5*np.trace(np.dot(temp,der)-temp3)
             return logLike,gradient
         except:
-            print "noo"
+            print "no"
             L=np.linalg.inv(K)
             det=np.linalg.det(K)
             logLike=-0.5*np.dot(y2,np.dot(L,y2))-0.5*N*np.log(2*np.pi)-0.5*np.log(det)
@@ -148,27 +192,56 @@ class SEK:
             gradient[self.dimension+1]=0.5*np.trace(temp2)
             return logLike,gradient
             
-
     def gradientLogLikelihood(self,X,y,noise=None,alpha=None,variance=None,mu=None):
+        """
+        Computes the gradient of the log-likelihood, respect to log(var)
+        and log(alpha**2).
+        
+        Args:
+            -X: Matrix with the training data.
+            -y: Output of the training data.
+            -noise: Noise of the outputs.
+            -alpha: Hyperparameters of the kernel
+            -variance: Hyperparameter of the kernel.
+            -mu: Mean parameter of the GP.
+            -gradient: True if we want the gradient; False otherwise.
+        """
         return self.logLikelihood(X,y,noise=noise,alpha=alpha,variance=variance,mu=mu,gradient=True)[1]
     
-    
     def minuslogLikelihoodParameters(self,t):
+        """
+        Computes the minus log-likelihood.
+        
+        Args:
+            t: hyperparameters of the kernel.
+        """
         alpha=t[0:self.dimension]
         variance=np.exp(t[self.dimension])
         mu=t[self.dimension+1]
         return -self.logLikelihood(self.X,self.y,self.noise,alpha=alpha,variance=variance,mu=mu)
     
     def minusGradLogLikelihoodParameters(self,t):
+        """
+        Computes the gradient of the minus log-likelihood.
+        
+        Args:
+            t: hyperparameters of the kernel.
+        """
         alpha=t[0:self.dimension]
         variance=np.exp(t[self.dimension])
         mu=t[self.dimension+1]
         return -self.gradientLogLikelihood(self.X,self.y,self.noise,alpha=alpha,variance=variance,mu=mu)
 
-    
-    
-    ##optimizer is the name like 'bfgs'
     def optimizeKernel(self,start=None,optimizer=None,**kwargs):
+        """
+        Optimize the minus log-likelihood using the optimizer method and starting in start.
+        
+        Args:
+            start: starting point of the algorithm.
+            optimizer: Name of the optimization algorithm that we want to use;
+                       e.g. 'bfgs'.
+            
+        """
         if start is None:
             start=np.concatenate((np.log(self.alpha**2),np.log(self.variance),self.mu))
         if optimizer is None:
@@ -182,6 +255,12 @@ class SEK:
     
     
     def trainnoParallel(self,scaledAlpha,**kwargs):
+        """
+        Train the hyperparameters starting in only one point the algorithm.
+        
+        Args:
+            -scaledAlpha: The definition may be found above.
+        """
         dim=self.dimension
         alpha=np.random.randn(dim)
         variance=np.random.rand(1)
@@ -194,10 +273,14 @@ class SEK:
         self.variance=np.exp(np.array(temp[self.dimension]))
         self.mu=np.array(temp[self.dimension+1])
 
-    
-    ###Train the hyperparameters using MLE
-    ###noise is an array. X is a matrix y is an array
     def train(self,scaledAlpha,numStarts=None,numProcesses=None,**kwargs):
+        """
+        Train the hyperparameters starting in several different points.
+        
+        Args:
+            -scaledAlpha: The definition may be found above.
+            -numStarts: Number of restarting times oft he algorithm.
+        """
         if numStarts is None:
             numStarts=self.restarts
         
@@ -206,15 +289,11 @@ class SEK:
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             for i in range(numStarts):
-               # alpha=np.log((np.exp(np.random.randn(dim))/scaledAlpha)**2)
                 alpha=np.random.randn(dim)
                 variance=np.random.rand(1)
                 st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),[0.0]))
                 args2={}
                 args2['start']=st
-              #  misc.kernOptWrapper(self,**args2)
-               # print args2
-               # print self.minuslogLikelihoodParameters(st)
 
                 job = pool.apply_async(misc.kernOptWrapper, args=(self,), kwds=args2)
                 jobs.append(job)
@@ -236,16 +315,15 @@ class SEK:
         if len(self.optRuns):
             i = np.argmin([o.fOpt for o in self.optRuns])
             temp=self.optRuns[i].xOpt
-            #print "norm"
-            #print np.sqrt(np.sum(self.minusGradLogLikelihoodParameters(temp)**2))
-        #    print "opt"
-        #    print self.minuslogLikelihoodParameters(temp)
             self.alpha=np.sqrt(np.exp(np.array(temp[0:self.dimension])))
             self.variance=np.exp(np.array(temp[self.dimension]))
             self.mu=np.array(temp[self.dimension+1])
 
     
     def printPar(self):
+        """
+        Print the hyperparameters of the kernel.
+        """
         print "alpha is "+self.alpha
         print "variance is "+self.variance
         print "mean is "+ self.mu
