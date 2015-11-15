@@ -1,8 +1,12 @@
 #!/usr/bin/env python
+"""
+This file includes the optimization methods used such as
+gradient ascent (maximizes) and BFGS (minimizes).
+"""
+
 
 import numpy as np
 from scipy.optimize import *
-#from misc import getOptimizationMethod
 from warnings import warn
 from math import *
 from scipy import linalg
@@ -11,19 +15,20 @@ import SBOGeneral2 as SB
 
 
 class Optimization:
-    def __init__(self,xStart,maxfun=1e4,maxIters=1e3,ftol=None,xtol=None,gtol=None,bfgsFactor=None):
+    def __init__(self,xStart,):
+	"""
+	General class for any optimization method used.
+	
+	Args:
+	    -xStart: Starting point of the algorithms.
+	"""
         self.optMethod=None
         self.xStart=xStart
-        self.maxFun=maxfun
-        self.maxIters=maxIters
-        self.ftol=ftol
-        self.xtol=xtol
-        self.gtol=gtol
-        self.xOpt=None
-        self.fOpt=None
-        self.status=None
-        self.bfgsFactor=bfgsFactor
-        self.gradOpt=None
+	
+        self.xOpt=None #Optimal point
+        self.fOpt=None #Optimal value
+        self.status=None 
+        self.gradOpt=None #Derivative at the optimum
         self.nIterations=None
 
     def run(self, **kwargs):
@@ -31,16 +36,41 @@ class Optimization:
     
         
     def opt(self,f=None,fp=None):
+	"""
+	Optimizes f.
+	
+	Args:
+	    f: Objective function.
+	    fp: Derivative of the function.
+	"""
         raise NotImplementedError, "optimize needs to be implemented"
     
 
 class OptBFGS(Optimization):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, maxfun=1e4,gtol=None,bfgsFactor=None,*args, **kwargs):
         Optimization.__init__(self,*args,**kwargs)
+	"""
+	This is the class of the bfgs algorithm.
+	
+	Args:
+	    -maxfun: Maximum number of evaluations of the objective.
+	    -gtol: Tolerance of the change of the gradient.
+	    -bfgsFactor= Parameter related to the bfgs method.
+	    
+	"""
         self.Name="bfgs"
+	self.gtol=gtol
+	self.bfgsFactor=bfgsFactor
+	self.maxFun=maxfun
     
-    #fd is the derivative
     def opt(self,f=None,df=None):
+	"""
+	Minimizes f.
+	
+	Args:
+	    -f: Objective function.
+	    -df: Derivative of the function.
+	"""
         assert df!=None, "Derivative is necessary"
         
         statuses = ['Converged', 'Maximum number of f evaluations reached', 'Error']
@@ -59,13 +89,31 @@ class OptBFGS(Optimization):
         
         
 class OptSteepestDescent(Optimization):
-    def __init__(self,stopFunction,n1,projectGradient=None, *args, **kwargs):
+    def __init__(self,stopFunction,n1,maxIters=1e3,xtol=None,
+		 projectGradient=None, *args, **kwargs):
         Optimization.__init__(self,*args,**kwargs)
+	"""
+	Gradient Ascent algorithm.
+	
+	Args:
+	    stopFunction: Gives the stopping rule, e.g. the
+			  function could be the Euclidean norm.
+			  Its arguments is:
+			    -x: Point where the condition is evaluated.
+	    n1: Dimension of the domain of the objective function.
+	    maxIters: Maximum number of iterations.
+	    xtol: Tolerance in the change of points of two consecutive
+		  iterations.
+	    projectGradient: Project a point x to the domain of the problem
+			     at each step of the gradient ascent method if
+			     needed. Its argument is:
+				    x: The point that is projected.
+	"""
         self.Name="steepest"
         self.maxtry=25
-        self.constraintA=-3.0
-        self.constraintB=3.0
         self.n1=n1
+	self.maxIters=maxIters
+	self.xtol=xtol
 	if stopFunction is None:
 	    stopFunction=LA.norm
 	self.stopFunction=stopFunction
@@ -145,8 +193,17 @@ class OptSteepestDescent(Optimization):
         else:
             return self.goldenSection(fns,al,al,ar,0,tol=tol)
     
-    ###borrar esta funcion
     def steepestAscent(self,f):
+	"""
+	Steepest Ascent algorithm.
+	
+	Args:
+	    -f: objective function and its gradient.
+		Its arguments are:
+		    x: Point where the function is evaluated.
+		    grad: True if we want the gradient; False otherwise.
+		    onlyGradient: True if we only want the gradient; False otherwise.
+	"""
         xStart=self.xStart
         tol=self.xtol
         maxit=self.maxIters
@@ -158,8 +215,6 @@ class OptSteepestDescent(Optimization):
         print "xstart"
 	print xStart
         n1=self.n1
-        c=self.constraintA
-        d=self.constraintB
         
         while tolMet==False:
             iter=iter+1
@@ -199,18 +254,33 @@ class OptSteepestDescent(Optimization):
                 g1,g2=f(X,grad=True)
                 return X,g1,g2,iter
                 
-    
-    #f gives both the function and the derivative
     def opt(self,f=None,df=None):
+	"""
+	Runs the steepest ascent method.
+	
+	Args:
+	    -f: objective function and its gradient.
+		Its arguments are:
+		    x: Point where the function is evaluated.
+		    grad: True if we want the gradient; False otherwise.
+		    onlyGradient: True if we only want the gradient; False otherwise.
+	
+	"""
         x,g,g1,it=self.steepestAscent(f)
         self.xOpt=x
         self.fOpt =g
         self.gradOpt=g1
         self.nIterations=it
         
-##x is a string with the name of the method we want to use.
-##x: 'bfgs',..
+
 def getOptimizationMethod(x):
+    """
+    Get the optimization method.
+    
+    Args:
+	-x: String with the name of the method, e.g.
+	    'bfgs','steepest'.
+    """
     optimizers={'bfgs': OptBFGS,'steepest':OptSteepestDescent}
     
     for optMethod in optimizers.keys():
@@ -218,12 +288,3 @@ def getOptimizationMethod(x):
             return optimizers[optMethod]
         
     raise KeyError('No optimizer was found matching the name: %s' % x)
-
-
-
-        
-    
-    
-    
-        
-        
