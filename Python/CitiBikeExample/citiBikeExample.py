@@ -147,7 +147,8 @@ def estimationObjective(x,N=100):
     
     return np.mean(result),float(np.var(result))/estimator
 
-Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,simulatorW,estimationObjective)
+Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,
+                          simulatorW,estimationObjective)
 
 """
 We define the miscellaneous object.
@@ -284,7 +285,7 @@ def computeLogProductExpectationsForAn(W,N,kernel):
 stat=stat.SBOGP(kernel=kernel,B=B,dimNoiseW=n2,dimPoints=n1,
                 dimKernel=n1+n2, numberTraining=trainingPoints,
                 gradXBforAn=gradXBforAn, computeLogProductExpectationsForAn=
-                computeLogProductExpectationsForAn)
+                computeLogProductExpectationsForAn,scaledAlpha=scaledAlpha)
 
 
 """
