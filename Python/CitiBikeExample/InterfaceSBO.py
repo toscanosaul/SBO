@@ -21,19 +21,35 @@ We define classes needed to run the SBO algorithm:
 """
 
 class objective:
-    """
-    Args:
-        -fobj: The simulator or objective function.
-        -dimSeparation: Dimension of w.
-        -noisyF: Estimator of the conditional expectation given w,
-                 F(x,w)=E[f(x,w,z)|w].
-        -numberEstimateF: Number of samples used to estimate F.
-        -sampleFromX: Chooses a point x at random.
-        -simulatorW: Simulates a random vector w.
-        -estimationObjective: Estimates the expectation of fobj.
-    """
     def __init__(self, fobj,dimSeparation,noisyF,numberEstimateF,SampleFromX,
                  simulatorW,estimationObjective):
+        """
+        Args:
+            -fobj: The simulator or objective function.
+            -dimSeparation: Dimension of w.
+            -noisyF: Estimator of the conditional expectation given w,
+                     F(x,w)=E[f(x,w,z)|w].
+                     Its arguments are:
+                        -(x,w): Point where F is evaluated.
+                        -N: number of samples to estimate F
+                     Its outputs are:
+                        -Estimator of F.
+                        -Estimator of the variance of the output.
+            -numberEstimateF: Number of samples used to estimate F.
+            -sampleFromX: Chooses a point x at random.
+                          Its argument is:
+                            -N: Number of points chosen.
+            -simulatorW: Simulates a random vector w.
+                         Its argument is:
+                            -N: Number of simulations taken.
+            -estimationObjective: Estimates the expectation of fobj.
+                                  Its arguments are:
+                                     -x: Point where G is evaluated.
+                                     -N: number of samples to estimate G
+                                  Its outputs are:
+                                     -Estimator of G.
+                                     -Estimator of the variance of the output.
+        """
         self.fobj=fobj
         self.dimSeparation=dimSeparation
         self.noisyF=noisyF
@@ -72,23 +88,74 @@ class opt:
                        may want to reduce the dimension of the original problem.
         -transformationDomainX: Transforms the point x given by the steepest ascent
                                 method to the right domain of x.
+                                Its arugment its:
+                                    -x: The point to be transformed
         -transformationDomainW: Transforms the point w given by the steepest ascent
                                 method to the right domain of w.
+                                Its argument is:
+                                  -w: The point to be tranformed.
         -projectGradient: Project a point x to the domain of the problem at each step
                           of the gradient ascent method if needed.
+                          Its argument is:
+                            -x: The point that is projected.
         -functionGradientAscentVn: Function used for the gradient ascent method. It
                                    evaluates the VOI, when grad and onlyGradient are
                                    False; it evaluates the VOI and computes its
                                    derivative when grad is True and onlyGradient is False,
                                    and computes only its gradient when gradient and
-                                   onlyGradient are both True. 
+                                   onlyGradient are both True.
+                                   Its arguments are:
+                                    -x: VOI is evaluated at x.
+                                    -grad: True if we want to compute the gradient;
+                                           False otherwise.
+                                    -i: Iteration of the SBO algorithm.
+                                    -L: Cholesky decomposition of the matrix A,
+                                        where A is the covariance matrix of the
+                                        past obsevations (x,w).
+                                    -Bfunc: Computes B(x,XW)=\int\Sigma_{0}(x,w,
+                                                     XW[0:n1],XW[n1:n1+n2])dp(w).
+                                    -temp2: temp2=inv(L)*B.T, where B is a matrix
+                                            such that B(i,j) is
+                                            \int\Sigma_{0}(x_{i},w,x_{j},w_{j})dp(w)
+                                            where points x_{p} is a point of the
+                                            discretization of the space of x; and
+                                            (x_{j},w_{j}) is a past observation.
+                                    -a: Vector of the means of the GP on G. The
+                                        means are evaluated on the
+                                        discretization of the space of x.
+                                    -VOI: VOI object
+                                    -kern: kernel
+                                    -XW: Past observations
+                                    -scratch: matrix where scratch[i,:] is the
+                                              solution of the linear system
+                                              Ly=B[j,:].transpose()
+                                    -onlyGradient: True if we only want to compute
+                                                    the gradient; False otherwise.
         -functionGradientAscentAn: Function used for the gradient ascent method. It evaluates
                                    a_{n}, when grad and onlyGradient are False; it evaluates
                                    a_{n} and computes its derivative when grad is True and
                                    onlyGradient is False, and computes only its gradient when
                                    gradient and onlyGradient are both True.
+                                   Its arguments are:
+                                    x: a_{i} is evaluated at x.
+                                    grad: True if we want to compute the gradient; False
+                                          otherwise.
+                                    i: Iteration of the SBO algorithm.
+                                    L: Cholesky decomposition of the matrix A, where A is
+                                       the covariance matrix of the past obsevations (x,w).
+                                    dataObj: Data object.
+                                    stat: Statistical object.
+                                    onlyGradient: True if we only want to compute the gradient;
+                                                  False otherwise.
+                                    logproductExpectations: Vector with the logarithm of the
+                                                            product of the expectations of
+                                                            np.exp(-alpha2[j]*((z-W[i,j])**2))
+                                                            where W[i,:] is a point in the history.
+                                                            Only when SK is used.
         -functionConditionOpt: Gives the stopping rule for the steepest ascent method, e.g. the
-                               function could be the Euclidean norm. 
+                               function could be the Euclidean norm.
+                               Its arguments is:
+                                -x: Point where the condition is evaluated.
         -xtol: Tolerance of x for the convergence of the steepest ascent method.
         """
         self.numberParallel=numberParallel
