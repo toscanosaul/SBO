@@ -386,7 +386,7 @@ def gradWB(new,kern,BN,keep,points):
             gradWBarray[j,i]=np.exp(gradWBarray[j,i])*productExpectations
     return gradWBarray
 
-VOIobj=VOI.VOISBO(gradXWSigmaOfunc=gradXWSigmaOfunc,Bhist=None, dimX=n1,
+VOIobj=VOI.VOISBO(gradXWSigmaOfunc=gradXWSigmaOfunc,dimX=n1,
                   pointsApproximation=pointsVOI,gradXBfunc=gradXB,
                   gradWBfunc=gradWB,dimW=n2,numberTraining=trainingPoints)
 
@@ -455,7 +455,6 @@ def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGr
     xFinal=np.concatenate((x2,tempW),1)
     temp=VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
                           kern=kern,XW=XW,B=Bfunc)
-    
 
     if onlyGradient:
         t=np.diag(np.ones(n1-1))
