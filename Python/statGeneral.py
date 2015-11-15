@@ -77,7 +77,6 @@ class SBOGP(GaussianProcess):
         self.n1=dimPoints
         self.n2=dimNoiseW
         self.B=B
-        self._gradXBfunc=gradXBfunc
         self.gradXBforAn=gradXBforAn
         self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
         
