@@ -47,8 +47,8 @@ class Optimization:
     
 
 class OptBFGS(Optimization):
-    def __init__(self, maxfun=1e4,gtol=None,bfgsFactor=None,*args, **kwargs):
-        Optimization.__init__(self,*args,**kwargs)
+    def __init__(self, xStart,maxfun=1e4,gtol=None,bfgsFactor=None):
+        Optimization.__init__(self,xStart)
 	"""
 	This is the class of the bfgs algorithm.
 	
