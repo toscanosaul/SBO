@@ -15,7 +15,7 @@ import SBOGeneral2 as SB
 
 
 class Optimization:
-    def __init__(self,xStart,):
+    def __init__(self,xStart):
 	"""
 	General class for any optimization method used.
 	
