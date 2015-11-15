@@ -80,14 +80,26 @@ class SBOGP(GaussianProcess):
         self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
         self.gradXBforAn=gradXBforAn
 
-    ##x is point where function is evaluated
-    ##L is cholesky factorization of An
-    ##X,W past points
-    ##y2 are the past observations
-    ##n is the time where aN is computed
-    ##Output: aN and its gradient if gradient=True
-    ##Other parameters are defined in Vn
     def aN_grad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
+        """
+        Computes a_{n} and it can compute its derivative. It evaluates a_{n},
+        when grad and onlyGradient are False; it evaluates the a_{n} and computes its
+        derivative when grad is True and onlyGradient is False, and computes only its
+        gradient when gradient and onlyGradient are both True.
+        
+        Args:
+            x: a_{n} is evaluated at x.
+            L: Cholesky decomposition of the matrix A, where A is the covariance
+               matrix of the past obsevations (x,w).
+            n: Step of the algorithm.
+            dataObj: Data object (it contains all the history).
+            gradient: True if we want to compute the gradient; False otherwise.
+            onlyGradient: True if we only want to compute the gradient; False otherwise.
+            logproductExpectations: Vector with the logarithm of the product of the
+                                    expectations of np.exp(-alpha2[j]*((z-W[i,j])**2))
+                                    where W[i,:] is a point in the history.
+                                    --Only with the SEK--
+        """
         n1=self.n1
         n2=self.n2
         muStart=self._k.mu
@@ -102,14 +114,13 @@ class SBOGP(GaussianProcess):
                 B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,logproductExpectations[i])
         
         inv1=linalg.solve_triangular(L,y2,lower=True)
-        
+
         if onlyGradient:
             gradXB=self.gradXBforAn(x,n,B,self._k,dataObj.Xhist[0:n+self._numberTraining,0:n1])
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
             gradAn=np.dot(inv1.transpose(),temp4)
             return gradAn
-        
-        
+
         inv2=linalg.solve_triangular(L,B.transpose(),lower=True)
         aN=muStart+np.dot(inv2.transpose(),inv1)
         if gradient==True:
