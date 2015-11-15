@@ -24,7 +24,21 @@ class VOI:
         """
         self._numberTraining=numberTraining
         
-    def evalVOI(self,n,pointNew,a,b,grad=False,**args):
+    def evalVOI(self,n,pointNew,onlyGradient=False, grad=False,**args):
+        """
+        Output:
+            Evaluates the VOI and it can compute its derivative. It evaluates
+            the VOI, when grad and onlyGradient are False; it evaluates the
+            VOI and computes its derivative when grad is True and onlyGradient
+            is False, and computes only its gradient when gradient and
+            onlyGradient are both True.
+            
+        Args:
+            -n: Iteration of the algorithm
+            -pointNew: The VOI will be evaluated at this point.
+            -grad: True if we want to compute the gradient; False otherwise.
+            -onlyGradient: True if we only want to compute the gradient; False otherwise.
+        """
         raise NotImplementedError, "this needs to be implemented"
         
 
@@ -102,7 +116,7 @@ class VOISBO(VOI):
         Args:
             -n: Iteration of the algorithm
             -x: nxdim(x) matrix where b is evaluated.
-            -(xNew,wNew): The candidate point to be chosen at iteration n.
+            -(xNew,wNew): The VOI will be evaluated at this point.
             -L: Cholesky decomposition of the matrix A, where A is the covariance
                 matrix of the past obsevations (x,w).
             -temp2:temp2=inv(L)*B.T, where B is a matrix such that B(i,j) is
@@ -142,9 +156,47 @@ class VOISBO(VOI):
             b=np.zeros((len(b),1))
         return b,gamma,BN,temp1,aux4
 
-    ##a,b are the vectors of the paper: a=(a_{n}(x_{i}), b=(sigma^tilde_{n})
     def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,inv,aux4,kern,XW,
                 scratch=None,grad=False,onlyGradient=False):
+        """
+        Output:
+            Evaluates the VOI and it can compute its derivative. It evaluates
+            the VOI, when grad and onlyGradient are False; it evaluates the
+            VOI and computes its derivative when grad is True and onlyGradient
+            is False, and computes only its gradient when gradient and
+            onlyGradient are both True.
+        
+        Args:
+            -n: Iteration of the algorithm.
+            -pointNew: The VOI will be evaluated at this point.
+            -a: Vector of the means of the GP on g(x)=E(f(x,w,z)).
+                The means are evaluated on the discretization of
+                the space of x.
+            -b: Vector of posterior variances of G(x)=E[f(x,w,z)] if
+                we choose (xNew,wNew) at this iteration. The variances
+                are evaluated at all the points of x.
+            -c: Vector returned by AffineBreakPoints.
+            -keep: Indexes returned by AffineBreakPointsPrep. They represent
+                   the new order of the elements of a and b.
+            -keep1: Indexes returned by AffineBreakPoints. Those are the
+                    indexes of the elements keeped.
+            -M: Number of points keeped.
+            -gamma: Vector of Sigma_{0}(x_{i},w_{i},xNew,wNew) where
+                    (x_{i},w_{i}) are the past observations.
+            -BN: Vector B(x_{p},n+1), where x_{p} is a point
+                 in the discretization of the domain of x. 
+            -L: Cholesky decomposition of the matrix A, where A is the covariance
+                matrix of the past obsevations (x,w).
+            -inv: Solution to the system Ly=gamma, where L
+                  is the Cholesky decomposition of A.
+            -aux4: Square of the norm of inv.
+            -kern: Kernel.
+            -XW: Past observations.
+            -scratch: Matrix where scratch[i,:] is the solution of the linear system
+                      Ly=B[j,:].transpose() (See above for the definition of B and L)
+            -grad: True if we want to compute the gradient; False otherwise.
+            -onlyGradient: True if we only want to compute the gradient; False otherwise.
+        """
         n1=self.n1
         n2=self.n2
         
@@ -206,8 +258,41 @@ class VOISBO(VOI):
             return result
         h=hvoi(bPrev,cPrev,keep1) 
         return h,result
-                    
+
     def VOIfunc(self,n,pointNew,grad,L,temp2,a,scratch,kern,XW,B,onlyGradient=False):
+        """
+        Output:
+            Evaluates the VOI and it can compute its derivative. It evaluates
+            the VOI, when grad and onlyGradient are False; it evaluates the
+            VOI and computes its derivative when grad is True and onlyGradient
+            is False, and computes only its gradient when gradient and
+            onlyGradient are both True.
+        
+        Args:
+            -n: Iteration of the algorithm.
+            -pointNew: The VOI will be evaluated at this point.
+            -grad: True if we want to compute the gradient; False otherwise.
+            -L: Cholesky decomposition of the matrix A, where A is the covariance
+                matrix of the past obsevations (x,w).
+            -temp2: temp2=inv(L)*B.T, where B is a matrix such that B(i,j) is
+                   \int\Sigma_{0}(x_{i},w,x_{j},w_{j})dp(w)
+                   where points x_{p} is a point of the discretization of
+                   the space of x; and (x_{j},w_{j}) is a past observation.
+            -a: Vector of the means of the GP on g(x)=E(f(x,w,z)).
+                The means are evaluated on the discretization of
+                the space of x.
+            -scratch: Matrix where scratch[i,:] is the solution of the linear system
+                      Ly=B[j,:].transpose() (See above for the definition of B and L)
+            -kern: Kernel.
+            -XW: Past observations.
+            -B: Computes B(x,XW)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
+                Its arguments are:
+                    -x: Vector of points where B is evaluated
+                    -XW: Point (x,w)
+                    -n1: Dimension of x
+                    -n2: Dimension of w
+            -onlyGradient: True if we only want to compute the gradient; False otherwise.
+        """
         n1=self.n1
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
                                     temp2=temp2,past=XW,kernel=kern,B=B)
