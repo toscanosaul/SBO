@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+"""
+Queuing simulation based on New York City's Bike system,
+in which system users may remove an available bike from
+a station at one location within the city, and ride it
+to a station with an available dock in some other location
+within the city.
+"""
+
 import numpy as np
 from math import *
 from geopy.distance import vincenty
@@ -11,11 +19,22 @@ nBikes=6000
 nStations=329
 distancesBikeStations=np.loadtxt("distanceBikeStations.txt")
 
-###Simulate N(T,(i,j)) where (i,j) is in A, and N(T,(i,j)) is the poisson process related
-###to the station (i,j); and A is a subset of stations. Return the number of times generated.
-###Precondition: N is N(T,A)=sum(i,j in A) N(T,(i,j)), lamb is a vector with the parameters of the
-###             poisson processes N(T,(i,j)) (lamb[i] is related to the ith entry of A)
 def PoissonProcess(T,lamb,A,N):
+    """
+    Simulate N(T,(i,j)) where (i,j) is in A, and N(T,(i,j)) is the poisson process related
+    to the station (i,j); and A is a subset of stations. Return the number of times generated.
+    
+    Output:
+        TIME: Arrial times
+        nArrivals: Number of arrivals
+    
+    Args:
+        T: Final time of the simulation.
+        A: Subsets A(i,j) of pair of bike stations. 
+        N: N(T,A)=sum(i,j in A) N(T,(i,j))
+        lamb: Vector with the parameters of the poisson processes N(T,(i,j))
+                (lamb[i] is related to the ith entry of A)
+    """
     n=len(A) ##cardinality of A
     prob=np.ones(n)
     lambSum=(np.sum(lamb))
@@ -29,12 +48,17 @@ def PoissonProcess(T,lamb,A,N):
             unif=np.random.uniform(0,1,X[i])
             temp=np.sort(float(T)*unif)
             TIME.append([A[i],temp])
-    return TIME,nArrivals ##Each element of the list corresponds to the times of the poisson process of each pair (i,j)
+    return TIME,nArrivals 
 
-##Generates subsets A(i,j) based on the flow between the bike station, with their parameters lamb
-##n sets generated
-##fil is the name of the file with the parameters of the poisson processes
 def generateSets(n,fil):
+    """
+    Generates subsets A(i,j) based on the flow between the bike station,
+    with their parameters lambda.
+    
+    Args:
+        n: Number of sets generated.
+        fil: Name of the file with the parameters of the Poisson processes.
+    """
     poiss=np.loadtxt(fil)
     n1=poiss.shape[0]
     A=[[] for i in range(n)]
@@ -50,27 +74,42 @@ def generateSets(n,fil):
                 lamb[ind].append(poiss[j,i])
     return A,lamb
 
-##Simulate N(T,A)=sum(i,j in A) N(T,(i,j))
-##Precondition: lambd are the respective parameters of the elements in A
 def SimulateNt (A,lamb,T):
+    """
+    Simulate N(T,A)=sum(i,j in A) N(T,(i,j)).
+    
+    Args:
+        -A: Subsets A(i,j) based on the flow between the bike stations.
+        -lamb: Vector with the parameters of the elements in A
+        -T: Time of the variable N(T,(i,j))
+    """
     la=np.sum(lamb)
     la=la*T
     res=np.random.poisson(la)
     return res
 
-###Starts the Initial configuration of the citibike problem, where X is a vector with the initial configuration of bikes,
-###and m are the number of groups according to K-means algorithm.
-###returns a matrix with the number of docks and bikes available
-def startInitialConfiguration (X,m,data,cluster,bikeData):
- #   with open ('json.json') as data_file:
- #       data=json.load(data_file)
-   # bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
- #   f = open(str(m)+"-cluster.txt", 'r')
- #   cluster=eval(f.read())
- #   f.close()
+def startInitialConfiguration (X,m,data,cluster,bikeData,files=False):
+    """
+    Starts the Initial configuration of the citibike problem. Returns a
+    matrix with the number of docks and bikes available.
+    
+    Args:
+        -X: Vector with the initial configuration of bikes.
+        -m: Number of groups according to K-means algorithm.
+        -data: Contain the latitudes,longitudes,addreses,indexes of the
+                bike stationsload; this data is loaded from a json file.
+        -cluster: Array read from a txt file. It contains the clusters of
+                 the bike stations.
+        -bikeData: Matrix with the ID, numberDocks, Latitute,longitude.
+        -files: True if we want to save the initial configuration;
+                False otherwise.
+    """
     A=np.zeros((nStations,2))
-  #  f= open(str(m)+"-initialConfiguration.txt", 'w')
-  #  f.write("docks"+","+"bickes"+","+"ID"+","+"total"+","+"bikes/total"+","+"latitude"+","+"longitude"+","+"streets")
+    if files:
+      f= open(str(m)+"-initialConfiguration.txt", 'w')
+      f.write("docks"+","+"bickes"+","+"ID"+","+"total"+","+
+              "bikes/total"+","+"latitude"+","+"longitude"+
+              ","+"streets")
     for i in range(m):
         temp=cluster[i]
         setBikes=X[i]/len(temp)
@@ -89,14 +128,23 @@ def startInitialConfiguration (X,m,data,cluster,bikeData):
             total=nBikes+docks
             A[ind,0]=docks
             A[ind,1]=nBikes
-          #  f.write("\n")
-          #  f.write(str(docks)+","+str(nBikes)+","+str(ID)+","+str(total)+","+str(float(nBikes)/(total))+","+lat+","+longt+","+street)
-   # f.close()
+            if files:
+              f.write("\n")
+              f.write(str(docks)+","+str(nBikes)+","+str(ID)+","+
+                      str(total)+","+str(float(nBikes)/(total))+
+                      ","+lat+","+longt+","+street)
+    if files:
+     f.close()
     return A
 
-##Find the closest bike station to currentBikeStation with available docks
-##state is the situation of the bike stations
 def findBikeStation(state,currentBikeStation):
+    """
+    Find the closest bike station to currentBikeStation with available docks.
+    
+    Args:
+        state: Matrix with states of all the bike stations.
+        currentBikeStation: index of the current bike station.
+    """
     dist=distancesBikeStations[currentBikeStation,:]
     sort=[i[0] for i in sorted(enumerate(dist), key=lambda x:x[1])]
     k=1
@@ -108,15 +156,29 @@ def findBikeStation(state,currentBikeStation):
             k+=1
     return 0
 
-##Counts the number of people who doesn't find a bike or a dock
-##Precondition: N is th evector N(T,A_{i});
-##X is the initial configuration of the bikes: we divide the bike stations
-##in m groups according to K-means algorithm. The bikes are distributed uniformly
-##in each group.
-##lamb is a list with vectors of the parameters of the poisson processes N(T,(i,j))
-##A is a list with all the sets considered
-##date is respect to the data used , and it's a string: yyyy-mm
 def unhappyPeople (T,N,X,m,lamb,A,date,exponentialTimes,data,cluster,bikeData):
+    """
+    Counts the number of people who doesn't find a bike or an available dock.
+    We divide the bike stations in m groups according to K-means algorithm.
+    The bikes are distributed uniformly in each group.
+    
+    Args:
+        T: Time of the simulation.
+        N: Vector N(T,A_{i}).
+        X: Initial configuration of the bikes.
+        m: Number of groups formed with the bike stations.
+        lamb: List with vectors of the parameters of the
+              poisson processes N(T,(i,j)).
+        A: List with all the sets considered.
+        date: String: yyyy-mm. We are using the data of that
+              date.
+        exponentialTimes: Parameters of the exponential distributions.
+        data:  Contain the latitudes,longitudes,addreses,indexes of the
+               bike stationsload; this data is loaded from a json file.
+        cluster: Array read from a txt file. It contains the clusters of
+                 the bike stations.
+        bikeData: Matrix with the ID, numberDocks, Latitute,longitude.
+    """
     unHappy=0
     state=startInitialConfiguration(X,m,data,cluster,bikeData)
   #  exponentialTimes=np.loadtxt(date+"ExponentialTimes.txt")
@@ -129,7 +191,6 @@ def unhappyPeople (T,N,X,m,lamb,A,date,exponentialTimes,data,cluster,bikeData):
         times.extend(temp[0])
     Times=np.zeros((nTimes,3))
     
-
     k=0
     for i in range(len(times)):
         for j in range(len(times[i][1])):
