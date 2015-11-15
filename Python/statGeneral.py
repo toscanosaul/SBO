@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+"""
+This file defines the statistical model used.
+It includes the statistical models for SBO, KG,
+EI and PI.
+"""
+
 import numpy as np
 from math import *
 from scipy import linalg
@@ -7,32 +13,73 @@ from scipy.stats import norm
 import os
 import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 from matplotlib import pyplot as plt
-#####borrar
-#import VOIsboGaussian as voi1
-#######
 
 class GaussianProcess:
     def __init__(self,kernel,dimKernel,numberTraining,scaledAlpha=1.0):
+        """
+        This class defines the statistical model used.
+        
+        Arguments:
+            -kernel: kernel
+            -dimKernel: Dimension of the kernel.
+            -numberTraining: Numer of training data.
+            -scaledAlpha: The hyperparameters of the kenerl are scaled by
+                          alpha/(scaledAlpha^{2}).
+        """
         self._k=kernel
         self._numberTraining=numberTraining ##number of points used to train the kernel
         self._n=dimKernel
         self.scaledAlpha=scaledAlpha
-        
-        
-        
+    
 class SBOGP(GaussianProcess):
-    def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn, computeLogProductExpectationsForAn,
+    def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn, computeLogProductExpectationsForAn=None,
                  *args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
+        """
+        Statistical model for SBO.
+        
+        Arguments:
+            -B: Computes B(x)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
+                Its arguments are
+                    x: Vector of points where B is evaluated
+                    XW: Point (x,w)
+                    n1: Dimension of x
+                    n2: Dimension of w
+                    logproductExpectations: Vector with the logarithm
+                                            of the product of the
+                                            expectations of
+                                            np.exp(-alpha2[j]*((z-W[i,j])**2))
+                                            where W[i,:] is a point in the history.
+                                            Only used with the SEK.
+            -dimNoiseW: Dimension of w.
+            -dimPoints: Dimension of x.
+            -gradXBforAn: Computes the gradient of B(x,i) for i in
+                          {1,...,n+nTraining} where nTraining is the
+                          number of training points.
+                          Its arguments are
+                            x: Argument of B
+                            n: Current iteration of the algorithm
+                            B: Vector {B(x,i)} for i in {1,...,n}
+                            kern: kernel
+                            X: Past observations X[i,:] for i in {1,..,n+nTraining}
+            -computeLogProductExpectationsForAn: Only used with the SEK.
+                                                 Computes the logarithm of the product
+                                                 of the expectations of
+                                                 np.exp(-alpha2[j]*((z-W[i,j])**2))
+                                                 where W[i,:] is a point in the history.
+                                                 Its arguments are:
+                                                   W: Matrix where each row is a past
+                                                      random vector used W[i,:]
+                                                   N: Number of observations
+                                                   kernel: kernel
+        """
         self.SBOGP_name="SBO"
         self.n1=dimPoints
         self.n2=dimNoiseW
         self.B=B
         self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
         self.gradXBforAn=gradXBforAn
-    
 
-        
     ##x is point where function is evaluated
     ##L is cholesky factorization of An
     ##X,W past points
