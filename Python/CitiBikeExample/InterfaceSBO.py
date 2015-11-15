@@ -32,7 +32,7 @@ class objective:
                      Its arguments are:
                         -(x,w): Point where F is evaluated.
                         -N: number of samples to estimate F
-                     Its outputs are:
+                     Its output is a couple with:
                         -Estimator of F.
                         -Estimator of the variance of the output.
             -numberEstimateF: Number of samples used to estimate F.
@@ -46,7 +46,7 @@ class objective:
                                   Its arguments are:
                                      -x: Point where G is evaluated.
                                      -N: number of samples to estimate G
-                                  Its outputs are:
+                                  Its output is a couple with:
                                      -Estimator of G.
                                      -Estimator of the variance of the output.
         """
