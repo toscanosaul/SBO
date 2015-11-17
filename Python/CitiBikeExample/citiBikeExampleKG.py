@@ -131,7 +131,7 @@ parallel=True
 
 trainingPoints=nTemp2
 
-nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
+nameDirectory="ResultsTest"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 folder=os.path.join(nameDirectory,"KG")
 
 misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
