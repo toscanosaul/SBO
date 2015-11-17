@@ -118,7 +118,7 @@ class KG:
 	for i in xrange(m):
 	    temp2[i,:]=linalg.solve_triangular(L,B[i,:].T,lower=True)
 	    a[i]=muStart+np.dot(temp2[i,:],temp1)
-	    B2[0,p1]=self._k.K(self._points[keep[i]:keep[i]+1,:],X[p1:p1+1,:])[:,0]
+
 #	inv1=linalg.solve_triangular(L,B2.T,lower=True)
 	args['temp2']=temp2
 	
