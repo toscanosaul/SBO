@@ -30,7 +30,7 @@ class KG:
 	self._n1=Objobj.dimSeparation
 	self.numberTraining=statObj._numberTraining
 	
-	self.path=os.path.join(folderContainerResults,'%d'%randomSeed+"run")
+	self.path=os.path.join(miscObj.folder,'%d'%miscObj.rs+"run")
         if not os.path.exists(self.path):
             os.makedirs(self.path)
 	
