@@ -59,6 +59,8 @@ class KG:
             print i
 	    if self.misc.parallel:
 		self.optVOIParal(i,self.opt.numberParallel)
+	    else:
+		 self.optVOInoParal(i)
        #     st=np.array([[2.1]])
          #   args2={}
         #    args2['start']=st
@@ -67,9 +69,13 @@ class KG:
             print i
 	    if self.misc.parallel:
 		self.optAnParal(i,self.opt.numberParallel)
+	    else:
+		self.optAnnoParal(i)
             print i
 	if self.misc.parallel:
 	    self.optAnParal(m,self.opt.numberParallel)
+	else:
+	    self.optAnnoParal(i)
         
     ###start is a matrix of one row
     ###
@@ -128,45 +134,15 @@ class KG:
 
     def optVOInoParal(self,i):
 	n1=self._n1
-	Xst=self.sampleFromX(nStart)
+      #  n2=self._dimW
+     #   dim=self.dimension
+	args3=self.getParametersOptVoi(i)
+	Xst=self.Obj.sampleFromX(1)
+	st=Xst[0:1,:]
+	args3['start']=st
+	self.optRuns.append(misc.VOIOptWrapper(self,**args3))
+	fl.writeNewPointKG(self,self.optRuns[0])
 	
-	args2={}
-        args2['start']=Xst
-        args2['i']=i
-    
-	job=misc.VOIOptWrapper(self,**args2)
-	self.optRuns.append(job)
-	j=0
-
-	temp=self.optRuns[j].xOpt
-	gradOpt=self.optRuns[j].gradOpt
-	numberIterations=self.optRuns[j].nIterations
-	gradOpt=np.sqrt(np.sum(gradOpt**2))
-	gradOpt=np.array([gradOpt,numberIterations])
-	xTrans=self.transformationDomainX(self.optRuns[j].xOpt[0:1,0:self.dimXsteepest])
-        temp=xTrans
-	self.optRuns=[]
-	self.optPointsArray=[]
-	self._Xhist=np.vstack([self._Xhist,temp])
-	self._VOI._PointsHist=self._Xhist
-	self._VOI._GP._Xhist=self._Xhist
-	y,var=self._infSource(temp,self._numberSamples)
-	self._yHist=np.vstack([self._yHist,y])
-	self._VOI._yHist=self._yHist
-	self._VOI._GP._yHist=self._yHist
-	self._varianceObservations=np.append(self._varianceObservations,var)
-	self._VOI._noiseHist=self._varianceObservations
-	self._VOI._GP._noiseHist=self._varianceObservations
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"varHist.txt"), "a") as f:
-	    var=np.array(var).reshape(1)
-	    np.savetxt(f,var)
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"yhist.txt"), "a") as f:
-	    y=np.array(y).reshape(1)
-	    np.savetxt(f,y)
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"XHist.txt"), "a") as f:
-	    np.savetxt(f,temp)
-	with open(os.path.join(self.path,'%d'%self.randomSeed+"optKGgrad.txt"), "a") as f:
-	    np.savetxt(f,gradOpt)
         self.optRuns=[]
         self.optPointsArray=[]
 
@@ -227,6 +203,27 @@ class KG:
         self.optRuns.append(opt)
         xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.dimXsteepest])
         self.optPointsArray.append(xTrans)
+    
+    def optAnnoParal(self,i):
+	tempN=self.numberTraining+i
+	n1=self._n1
+     #   dim=self.dimension
+	args3={}
+	args3['i']=i
+
+	A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
+	L=np.linalg.cholesky(A)
+	
+	args3['L']=L
+	
+	muStart=self.stat._k.mu
+	y=self.dataObj.yHist
+	temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
+	args3['temp1']=temp1
+	Xst=self.Obj.sampleFromX(1)
+	args3['start']=Xst[0:1,:]
+	self.optRuns.append(misc.AnOptWrapper(self,**args3))
+	fl.writeSolution(self,self.optRuns[0])
     
     def optAnParal(self,i,nStart,numProcesses=None):
         try:
@@ -300,7 +297,11 @@ class KG:
         self.optPointsArray=[]
     
     def trainModel(self,numStarts,**kwargs):
-        self.stat._k.train(scaledAlpha=self.stat.scaledAlpha,numStarts=numStarts,**kwargs)
+	if self.misc.parallel:
+	    self.stat._k.train(scaledAlpha=self.stat.scaledAlpha,
+			       numStarts=numStarts,**kwargs)
+	else:
+	    self.stat._k.trainnoParallel(scaledAlpha=self.stat.scaledAlpha,**kwargs)
         
         f=open(os.path.join(self.path,'%d'%self.misc.rs+"hyperparameters.txt"),'w')
         f.write(str(self.stat._k.getParamaters()))
