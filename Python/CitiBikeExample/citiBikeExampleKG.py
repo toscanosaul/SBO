@@ -110,7 +110,8 @@ def noisyG(X,n):
     W=simulatorW(estimator)
     result=np.zeros(estimator)
     for i in range(estimator):
-        result[i]=g(TimeHours,W[i,:],X,nSets,lamb,A,"2014-05")
+        result[i]=g(TimeHours,W[i,:],X,nSets,lamb,A,"2014-05",
+                    exponentialTimes,data,cluster,bikeData)
     return np.mean(result),float(np.var(result))/estimator
 
 def estimationObjective(x,N=1000):
