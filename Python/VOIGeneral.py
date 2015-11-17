@@ -401,6 +401,10 @@ class KG(VOI):
             temp3=np.dot(temp2[j],temp5)
           #  tempKern[j]=kern.K(x[j:j+1,:],xNew)[:,0]
            # a[j]=muStart+np.dot(temp2[j],temp1)
+            print "iteration"
+            print j
+            print temp4
+            print temp3
             b[j]=-temp3+temp4[0,j]
             b[j]=b[j]/sqrt(float(BN))
         ######error check again!!!!!!!!!!
