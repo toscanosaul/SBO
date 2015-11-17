@@ -296,9 +296,9 @@ class KG:
         self.optPointsArray=[]
     
     def trainModel(self,numStarts,**kwargs):
-        self._k.train(scaledAlpha=self.scaledAlpha,numStarts=numStarts,**kwargs)
+        self.stat._k.train(scaledAlpha=self.scaledAlpha,numStarts=numStarts,**kwargs)
         
         f=open(os.path.join(self.path,'%d'%self.randomSeed+"hyperparameters.txt"),'w')
-        f.write(str(self._k.getParamaters()))
+        f.write(str(self.stat._k.getParamaters()))
         f.close()
         
