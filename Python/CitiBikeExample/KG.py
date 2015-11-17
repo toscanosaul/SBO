@@ -94,7 +94,7 @@ class KG:
             #    return temp
         opt.run(f=g)
         self.optRuns.append(opt)
-        xTrans=self.opt.transformationDomainX(self.opt.xOpt[0:1,0:self.dimXsteepest])
+        xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
         self.optPointsArray.append(xTrans)
         
     def getParametersOptVoi(self,i):
@@ -201,7 +201,7 @@ class KG:
          #   return self.functionGradientAscentMun(x,grad,self,i,L)
         opt.run(f=g)
         self.optRuns.append(opt)
-        xTrans=self.transformationDomainX(self.opt.xOpt[0:1,0:self.dimXsteepest])
+        xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
         self.optPointsArray.append(xTrans)
     
     def optAnnoParal(self,i):
