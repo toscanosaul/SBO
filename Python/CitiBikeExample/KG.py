@@ -92,6 +92,7 @@ class KG:
         self.optPointsArray.append(xTrans)
         
     def getParametersOptVoi(self,i):
+	tempN=self.numberTraining+i
 	args={}
 	args['i']=i
 	A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
