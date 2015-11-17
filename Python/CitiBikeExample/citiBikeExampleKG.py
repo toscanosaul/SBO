@@ -197,7 +197,7 @@ def gradXKernel(x,n,kern,trainingPoints,X):
 
 
 stat=stat.KG(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
-                scaledAlpha=scaledAlpha, dimPoints=n1,gradXKern=gradXKernel)
+                scaledAlpha=scaleAlpha, dimPoints=n1,gradXKern=gradXKernel)
 
 """
 We define the VOI object.
