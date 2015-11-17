@@ -56,6 +56,40 @@ def writeNewPointSBO(ALGObj,optim):
     ALGObj.optRuns=[]
     ALGObj.optPointsArray=[]
     
+def writeNewPointKG(ALG,optim):
+    temp=optim.xOpt
+    gradOpt=optim.gradOpt
+    numberIterations=optim.nIterations
+    gradOpt=np.sqrt(np.sum(gradOpt**2))
+    gradOpt=np.array([gradOpt,numberIterations])
+    xTrans=ALG.opt.transformationDomainX(optim.xOpt[0:1,0:self.dimXsteepest])
+ #   wTrans=self.transformationDomainW(self.optRuns[j].xOpt[0:1,self.dimXsteepest:self.dimXsteepest+self._dimW])
+    ###falta transformar W
+    temp=xTrans
+   # temp=np.concatenate((xTrans,wTrans),1)
+    self.optRuns=[]
+    self.optPointsArray=[]
+    ALG.dataObj.Xhist=np.vstack([ALG.dataObj.Xhist,temp])
+  #  self._VOI._PointsHist=self._Xhist
+   # self._VOI._GP._Xhist=self._Xhist
+    y,var=ALG.Obj.noisyG(temp,ALG.Obj.numberEstimateG)
+    ALG.dataObj.yHist=np.vstack([ALG.dataObj.yHist,y])
+   # self._VOI._yHist=self._yHist
+   # self._VOI._GP._yHist=self._yHist
+    ALG.dataObj.varianceObservations=np.append(ALG.dataObj.varianceObservations,var)
+   # self._VOI._noiseHist=self._varianceObservations
+    #self._VOI._GP._noiseHist=self._varianceObservations
+    with open(os.path.join(ALG.path,'%d'%ALG.misc.rs+"varHist.txt"), "a") as f:
+        var=np.array(var).reshape(1)
+        np.savetxt(f,var)
+    with open(os.path.join(ALG.path,'%d'%ALG.misc.rs+"yhist.txt"), "a") as f:
+        y=np.array(y).reshape(1)
+        np.savetxt(f,y)
+    with open(os.path.join(ALG.path,'%d'%ALG.misc.rs+"XHist.txt"), "a") as f:
+        np.savetxt(f,temp)
+    with open(os.path.join(ALG.path,'%d'%ALG.misc.rs+"optKGgrad.txt"), "a") as f:
+        np.savetxt(f,gradOpt)
+    
 def writeSolution(ALGObj,optim):
     temp=optim.xOpt
     tempGrad=optim.gradOpt

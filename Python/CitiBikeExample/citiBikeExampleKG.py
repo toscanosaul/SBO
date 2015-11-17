@@ -1,16 +1,36 @@
 #!/usr/bin/env python
 
+"""
+We consider a queuing simulation based on New York City's Bike system,
+in which system users may remove an available bike from a station at one
+location within the city, and ride it to a station with an available dock
+in some other location within the city. The optimization problem that we
+consider is the allocation of a constrained number of bikes (6000) to available
+docks within the city at the start of rush hour, so as to minimize, in simulation,
+the expected number of potential trips in which the rider could not find an
+available bike at their preferred origination station, or could not find an
+available dock at their preferred destination station. We call such trips
+"negatively affected trips".
+
+To use the KG algorithm, we need to create 6 objets:
+
+Objobj: Objective object (See InterfaceSBO).
+miscObj: Miscellaneous object (See InterfaceSBO).
+VOIobj: Value of Information function object (See VOIGeneral).
+optObj: Opt object (See InterfaceSBO).
+statObj: Statistical object (See statGeneral).
+dataObj: Data object (See InterfaceSBO).
+
+"""
+
 import sys
 sys.path.append("..")
-#sys.path.insert(0, '/Users/saultoscano/Documents/research/optimal_globalization/repositoryOnlyForCluster/cluster/SBONew')
-
 import numpy as np
 import SquaredExponentialKernel as SK
 from grid import *
 import KG
 from simulationPoissonProcess import *
 from math import *
-#import pylab
 from matplotlib import pyplot as plt
 import scipy.stats as stats
 from scipy.stats import norm
@@ -18,6 +38,7 @@ import statsmodels.api as sm
 import multiprocessing as mp
 import os
 from scipy.stats import poisson
+import InterfaceSBO as inter
 
 nTemp=int(sys.argv[1])
 nTemp2=int(sys.argv[2])
@@ -26,29 +47,45 @@ nTemp3=int(sys.argv[3])
 randomSeed=nTemp
 np.random.seed(randomSeed)
 
-g=unhappyPeople
+######
 
 n1=4
 n2=4
 numberSamplesForG=nTemp3
+
+######
+
+"""
+We define the variables needed for the queuing simulation. 
+"""
+
+g=unhappyPeople
+
+
 fil="2014-05PoissonParameters.txt"
 nSets=4
 A,lamb=generateSets(nSets,fil)
-#####
+
 parameterSetsPoisson=np.zeros(n2)
 for j in xrange(n2):
     parameterSetsPoisson[j]=np.sum(lamb[j])
-####
+    
+exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
+with open ('json.json') as data_file:
+    data=json.load(data_file)
+
+f = open(str(4)+"-cluster.txt", 'r')
+cluster=eval(f.read())
+f.close()
+
+bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
 
 TimeHours=4.0
-trainingPoints=nTemp2
 numberBikes=6000
-lowerX=100*np.ones(4)
-UpperX=numberBikes*np.ones(4)
-dimensionKernel=n1
-nGrid=50
-####to generate points run poissonGeneratePoints.py
-pointsVOI=np.loadtxt("pointsPoisson.txt")
+
+"""
+We define the objective object.
+"""
 
 def simulatorW(n):
     wPrior=np.zeros((n,n2))
@@ -74,8 +111,38 @@ def noisyG(X,n):
     result=np.zeros(estimator)
     for i in range(estimator):
         result[i]=g(TimeHours,W[i,:],X,nSets,lamb,A,"2014-05")
-
     return np.mean(result),float(np.var(result))/estimator
+
+def estimationObjective(x,N=1000):
+    estimator=N
+    W=simulatorW(estimator)
+    result=np.zeros(estimator)
+    for i in range(estimator):
+        result[i]=g(TimeHours,W[i,:],x,nSets,lamb,A,"2014-05")
+    return np.mean(result),float(np.var(result))/estimator
+
+Objective=inter.objective(g,n1,noisyG,numberSamplesForG,sampleFromX,
+                          simulatorW,estimationObjective)
+
+"""
+We define the miscellaneous object.
+"""
+parallel=True
+
+trainingPoints=nTemp2
+
+nameDirectory="ResultsTest"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
+folder=os.path.join(nameDirectory,"KG")
+
+misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
+
+"""
+We define the data object.
+"""
+
+"""
+Generate the training data
+"""
 
 tempX=sampleFromX(trainingPoints)
 tempFour=numberBikes-np.sum(tempX,1)
@@ -84,77 +151,101 @@ Xtrain=np.concatenate((tempX,tempFour),1)
 yTrain=np.zeros([0,1])
 NoiseTrain=np.zeros(0)
 
-jobs = []
-pool = mp.Pool()
-for i in xrange(trainingPoints):
-    job = pool.apply_async(noisyG,(Xtrain[i,:],numberSamplesForG))
-    jobs.append(job)
 
-pool.close()  # signal that no more data coming in
-pool.join()  # wait for all the tasks to complete
-for j in range(trainingPoints):
-    temp=jobs[j].get()
-    yTrain=np.vstack([yTrain,temp[0]])
-    NoiseTrain=np.append(NoiseTrain,temp[1])
+if parallel:
+    jobs = []
+    pool = mp.Pool()
+    for i in xrange(trainingPoints):
+        job = pool.apply_async(noisyG,(Xtrain[i,:],numberSamplesForG))
+        jobs.append(job)
+    
+    pool.close()  # signal that no more data coming in
+    pool.join()  # wait for all the tasks to complete
+    for j in range(trainingPoints):
+        temp=jobs[j].get()
+        yTrain=np.vstack([yTrain,temp[0]])
+        NoiseTrain=np.append(NoiseTrain,temp[1])
+else:
+    for i in xrange(trainingPoints):
+        temp=noisyG(Xtrain[i,:],numberSamplesForG)
+        yTrain=np.vstack([yTrain,temp[0]])
+        NoiseTrain=np.append(NoiseTrain,temp[1])
 
+dataObj=inter.data(XTrain,yTrain,NoiseTrain)
 
-#########
+"""
+We define the statistical object.
+"""
+
+dimensionKernel=n1
 
 scaleAlpha=1000.0
 kernel=SK.SEK(n1,X=Xtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
-#########
-
-#########
-
-logFactorial=[np.sum([log(i) for i in range(1,j+1)]) for j in range(1,501)]
-logFactorial.insert(1,0)
-logFactorial=np.array(logFactorial)
-
-#Computes log*sum(exp(x)) for a vector x, but in numerically careful way
-def logSumExp(x):
-    xmax=np.max(np.abs(x))
-    y=xmax+np.log(np.sum(np.exp(x-xmax)))
-    return y
-
-def gradXKernel(x,n,objVOI):
-    kern=objVOI._k
+def gradXKernel(x,n,kern,trainingPoints,X):
     alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
     tempN=n+trainingPoints
-    X=objVOI._Xhist[0:tempN,:]
+  #  X=objVOI._Xhist[0:tempN,:]
     gradX=np.zeros((tempN,n1))
     for j in xrange(n1):
         for i in xrange(tempN):
             gradX[i,j]=kern.K(x,X[i,:].reshape((1,n1)))*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
     return gradX
 
-def gradXKernel2(x,i,keep,j,objVOI):
-    kern=objVOI._k
+
+stat=stat.KG(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
+                scaledAlpha=scaledAlpha, dimPoints=n1,gradXKern=gradXKernel)
+
+"""
+We define the VOI object.
+"""
+
+pointsVOI=np.loadtxt("pointsPoisson.txt")
+
+
+def gradXKernel2(x,i,keep,j,kern,points):
     alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
-    return kern.K(x,pointsVOI[keep[i]:keep[i]+1,:])*(-2.0*alpha[j]*(x[0,j]-pointsVOI[keep[i],j]))
+    return kern.K(x,pointsVOI[keep[i]:keep[i]+1,:])*(-2.0*alpha[j]*(x[0,j]-points))
+
+voi=VOI.KG(numberTraining=trainingPoints, gradXKern=gradXKernel,gradXKern2=gradXKernel2,
+           pointsApproximation=pointsVOI)
+
+"""
+We define the Opt object.
+"""
+
+dimXsteepest=n1-1 #Dimension of x when the VOI and a_{n} are optimized.
 
 def projectGradientDescent(x,direction,xo):
     minx=np.min(x)
     alph=[]
     if (minx < 0):
-        ind=np.where(direction<0)[0]
-        quotient=xo[ind].astype(float)/direction[ind]
-        alp=-1.0*np.max(quotient)
-        alph.append(alp)
+ 	ind=np.where(direction<0)[0]
+	quotient=xo[ind].astype(float)/direction[ind]
+	alp=-1.0*np.max(quotient)
+	alph.append(alp)
     if (np.sum(x[0:n1])>numberBikes):
-        if (np.sum(direction[0:n1])>0):
-            alph2=(float(numberBikes)-np.sum(xo[0:n1]))/(np.sum(direction[0:n1]).astype(float))
-            alph.append(alph2)
+	if (np.sum(direction[0:n1])>0):
+	    alph2=(float(numberBikes)-np.sum(xo[0:n1]))/(np.sum(direction[0:n1]).astype(float))	        
+    	    alph.append(alph2)
     if (len(alph)==0):
-        return x
+	return x
     return xo+direction*min(alph)
 
 ##EI object
-def functionGradientAscentVn(x,grad,KG,i):
+def functionGradientAscentVn(x,grad,VOI,i,L,data,kern,temp1,temp2,a,onlyGrad):
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
     tempX=x[0:1,0:n1-1]
     x2=np.concatenate((tempX,x4),1)
-    temp=KG._VOI.VOIfunc(i,x2,grad=grad)
+    temp=VOI.VOIfunc(i,x2,L,data,kern,temp1,temp2,grad,a,onlyGrad)
+    if onlyGrad:
+        t=np.diag(np.ones(n1-1))
+        s=-1.0*np.ones((1,n1-1))
+        L=np.concatenate((t,s))
+        grad2=np.dot(temp,L)
+        return grad2
+        
+    
     if grad==True:
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
@@ -164,19 +255,24 @@ def functionGradientAscentVn(x,grad,KG,i):
     else:
         return temp
     
-
-def functionGradientAscentMuN(x,grad,KG,i):
+def functionGradientAscentMuN(x,grad,data,stat,i,L,temp1,onlyGrad):
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
-    temp=KG._VOI._GP.muN(x,i,grad)
-    if grad==False:
-        return temp
-    else:
+    temp=stat.muN(x,i,data,L,temp1,grad,onlyGrad)
+    if onlyGrad:
+        t=np.diag(np.ones(n1-1))
+        s=-1.0*np.ones((1,n1-1))
+        L=np.concatenate((t,s))
+        grad2=np.dot(temp,L)
+        return grad2
+    if grad:
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L=np.concatenate((t,s))
         grad2=np.dot(temp[1],L)
         return temp[0],grad2
+    else:
+        return temp
 
 dimXsteepest=n1-1
 
@@ -185,50 +281,26 @@ def transformationDomainX(x):
     x=np.concatenate((np.floor(x),x4),1)
     return x
 
-###returns the value and the variance
-def estimationObjective(x):
-    estimator=1000
-    W=simulatorW(estimator)
-    result=np.zeros(estimator)
-    for i in range(estimator):
-        result[i]=g(TimeHours,W[i,:],x,nSets,lamb,A,"2014-05")
 
-    return np.mean(result),float(np.var(result))/estimator
-
-nameDirectory="Results"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
-
-l={}
-l['folderContainerResults']=os.path.join(nameDirectory,"KG")
-l['estimationObjective']=estimationObjective
-l['transformationDomainX']=transformationDomainX
-l['dimXsteepest']=dimXsteepest
-l['functionGradientAscentVn']=functionGradientAscentVn
-l['functionGradientAscentMuN']=functionGradientAscentMuN
-l['sampleFromX']=sampleFromX
-l['projectGradient']=projectGradientDescent
-l['fobj']=g
-l['dimensionKernel']=dimensionKernel
-l['numberTrainingData']=trainingPoints
-l['numberEstimateG']=numberSamplesForG
-l['constraintA']=lowerX
-l['constraintB']=UpperX
-l['Xhist']=Xtrain
-l['yHist']=yTrain
-l['varHist']=NoiseTrain
-l['kernel']=kernel
-l['randomSeed']=randomSeed
-l['pointsVOI']=pointsVOI
-
-l['gradXKern']=gradXKernel
-l['gradXKern2']=gradXKernel2
-l['numberParallel']=10
-l['noisyG']=noisyG
-l['scaledAlpha']=scaleAlpha
-l['xtol']=1.0
 def conditionOpt(x):
     return np.max((np.floor(np.abs(x))))
-l['functionConditionOpt']=conditionOpt
+###returns the value and the variance
+
+opt=inter.opt(1,dimXsteepest,transformationDomainX,None,projectGradientDescent,functionGradientAscentVn,
+              functionGradientAscentAn,conditionOpt,1.0)
+
+
+#nameDirectory="Results"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
+
+l={}
+l['VOIobj']=VOIobj
+l['Objobj']=Objective
+l['miscObj']=misc
+l['optObj']=opt
+l['statObj']=stat
+l['dataObj']=dataObj
+
 kgObj=KG.KG(**l)
 
-kgObj.KGAlg(30,nRepeat=10,Train=True)
+kgObj.KGAlg(2,nRepeat=1,Train=True)
 

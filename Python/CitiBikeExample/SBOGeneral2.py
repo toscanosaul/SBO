@@ -2,7 +2,7 @@
 Stratified Bayesian Optimization (SBO) Algorithm.
 
 This is a new algorithm proposed by [Toscano-Palmerin and Frazier][tf].
-It's used for simulation optimization problems. Specificially, it's used
+It's used for simulation optimization problems. Specifically, it's used
 for the global optimization of the expectation of continuos functions
 (respect to some metric), which depend on big random vectors. We suppose
 that a small number of random variables have a much stronger effect on the
@@ -319,10 +319,11 @@ class SBO:
 	    tempN=self.numberTraining+i
             Xst=self.Obj.sampleFromX(nStart)
             wSt=self.Obj.simulatorW(nStart)
-	    args2=self.getParametersOptVoi(i)
+	    args3=self.getParametersOptVoi(i)
 	    jobs = []
             pool = mp.Pool(processes=numProcesses)
             for j in range(nStart):
+		args2=args3.copy()
                 x1=Xst[j:j+1,:]
                 w1=wSt[j:j+1,:]
                 st=np.concatenate((x1,w1),1)
@@ -431,15 +432,16 @@ class SBO:
 	    else:
 		logProduct=None
 
-	    args2={}
-	    args2['i']=i
-	    args2['L']=L
-	    args2['logProduct']=logProduct
+	    args3={}
+	    args3['i']=i
+	    args3['L']=L
+	    args3['logProduct']=logProduct
 	    Xst=self.Obj.sampleFromX(nStart)
 	    
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             for j in range(nStart):
+		args2=args3.copy()
                 args2['start']=Xst[j:j+1,:]
                 job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=args2)
                 jobs.append(job)
