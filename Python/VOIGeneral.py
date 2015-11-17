@@ -415,7 +415,7 @@ class KG(VOI):
     #    a,b,keep=AffineBreakPointsPrep(a,b)
     #    keep1,c=AffineBreakPoints(a,b)
     #    keep1=keep1.astype(np.int64)
-        n1=self._dimKernel
+        n1=self.n1
      #   h=hvoi(b,c,keep1) ##Vn
         aOld=a
         bOld=b
