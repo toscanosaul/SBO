@@ -105,7 +105,7 @@ class KG:
         L=np.linalg.cholesky(A)
 	args['L']=L
 	args['data']=self.dataObj
-	args['kern']=self.stat._k
+#	args['kern']=self.stat._k
 	
 	muStart=self.stat._k.mu
 	y=self.dataObj.yHist
