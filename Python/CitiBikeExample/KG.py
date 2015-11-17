@@ -230,6 +230,7 @@ class KG:
     
     def optAnParal(self,i,nStart,numProcesses=None):
         try:
+	    tempN=self.numberTraining+i
             n1=self._n1
          #   dim=self.dimension
 	    args3={}
