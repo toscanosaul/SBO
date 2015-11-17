@@ -407,7 +407,7 @@ class KG(VOI):
         ######
         return b,temp5,inner
       
-    def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,L,X,kern,temp22,inner,inv1=None,grad=True,onlyGrad=False):
+    def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,L,X,kern,temp22=None,inner=None,inv1=None,grad=True,onlyGrad=False):
         if grad==False:
             h=hvoi(b,c,keep1)
             return h
