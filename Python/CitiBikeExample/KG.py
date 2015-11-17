@@ -101,7 +101,7 @@ class KG:
 	args['data']=self.dataObj
 	args['kern']=self.stat._k
 	
-	muStart=stat._k.mu
+	muStart=self.stat._k.mu
 	y=dataObj.yHist
 	temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	args['temp1']=temp1
