@@ -123,6 +123,7 @@ class KG:
 	args['temp2']=temp2
 	
 	args['a']=a
+	return args
 	#args['inv1']=
 
     def optVOInoParal(self,i):
