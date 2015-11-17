@@ -116,7 +116,7 @@ def noisyG(X,n):
                     exponentialTimes,data,cluster,bikeData)
     return np.mean(result),float(np.var(result))/estimator
 
-def estimationObjective(x,N=1000):
+def estimationObjective(x,N=100):
     estimator=N
     W=simulatorW(estimator)
     result=np.zeros(estimator)
