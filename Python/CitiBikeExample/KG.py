@@ -175,7 +175,7 @@ class KG:
           #  n2=self._dimW
          #   dim=self.dimension
 	    args3=self.getParametersOptVoi(i)
-	    Xst=self.sampleFromX(nStart)
+	    Xst=self.Obj.sampleFromX(nStart)
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             #New
@@ -243,10 +243,10 @@ class KG:
 	    y=dataObj.yHist
 	    temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	    args3['temp1']=temp1
-	    
+	    Xst=self.Obj.sampleFromX(nStart)
             jobs = []
             pool = mp.Pool(processes=numProcesses)
-            Xst=self.sampleFromX(nStart)
+            
             for j in range(nStart):
            #     np.random.seed(seeds[j])
            #     x1=np.random.uniform(self._constraintA,self._constraintB,(1,n1))
