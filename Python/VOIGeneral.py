@@ -512,7 +512,12 @@ class KG(VOI):
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,grad=False)
         print "both"
         print self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad)
+        dh=0.00001
+        aux1=self.evalVOI(n,pointNew+dh,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad=False)
+        aux2=self.evalVOI(n,pointNew-dh,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad=False)
+        print (aux1-aux2)/(2*dh)
         print "\n"
+        
         return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad)
 
 class PI(VOI):
