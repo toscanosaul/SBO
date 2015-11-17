@@ -357,8 +357,8 @@ class EI(VOI):
         return temp1,temp10
  
 class KG(VOI):
-    def __init__(self,gradXKern,gradXKern2,pointsApproximation,*args,**kargs):
-        VOI.__init__(self,dimX,*args,**kargs)
+    def __init__(self,dimX,gradXKern,gradXKern2,pointsApproximation,*args,**kargs):
+        VOI.__init__(self,*args,**kargs)
         self.VOI_name="KG"
         self.gradXKern=gradXKern
         self.gradXKern2=gradXKern2
