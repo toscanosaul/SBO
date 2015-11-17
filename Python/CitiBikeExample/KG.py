@@ -35,12 +35,12 @@ class KG:
             os.makedirs(self.path)
 	
 
-        with open(os.path.join(self.path,'%d'%randomSeed+"XHist.txt"), "a") as f:
-            np.savetxt(f,Xhist)
-        with open(os.path.join(self.path,'%d'%randomSeed+"yhist.txt"), "a") as f:
-            np.savetxt(f,yHist)
-        with open(os.path.join(self.path,'%d'%randomSeed+"varHist.txt"), "a") as f:
-            np.savetxt(f,varHist)
+    #    with open(os.path.join(self.path,'%d'%miscObj.rs+"XHist.txt"), "a") as f:
+     #       np.savetxt(f,Xhist)
+     #   with open(os.path.join(self.path,'%d'%miscObj.rs+"yhist.txt"), "a") as f:
+      #      np.savetxt(f,yHist)
+      #  with open(os.path.join(self.path,'%d'%miscObj.rs+"varHist.txt"), "a") as f:
+       #     np.savetxt(f,varHist)
     
 
         self.optRuns=[]
