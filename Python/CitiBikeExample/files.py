@@ -67,8 +67,8 @@ def writeNewPointKG(ALG,optim):
     ###falta transformar W
     temp=xTrans
    # temp=np.concatenate((xTrans,wTrans),1)
-    self.optRuns=[]
-    self.optPointsArray=[]
+   # ALG.optRuns=[]
+   # ALG.optPointsArray=[]
     ALG.dataObj.Xhist=np.vstack([ALG.dataObj.Xhist,temp])
   #  self._VOI._PointsHist=self._Xhist
    # self._VOI._GP._Xhist=self._Xhist
