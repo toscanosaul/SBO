@@ -23,7 +23,7 @@ class GaussianProcess:
             -kernel: kernel
             -dimKernel: Dimension of the kernel.
             -numberTraining: Numer of training data.
-            -scaledAlpha: The hyperparameters of the kenerl are scaled by
+            -scaledAlpha: The hyperparameters of the kernel are scaled by
                           alpha/(scaledAlpha^{2}).
         """
         self._k=kernel
@@ -220,86 +220,54 @@ class EIGP(GaussianProcess):
     
     
 class KG(GaussianProcess):
-    def __init__(self,dimPoints,gradXKern,gradXKern2,*args,**kargs):
+    def __init__(self,dimPoints,gradXKern,*args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
         self.SBOGP_name="KG"
         self.n1=dimPoints
         self.gradXKern=gradXKern
-        self.gradXKern2=gradXKern2
 
-     ##return a_n and b_n
-    ##x is a vector of points (x is as matrix) where a_n and sigma_n are evaluated  
-    def aANDb(self,n,x,xNew):
-        tempN=n+self._numberTraining
-        x=np.array(x)
-        xNew=xNew.reshape((1,self.n1))
-        m=x.shape[0]
-        A=self._k.A(self._Xhist[0:tempN,:],noise=self._noiseHist[0:tempN])
-        L=np.linalg.cholesky(A)
-        B=np.zeros([m,tempN])
-        X=self._Xhist
-        y=self._yHist
 
-        for i in xrange(tempN):
-            B[:,i]=self._k.K(x,X[i:i+1,:])[:,0]
-        muStart=self._k.mu
-        temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
-        temp4=self._k.K(xNew,X)
-        temp5=linalg.solve_triangular(L,temp4.T,lower=True)
-        BN=self._k.K(xNew)[:,0]-np.dot(temp5.T,temp5)
-        ####esto se debe cambiar en mas dimensiones!!!!!!!!!!!!!!!!!!!!!
-       # a=np.zeros((m,1))
-       # b=np.zeros((m,1))
-        a=np.zeros(m)
-        b=np.zeros(m)
-        ##############
-        for j in xrange(m):
-            temp2=linalg.solve_triangular(L,B[j,:].T,lower=True)
-            temp3=np.dot(temp2.T,temp5)
-           # a[j,0]=muStart+np.dot(temp1.T,temp5)
-           # b[j,0]=-temp3+self._k.K(x[j:j+1,:],xNew)[:,0]
-           # b[j,0]=b[j,0]/sqrt(float(BN))
-            a[j]=muStart+np.dot(temp2.T,temp1)
-            b[j]=-temp3+self._k.K(x[j:j+1,:],xNew)[:,0]
-            b[j]=b[j]/sqrt(float(BN))
-        ######error check again!!!!!!!!!!
-        ######
-        return a,b,L
-
-    def muN(self,x,n,grad=False):
+    def muN(self,x,n,data,L,temp1,grad=True,onlyGradient=False):
         tempN=self._numberTraining+n
-        x=np.array(x)
-        X=self._Xhist[0:tempN,:]
-        y=self._yHist[0:tempN,:]
-        A=self._k.A(self._Xhist[0:tempN,:],noise=self._noiseHist[0:tempN])
- 
-        m=1
-        L=np.linalg.cholesky(A)
+  #      x=np.array(x)
         x=np.array(x).reshape((1,self.n1))
-        B=np.zeros([m,tempN])
-        
+        if onlyGradient:
+            gradX=self.gradXKern(x,n,self._k,self._numberTraining,
+                                 data.Xhist[0:tempN,:])
+            gradi=np.zeros(self.n1)
+            for j in xrange(self.n1):
+                temp2=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
+                gradi[j]=np.dot(temp2.T,temp1)
+            return gradi
+            
+        #######L
+   #     X=data.Xhist[0:tempN,:]
+    #    y=data.yHist[0:tempN,:]
+     #   A=self._k.A(X,noise=data.varHist[0:tempN])
+      #  L=np.linalg.cholesky(A)
+        #####
+        B=np.zeros([1,tempN])
         muStart=self._k.mu
+        
         for i in xrange(tempN):
-            # if n>0:
-              #  print "x"
-               # print x
-               # print X[i:i+1,:]
             B[:,i]=self._k.K(x,X[i:i+1,:])
         temp2=linalg.solve_triangular(L,B.T,lower=True)
-       # print "ver"
-      #  print y
-     #   print L
-        temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
+#####
+#        temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
+#####
         a=muStart+np.dot(temp2.T,temp1)
         if grad==False:
             return a
-        x=np.array(x).reshape((1,self.n1))
-#        gradX=np.zeros((n,self._n1))
-        gradX=self.gradXKern(x,n,self)
+        
+        gradX=self.gradXKern(x,n,self._k,self._numberTraining,
+                             data.Xhist[0:tempN,:])
         gradi=np.zeros(self.n1)
         for j in xrange(self.n1):
             temp2=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
             gradi[j]=np.dot(temp2.T,temp1)
+  #      x=np.array(x).reshape((1,self.n1))
+
+
         return a,gradi
         
 class PIGP(GaussianProcess):
