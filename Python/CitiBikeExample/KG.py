@@ -107,7 +107,7 @@ class KG:
 	args['temp1']=temp1
 	
 	m=self._VOI._points.shape[0]
-	temp2=np.zeros(m)
+	temp2=np.zeros((m,tempN))
 	
 	X=self.dataObj.Xhist
 	B=np.zeros((m,tempN))
