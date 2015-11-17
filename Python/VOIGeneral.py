@@ -358,12 +358,13 @@ class EI(VOI):
  
 class KG(VOI):
     def __init__(self,gradXKern,gradXKern2,pointsApproximation,*args,**kargs):
-        VOI.__init__(self,*args,**kargs)
+        VOI.__init__(self,dimX,*args,**kargs)
         self.VOI_name="KG"
         self.gradXKern=gradXKern
         self.gradXKern2=gradXKern2
         self._points=pointsApproximation
         self.sizeDiscretization=self._points.shape[0]
+        self.n1=dimX
      #   self._GP=stat.KG(kernel=self._k,dimPoints=self._dimKernel,
       #                 Xhist=self._PointsHist, dimKernel=self._dimKernel,
       #                 yHist=self._yHist,noiseHist=self._noiseHist,numberTraining=self._numberTraining,
@@ -482,7 +483,7 @@ class KG(VOI):
         return h,gradient
             
     def VOIfunc(self,n,pointNew,L,data,kern,temp1,temp2,grad,a,onlyGrad=False):
-        n1=self._dimKernel
+        n1=self.n1
         tempN=n+self._numberTraining
         b,temp5,inner=self.aANDb(n,self._points,pointNew,L,data,kern,temp1,temp2)
         a,b,keep=AffineBreakPointsPrep(a,b)
