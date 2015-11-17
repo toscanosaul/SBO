@@ -486,6 +486,9 @@ class KG(VOI):
         n1=self.n1
         tempN=n+self._numberTraining
         b,temp5,inner=self.aANDb(n,self._points,pointNew,L,data,kern,temp1,temp2)
+        print L
+        print pointNew
+        print a,b
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
