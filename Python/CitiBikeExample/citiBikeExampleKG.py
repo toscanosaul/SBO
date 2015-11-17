@@ -172,7 +172,7 @@ else:
         yTrain=np.vstack([yTrain,temp[0]])
         NoiseTrain=np.append(NoiseTrain,temp[1])
 
-dataObj=inter.data(XTrain,yTrain,NoiseTrain)
+dataObj=inter.data(Xtrain,yTrain,NoiseTrain)
 
 """
 We define the statistical object.
