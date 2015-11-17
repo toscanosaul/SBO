@@ -29,6 +29,8 @@ import numpy as np
 import SquaredExponentialKernel as SK
 from grid import *
 import KG
+import statGeneral as stat
+import VOIGeneral as VOI
 from simulationPoissonProcess import *
 from math import *
 from matplotlib import pyplot as plt
