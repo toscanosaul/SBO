@@ -76,7 +76,7 @@ def writeNewPointKG(ALG,optim):
     ALG.dataObj.yHist=np.vstack([ALG.dataObj.yHist,y])
    # self._VOI._yHist=self._yHist
    # self._VOI._GP._yHist=self._yHist
-    ALG.dataObj.varianceObservations=np.append(ALG.dataObj.varHist,var)
+    ALG.dataObj.varHist=np.append(ALG.dataObj.varHist,var)
    # self._VOI._noiseHist=self._varianceObservations
     #self._VOI._GP._noiseHist=self._varianceObservations
     with open(os.path.join(ALG.path,'%d'%ALG.misc.rs+"varHist.txt"), "a") as f:
