@@ -190,8 +190,8 @@ class KG:
         
         
     def optimizeAn(self,start,i,L,temp1):
-        opt=op.OptSteepestDescent(n1=self.dimXsteepest,projectGradient=self.projectGradient,
-				  xStart=start,xtol=self.xtol,stopFunction=self.functionConditionOpt)
+        opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
+				  xStart=start,xtol=self.opt.xtol,stopFunction=self.opt.functionConditionOpt)
         tempN=i+self.numberTraining
         #A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
         #L=np.linalg.cholesky(A)
@@ -239,7 +239,7 @@ class KG:
 	    args3['L']=L
 	    
 	    muStart=self.stat._k.mu
-	    y=self.dataObj.yHist
+	    y=self.dataObj.yHist[0:tempN,:]
 	    temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	    args3['temp1']=temp1
 	    Xst=self.Obj.sampleFromX(nStart)
