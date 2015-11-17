@@ -73,7 +73,7 @@ class KG:
 		self.optAnnoParal(i)
             print i
 	if self.misc.parallel:
-	    self.optAnParal(m,self.opt.numberParallel)
+	    self.optAnParal(i,self.opt.numberParallel)
 	else:
 	    self.optAnnoParal(i)
         
@@ -217,10 +217,7 @@ class KG:
 	args3['L']=L
 	
 	muStart=self.stat._k.mu
-	y=self.dataObj.yHist
-	print "aver"
-	print L
-	print y
+	y=self.dataObj.yHist[0:tempN,:]
 	temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	args3['temp1']=temp1
 	Xst=self.Obj.sampleFromX(1)
