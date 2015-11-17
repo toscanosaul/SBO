@@ -290,7 +290,7 @@ def conditionOpt(x):
 ###returns the value and the variance
 
 opt=inter.opt(1,dimXsteepest,transformationDomainX,None,projectGradientDescent,functionGradientAscentVn,
-              functionGradientAscentAn,conditionOpt,1.0)
+              functionGradientAscentMuN,conditionOpt,1.0)
 
 
 #nameDirectory="Results"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
