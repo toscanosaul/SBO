@@ -16,7 +16,7 @@ import pylab as plb
 from scipy import linalg
 import statGeneral as stat
 import VOIGeneral as VOI
-impor tilfes as fl
+import files as fl
 
 class KG:
     def __init__(self, Objobj,miscObj,VOIobj,optObj,statObj,dataObj):
