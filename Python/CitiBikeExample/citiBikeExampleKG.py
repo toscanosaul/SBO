@@ -210,7 +210,7 @@ def gradXKernel2(x,i,keep,j,kern,points):
     alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
     return kern.K(x,pointsVOI[keep[i]:keep[i]+1,:])*(-2.0*alpha[j]*(x[0,j]-points))
 
-voi=VOI.KG(numberTraining=trainingPoints, gradXKern=gradXKernel,gradXKern2=gradXKernel2,
+voiObj=VOI.KG(numberTraining=trainingPoints, gradXKern=gradXKernel,gradXKern2=gradXKernel2,
            pointsApproximation=pointsVOI)
 
 """
@@ -296,7 +296,7 @@ opt=inter.opt(1,dimXsteepest,transformationDomainX,None,projectGradientDescent,f
 #nameDirectory="Results"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 
 l={}
-l['VOIobj']=VOIobj
+l['VOIobj']=voiObj
 l['Objobj']=Objective
 l['miscObj']=misc
 l['optObj']=opt
