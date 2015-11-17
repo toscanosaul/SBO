@@ -241,7 +241,7 @@ class KG(GaussianProcess):
             return gradi
             
         #######L
-   #     X=data.Xhist[0:tempN,:]
+        X=data.Xhist[0:tempN,:]
     #    y=data.yHist[0:tempN,:]
      #   A=self._k.A(X,noise=data.varHist[0:tempN])
       #  L=np.linalg.cholesky(A)
