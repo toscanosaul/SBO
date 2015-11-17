@@ -196,12 +196,12 @@ class KG:
         #A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
         #L=np.linalg.cholesky(A)
         def g(x,grad,onlyGradient=False):
-            return self.stat.functionGradientAscentMuN(x,grad,self.dataObj,
+            return self.opt.functionGradientAscentAn(x,grad,self.dataObj,
 						       self.stat,i,L,temp1,onlyGradient)
          #   return self.functionGradientAscentMun(x,grad,self,i,L)
         opt.run(f=g)
         self.optRuns.append(opt)
-        xTrans=self.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
+        xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
         self.optPointsArray.append(xTrans)
     
     def optAnnoParal(self,i):
