@@ -104,7 +104,7 @@ class KG:
 	A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
         L=np.linalg.cholesky(A)
 	args['L']=L
-	args['data']=self.dataObj
+#	args['data']=self.dataObj
 #	args['kern']=self.stat._k
 	
 	muStart=self.stat._k.mu
