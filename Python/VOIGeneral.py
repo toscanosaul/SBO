@@ -486,11 +486,6 @@ class KG(VOI):
         n1=self.n1
         tempN=n+self._numberTraining
         b,temp5,inner=self.aANDb(n,self._points,pointNew,L,data,kern,temp1,temp2)
-        print "L,point,a,b"
-        print L
-        print pointNew
-        print a,b
-        aOld=a
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
@@ -502,35 +497,10 @@ class KG(VOI):
             for j in xrange(M):
                 inv1temp[j,:]=temp2[keep2[j],:]
         if onlyGrad:
-            print "onlygrad"
-            print self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad,onlyGrad)
-            print "\n"
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad,onlyGrad)
         if grad==False:
-            print "eval"
-            print self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,grad=False)
-            print "\n"
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,grad=False)
-        print "both"
-        print self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad)
-        dh=0.00001
-        b,temp5,inner=self.aANDb(n,self._points,pointNew+dh,L,data,kern,temp1,temp2)
-        a,b,keep=AffineBreakPointsPrep(aOld,b)
-        keep1,c=AffineBreakPoints(a,b)
-        keep1=keep1.astype(np.int64)
-        M=len(keep1)
-        keep2=keep[keep1]
-        aux1=self.evalVOI(n,pointNew+dh,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad=False)
-        b,temp5,inner=self.aANDb(n,self._points,pointNew-dh,L,data,kern,temp1,temp2)
-        a,b,keep=AffineBreakPointsPrep(aOld,b)
-        keep1,c=AffineBreakPoints(a,b)
-        keep1=keep1.astype(np.int64)
-        M=len(keep1)
-        keep2=keep[keep1]
-        aux2=self.evalVOI(n,pointNew-dh,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad=False)
-        print (aux1-aux2)/(2*dh)
-        print "\n"
-        
+
         return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad)
 
 class PI(VOI):
