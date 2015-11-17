@@ -62,7 +62,7 @@ def writeNewPointKG(ALG,optim):
     numberIterations=optim.nIterations
     gradOpt=np.sqrt(np.sum(gradOpt**2))
     gradOpt=np.array([gradOpt,numberIterations])
-    xTrans=ALG.opt.transformationDomainX(optim.xOpt[0:1,0:self.dimXsteepest])
+    xTrans=ALG.opt.transformationDomainX(optim.xOpt[0:1,0:ALG.opt.dimXsteepest])
  #   wTrans=self.transformationDomainW(self.optRuns[j].xOpt[0:1,self.dimXsteepest:self.dimXsteepest+self._dimW])
     ###falta transformar W
     temp=xTrans
