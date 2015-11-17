@@ -65,10 +65,10 @@ class KG:
        #     args2['i']=i
        #     misc.AnOptWrapper(self,**args2)
             print i
-	    if paralllel:
+	    if self.misc.parallel:
 		self.optAnParal(i,self.opt.numberParallel)
             print i
-	if parallel:
+	if self.misc.parallel:
 	    self.optAnParal(m,self.opt.numberParallel)
         
     ###start is a matrix of one row
