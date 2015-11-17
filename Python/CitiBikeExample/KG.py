@@ -111,7 +111,7 @@ class KG:
 	
 	B=np.zeros((m,tempN))
 	for i in xrange(tempN):
-	    B[:,i]=self.stat._k.K(x,X[i:i+1,:])[:,0]
+	    B[:,i]=self.stat._k.K(self._VOI._points,X[i:i+1,:])[:,0]
 	
 	a=np.zeros(m)
 	for i in xrange(m):
