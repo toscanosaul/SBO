@@ -109,6 +109,7 @@ class KG:
 	m=self._VOI._points.shape[0]
 	temp2=np.zeros(m)
 	
+	X=self.dataObj.Xhist
 	B=np.zeros((m,tempN))
 	for i in xrange(tempN):
 	    B[:,i]=self.stat._k.K(self._VOI._points,X[i:i+1,:])[:,0]
