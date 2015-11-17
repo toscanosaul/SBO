@@ -211,7 +211,7 @@ def gradXKernel2(x,i,keep,j,kern,points):
     return kern.K(x,pointsVOI[keep[i]:keep[i]+1,:])*(-2.0*alpha[j]*(x[0,j]-points))
 
 voiObj=VOI.KG(numberTraining=trainingPoints, gradXKern=gradXKernel,gradXKern2=gradXKernel2,
-           pointsApproximation=pointsVOI)
+           pointsApproximation=pointsVOI,dimX=n1)
 
 """
 We define the Opt object.
