@@ -79,14 +79,14 @@ class KG:
         
     ###start is a matrix of one row
     ###
-    def optimizeVOI(self,start, i,L,temp1,temp2,a,inv1):
+    def optimizeVOI(self,start, i,L,temp1,temp2,a):
         opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
 				  xStart=start,xtol=self.opt.xtol,stopFunction=self.opt.functionConditionOpt)
 
         def g(x,grad,onlyGradient=False):
             return self.opt.functionGradientAscentVn(x,grad,self._VOI,i,L,self.dataObj,self.stat._k,
 						     temp1,temp2,a,
-						     inv1,onlyGradient)
+						     onlyGradient)
             #temp=self._VOI.VOIfunc(i,x,grad=grad)
             #if grad==True:
             #    return temp[0],temp[1]
@@ -127,7 +127,7 @@ class KG:
 
 #	inv1=linalg.solve_triangular(L,B2.T,lower=True)
 	args['temp2']=temp2
-	
+
 	args['a']=a
 	return args
 	#args['inv1']=
