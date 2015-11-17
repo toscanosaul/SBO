@@ -72,7 +72,7 @@ def writeNewPointKG(ALG,optim):
     ALG.dataObj.Xhist=np.vstack([ALG.dataObj.Xhist,temp])
   #  self._VOI._PointsHist=self._Xhist
    # self._VOI._GP._Xhist=self._Xhist
-    y,var=ALG.Obj.noisyG(temp,ALG.Obj.numberEstimateG)
+    y,var=ALG.Obj.noisyF(temp,ALG.Obj.numberEstimateF)
     ALG.dataObj.yHist=np.vstack([ALG.dataObj.yHist,y])
    # self._VOI._yHist=self._yHist
    # self._VOI._GP._yHist=self._yHist
