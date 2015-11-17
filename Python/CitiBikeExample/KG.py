@@ -42,7 +42,8 @@ class KG:
       #  with open(os.path.join(self.path,'%d'%miscObj.rs+"varHist.txt"), "a") as f:
        #     np.savetxt(f,varHist)
     
-
+	self._solutions=[]
+        self._valOpt=[]
         self.optRuns=[]
         self.optPointsArray=[]
 
