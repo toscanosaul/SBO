@@ -187,7 +187,7 @@ We define the statistical object.
 
 dimensionKernel=n1+n2
 scaleAlpha=1000.0
-kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
+#kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
 def B(x,XW,n1,n2,logproductExpectations=None):
     """Computes B(x)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
@@ -263,7 +263,7 @@ def computeLogProductExpectationsForAn(W,N,kernel):
             logproductExpectations[i]+=np.log(temp)
     return logproductExpectations
 
-stat=stat.SBOGP(kernel=kernel,B=B,dimNoiseW=n2,dimPoints=n1,
+stat=stat.SBOGP(B=B,dimNoiseW=n2,dimPoints=n1,trainingData=dataObj,
                 dimKernel=n1+n2, numberTraining=trainingPoints,
                 gradXBforAn=gradXBforAn, computeLogProductExpectationsForAn=
                 computeLogProductExpectationsForAn,scaledAlpha=scaleAlpha)
