@@ -178,10 +178,10 @@ Wtrain=simulatorW(trainingPoints)
 XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(Xtrain,yHist=None,varHist=None)
-dataObj.getTrainingData(trainingPoints,noisyF,numberSamplesForF,parallel)
+dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
 
-#yTrain=np.zeros([0,1])
-#NoiseTrain=np.zeros(0)
+yTrain=np.zeros([0,1])
+NoiseTrain=np.zeros(0)
 
 if parallel:
     jobs = []
