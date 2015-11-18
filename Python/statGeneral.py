@@ -15,7 +15,8 @@ import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 from matplotlib import pyplot as plt
 
 class GaussianProcess:
-    def __init__(self,kernel,dimKernel,numberTraining,scaledAlpha=1.0):
+    def __init__(self,dimKernel,numberTraining,trainingData=None,
+                 kernel=None,SEK=True,scaledAlpha=1.0):
         """
         This class defines the statistical model used.
         
@@ -25,11 +26,14 @@ class GaussianProcess:
             -numberTraining: Numer of training data.
             -scaledAlpha: The hyperparameters of the kernel are scaled by
                           alpha/(scaledAlpha^{2}).
+            -SEK: True if SEK is using; False otherwise.
+            -trainingData: Data object.
         """
         self._k=kernel
         self._numberTraining=numberTraining ##number of points used to train the kernel
         self._n=dimKernel
         self.scaledAlpha=scaledAlpha
+        self.data=trainingData.copy()
     
 class SBOGP(GaussianProcess):
     def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn, computeLogProductExpectationsForAn=None,
@@ -138,7 +142,6 @@ class SBOGP(GaussianProcess):
         z=np.zeros(m)
         for j in xrange(m):
             z[j]=self.aN_grad(points[j,:],L,i,gradient=False)
-         #   z2[j]=voi1.aN_grad(points[j,:],L,y2,X,W,n1,n2,variance0,alpha1,alpha2,muStart,tempN,gradient=False)
         
         fig=plt.figure()
         plt.plot(points,-(points**2),label="G(x)")
@@ -178,14 +181,11 @@ class EIGP(GaussianProcess):
         if grad==False:
             return a
         x=np.array(x).reshape((1,self.n1))
-       # gradX=np.zeros((n,self.n1))
         gradX=self.gradXKern(x,n,self)
         gradi=np.zeros(self.n1)
         temp3=linalg.solve_triangular(L,y-muStart,lower=True)
         
         for j in xrange(self.n1):
-           # for i in xrange(n):
-           #     gradX[i,j]=self._k.K(x,X[i,:].reshape((1,self._n1)))*(2.0*self._alpha1[j]*(x[0,j]-X[i,j]))
             temp2=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
             gradi[j]=muStart+np.dot(temp2.T,temp3)
         return a,gradi
@@ -209,10 +209,7 @@ class EIGP(GaussianProcess):
             x=np.array(x).reshape((1,self.n1))
 
             gradX=self.gradXKern(x,n,self)
-            #gradX=np.zeros((n,self._n1))
             for j in xrange(self.n1):
-              #  for i in xrange(n):
-                  #  gradX[i,j]=self._k.K(x,self._X[i,:].reshape((1,self._n1)))*(2.0*self._alpha1[j]*(x[0,j]-self._X[i,j]))
                 temp5=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
                 gradi[j]=np.dot(temp5.T,temp3)
             gradVar=-2.0*gradi
@@ -220,16 +217,32 @@ class EIGP(GaussianProcess):
     
     
 class KG(GaussianProcess):
-    def __init__(self,dimPoints,gradXKern,*args,**kargs):
+    def __init__(self,dimPoints,gradXKern=None,SEK=True,*args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
         self.SBOGP_name="KG"
         self.n1=dimPoints
         self.gradXKern=gradXKern
+        if SEK:
+            self.gradXKern=self.gradXKernelSEK
+            self._k=SK.SEK(n1,X=self.data.Xtrain,
+                           y=self.data.yTrain[:,0],
+                           noise=self.data.varHist,
+                           scaleAlpha=scaleAlpha)
+
+
+    def gradXKernelSEK(self,x,n,kern,trainingPoints,X):
+        alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
+        tempN=n+trainingPoints
+        gradX=np.zeros((tempN,n1))
+        for j in xrange(n1):
+            for i in xrange(tempN):
+                aux=kern.K(x,X[i,:].reshape((1,n1)))
+                gradX[i,j]=aux*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
+        return gradX
 
 
     def muN(self,x,n,data,L,temp1,grad=True,onlyGradient=False):
         tempN=self._numberTraining+n
-  #      x=np.array(x)
         x=np.array(x).reshape((1,self.n1))
         if onlyGradient:
             gradX=self.gradXKern(x,n,self._k,self._numberTraining,
@@ -240,21 +253,13 @@ class KG(GaussianProcess):
                 gradi[j]=np.dot(temp2.T,temp1)
             return gradi
             
-        #######L
         X=data.Xhist[0:tempN,:]
-    #    y=data.yHist[0:tempN,:]
-     #   A=self._k.A(X,noise=data.varHist[0:tempN])
-      #  L=np.linalg.cholesky(A)
-        #####
         B=np.zeros([1,tempN])
         muStart=self._k.mu
         
         for i in xrange(tempN):
             B[:,i]=self._k.K(x,X[i:i+1,:])
         temp2=linalg.solve_triangular(L,B.T,lower=True)
-#####
-#        temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
-#####
         a=muStart+np.dot(temp2.T,temp1)
         if grad==False:
             return a
@@ -265,9 +270,6 @@ class KG(GaussianProcess):
         for j in xrange(self.n1):
             temp2=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
             gradi[j]=np.dot(temp2.T,temp1)
-  #      x=np.array(x).reshape((1,self.n1))
-
-
         return a,gradi
         
 class PIGP(GaussianProcess):
