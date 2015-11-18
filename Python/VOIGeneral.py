@@ -141,14 +141,15 @@ class VOISBO(VOI):
               Wtrain2: Past observations of W
               N: Number of observations
         """
+        n1=self.n1
+        n2=self.n2
         gradXSigma0=np.zeros([n+self._numberTraining+1,self.n1])
         tempN=n+self._numberTraining
         past=np.concatenate((Xtrain2,Wtrain2),1)
         gamma=np.transpose(kern.A(new,past))
         alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
         gradWSigma0=np.zeros([n+self._numberTraining+1,self.n2])
-        n1=self.n1
-        n2=self.n2
+
         alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
         xNew=new[0,0:n1]
         wNew=new[0,n1:n1+n2]
