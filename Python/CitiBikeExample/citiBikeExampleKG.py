@@ -184,21 +184,23 @@ We define the statistical object.
 dimensionKernel=n1
 
 scaleAlpha=1000.0
-kernel=SK.SEK(n1,X=Xtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
+#kernel=SK.SEK(n1,X=Xtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
-def gradXKernel(x,n,kern,trainingPoints,X):
-    alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
-    tempN=n+trainingPoints
-  #  X=objVOI._Xhist[0:tempN,:]
-    gradX=np.zeros((tempN,n1))
-    for j in xrange(n1):
-        for i in xrange(tempN):
-            gradX[i,j]=kern.K(x,X[i,:].reshape((1,n1)))*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
-    return gradX
+#def gradXKernel(x,n,kern,trainingPoints,X):
+#    alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
+#    tempN=n+trainingPoints
+##    gradX=np.zeros((tempN,n1))
+#    for j in xrange(n1):
+#        for i in xrange(tempN):
+#            gradX[i,j]=kern.K(x,X[i,:].reshape((1,n1)))*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
+#    return gradX
 
 
-stat=stat.KG(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
-                scaledAlpha=scaleAlpha, dimPoints=n1,gradXKern=gradXKernel)
+#stat=stat.KG(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
+#                scaledAlpha=scaleAlpha, dimPoints=n1,gradXKern=gradXKernel)
+
+stat=stat.KG(dimKernel=dimensionKernel,numberTraining=trainingPoints,
+                scaledAlpha=scaleAlpha, dimPoints=n1,trainingData=dataObj)
 
 """
 We define the VOI object.
