@@ -38,7 +38,7 @@ class GaussianProcess:
             self.data=trainingData.copyData()
     
 class SBOGP(GaussianProcess):
-    def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn, computeLogProductExpectationsForAn=None,
+    def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn=None, computeLogProductExpectationsForAn=None,
                  SEK=True,*args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
         """
@@ -91,6 +91,24 @@ class SBOGP(GaussianProcess):
                            y=self.data.yHist[:,0],
                            noise=self.data.varHist,
                            scaleAlpha=self.scaledAlpha)
+            self.gradXBforAn=self.gradXBforAnSEK
+            
+    def gradXBforAnSEK(self,x,n,B,kern,X):
+        """Computes the gradient of B(x,i) for i in {1,...,n+nTraining}
+           where nTraining is the number of training points
+          
+           Args:
+              x: Argument of B
+              n: Current iteration of the algorithm
+              B: Vector {B(x,i)} for i in {1,...,n}
+              kern: kernel
+              X: Past observations X[i,:] for i in {1,..,n+nTraining}
+        """
+        gradXB=np.zeros((n1,n+trainingPoints))
+        alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
+        for i in xrange(n+trainingPoints):
+            gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
+        return gradXB
         
 
     def aN_grad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
