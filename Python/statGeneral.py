@@ -104,9 +104,9 @@ class SBOGP(GaussianProcess):
               kern: kernel
               X: Past observations X[i,:] for i in {1,..,n+nTraining}
         """
-        gradXB=np.zeros((n1,n+trainingPoints))
-        alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
-        for i in xrange(n+trainingPoints):
+        gradXB=np.zeros((self.n1,n+self._numberTraining))
+        alpha1=0.5*((kern.alpha[0:n1])**2)/(kern.scaleAlpha)**2
+        for i in xrange(n+self._numberTraining):
             gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
         return gradXB
         
