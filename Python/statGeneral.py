@@ -13,6 +13,7 @@ from scipy.stats import norm
 import os
 import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 from matplotlib import pyplot as plt
+import SquaredExponentialKernel as SK
 
 class GaussianProcess:
     def __init__(self,dimKernel,numberTraining,trainingData=None,
