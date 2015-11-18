@@ -207,9 +207,16 @@ We define the VOI object.
 pointsVOI=np.loadtxt("pointsPoisson.txt")
 
 
-def gradXKernel2(x,i,keep,j,kern,points):
-    alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
-    return kern.K(x,pointsVOI[keep[i]:keep[i]+1,:])*(-2.0*alpha[j]*(x[0,j]-points))
+#def gradXKernel2(x,i,keep,j,kern,points,prod):
+ #   alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
+  #  return kern.K(x,pointsVOI[keep[i]:keep[i]+1,:])*(-2.0*alpha[j]*(x[0,j]-points))
+
+def gradXKernel2(x,Btemp,points,nD,mD):
+    temp=np.zeros((nD,mD))
+    for i in xrange(nD):
+        temp[i,:]=(-2.0*alpha[i])*(x[0,i]-points[:,i])
+    return temp*Btemp
+#    return Btemp*(-2.0*alpha[j])*(x[0,j]-points[:,j])
 
 voiObj=VOI.KG(numberTraining=trainingPoints, gradXKern=gradXKernel,gradXKern2=gradXKernel2,
            pointsApproximation=pointsVOI,dimX=n1)
