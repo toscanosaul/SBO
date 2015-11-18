@@ -33,7 +33,8 @@ class GaussianProcess:
         self._numberTraining=numberTraining ##number of points used to train the kernel
         self._n=dimKernel
         self.scaledAlpha=scaledAlpha
-        self.data=trainingData.copy()
+        if trainingData is not None:
+            self.data=trainingData.copy()
     
 class SBOGP(GaussianProcess):
     def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn, computeLogProductExpectationsForAn=None,
