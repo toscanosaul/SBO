@@ -34,7 +34,7 @@ class GaussianProcess:
         self._n=dimKernel
         self.scaledAlpha=scaledAlpha
         if trainingData is not None:
-            self.data=trainingData.copy()
+            self.data=trainingData.copyData()
     
 class SBOGP(GaussianProcess):
     def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn, computeLogProductExpectationsForAn=None,
