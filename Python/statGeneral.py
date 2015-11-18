@@ -39,7 +39,7 @@ class GaussianProcess:
     
 class SBOGP(GaussianProcess):
     def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn, computeLogProductExpectationsForAn=None,
-                 *args,**kargs):
+                 SEK=True,*args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
         """
         Statistical model for SBO.
@@ -78,6 +78,7 @@ class SBOGP(GaussianProcess):
                                                       random vector used W[i,:]
                                                    N: Number of observations
                                                    kernel: kernel
+            -SEK: True if SEK is used; False otherwise. 
         """
         self.SBOGP_name="SBO"
         self.n1=dimPoints
@@ -85,6 +86,11 @@ class SBOGP(GaussianProcess):
         self.B=B
         self.gradXBforAn=gradXBforAn
         self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
+        if SEK:
+            self._k=SK.SEK(self.n1+self.n2,X=self.data.Xhist,
+                           y=self.data.yHist[:,0],
+                           noise=self.data.varHist,
+                           scaleAlpha=self.scaledAlpha)
         
 
     def aN_grad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
