@@ -156,7 +156,7 @@ Xtrain=np.concatenate((tempX,tempFour),1)
 #NoiseTrain=np.zeros(0)
 
 
-dataObj=inter.data(Xtrain,yTrain=None,NoiseTrain=None)
+dataObj=inter.data(Xtrain,yHist=None,varHist=None)
 dataObj.getTrainingData(trainingPoints,noisyG,numberSamplesForG,parallel)
 
 """
