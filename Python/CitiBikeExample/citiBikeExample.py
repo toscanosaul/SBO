@@ -177,8 +177,8 @@ Xtrain=np.concatenate((tempX,tempFour),1)
 Wtrain=simulatorW(trainingPoints)
 XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
-dataObj=inter.data(Xtrain,yHist=None,varHist=None)
-dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
+dataObj=inter.data(XWtrain,yHist=None,varHist=None)
+dataObj.getTrainingDataKG(trainingPoints,noisyF,numberSamplesForF,parallel)
 
 yTrain=np.zeros([0,1])
 NoiseTrain=np.zeros(0)
