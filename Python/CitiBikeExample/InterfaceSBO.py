@@ -20,6 +20,8 @@ We define classes needed to run the SBO algorithm:
 
 """
 
+import numpy  as np
+
 class objective:
     def __init__(self, fobj,dimSeparation,noisyF,numberEstimateF,SampleFromX,
                  simulatorW,estimationObjective):
