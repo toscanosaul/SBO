@@ -189,7 +189,7 @@ dimensionKernel=n1+n2
 scaleAlpha=1000.0
 #kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
-def B(x,XW,n1,n2,logproductExpectations=None):
+def B(x,XW,n1,n2,kernel,logproductExpectations=None):
     """Computes B(x)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
       
        Args:
@@ -197,6 +197,7 @@ def B(x,XW,n1,n2,logproductExpectations=None):
           XW: Point (x,w)
           n1: Dimension of x
           n2: Dimension of w
+          kernel
           logproductExpectations: Vector with the logarithm
                                   of the product of the
                                   expectations of
