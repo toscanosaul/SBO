@@ -375,7 +375,7 @@ class KG(VOI):
         gradX=np.zeros((tempN,self.n1))
         for j in xrange(self.n1):
             for i in xrange(tempN):
-                aux=kern.K(x,X[i,:].reshape((1,n1)))
+                aux=kern.K(x,X[i,:].reshape((1,self.n1)))
                 gradX[i,j]=aux*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
         return gradX
       
