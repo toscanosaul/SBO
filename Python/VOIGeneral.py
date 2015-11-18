@@ -464,7 +464,7 @@ class KG(VOI):
         beta2=np.zeros(M)
       #  for i in xrange(M):
        #     beta2[i]=kern.K(self._points[keep[i]:keep[i]+1,:],pointNew)-np.dot(inv1[i,:],inv3)
-        beta2=tempB-np.dot(inv1,inv3)
+        beta2=tempB[keep]-np.dot(inv1,inv3)
         grad2=self.gradXKernel2(pointNew,tempB[keep],points[keep,:],n1,M)
         for j in xrange(n1):
             inv2=linalg.solve_triangular(L,gradX[:,j],lower=True)
