@@ -233,7 +233,7 @@ class data:
                 NoiseTrain=np.append(NoiseTrain,temp[1])
         else:
             for i in xrange(trainingPoints):
-                temp=noisyF(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF)
+                temp=noisyF(XWtrain[i:i+1,:],numberSamplesForF)
                 yTrain=np.vstack([yTrain,temp[0]])
                 NoiseTrain=np.append(NoiseTrain,temp[1])
         self.yHist=yTrain
