@@ -372,7 +372,7 @@ class KG(VOI):
     def gradXKernelSEK(self,x,n,kern,trainingPoints,X):
         alpha=0.5*((kern.alpha)**2)/(kern.scaleAlpha)**2
         tempN=n+trainingPoints
-        gradX=np.zeros((tempN,n1))
+        gradX=np.zeros((tempN,self.n1))
         for j in xrange(self.n1):
             for i in xrange(tempN):
                 aux=kern.K(x,X[i,:].reshape((1,n1)))
