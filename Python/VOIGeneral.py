@@ -104,7 +104,7 @@ class VOISBO(VOI):
             self._gradXWSigmaOfunc=self.gradXWSigmaOfuncSEK
             self._gradXBfunc=self.gradXBSEK
             
-    def gradXBSEK(new,kern,BN,keep,points):
+    def gradXBSEK(self,new,kern,BN,keep,points):
         """Computes the vector of gradients with respect to x_{n+1} of
             B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
             where x_{p} is a point in the discretization of the domain of x.
@@ -128,7 +128,7 @@ class VOISBO(VOI):
         return gradXBarray
 
 
-    def gradXWSigmaOfuncSEK(n,new,kern,Xtrain2,Wtrain2):
+    def gradXWSigmaOfuncSEK(self,n,new,kern,Xtrain2,Wtrain2):
         """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
             all the past observations XW[i,]. Sigma_{0} is the covariance of
             the GP on F.
