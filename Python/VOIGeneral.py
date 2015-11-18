@@ -380,7 +380,7 @@ class KG(VOI):
                 gradX[i,j]=aux*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
         return gradX
     
-    def gradXKernel2SEK(x,Btemp,points,nD,mD,kern):
+    def gradXKernel2SEK(self,x,Btemp,points,nD,mD,kern):
         alpha=0.5*((kern.alpha)**2)/(kern.scaleAlpha)**2
         temp=np.zeros((nD,mD))
         for i in xrange(nD):
