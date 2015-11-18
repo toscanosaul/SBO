@@ -33,14 +33,6 @@ class KG:
 	self.path=os.path.join(miscObj.folder,'%d'%miscObj.rs+"run")
         if not os.path.exists(self.path):
             os.makedirs(self.path)
-	
-
-    #    with open(os.path.join(self.path,'%d'%miscObj.rs+"XHist.txt"), "a") as f:
-     #       np.savetxt(f,Xhist)
-     #   with open(os.path.join(self.path,'%d'%miscObj.rs+"yhist.txt"), "a") as f:
-      #      np.savetxt(f,yHist)
-      #  with open(os.path.join(self.path,'%d'%miscObj.rs+"varHist.txt"), "a") as f:
-       #     np.savetxt(f,varHist)
     
 	self._solutions=[]
         self._valOpt=[]
@@ -53,20 +45,14 @@ class KG:
 	    fl.createNewFilesFunc(self.path,self.misc.rs)
 	fl.writeTraining(self)
         if Train is True:
-            ###TrainingData is not None
 	    self.trainModel(numStarts=nRepeat,**kwargs)
-       # points=self._VOI._points
         for i in range(m):
             print i
 	    if self.misc.parallel:
 		self.optVOIParal(i,self.opt.numberParallel)
 	    else:
 		 self.optVOInoParal(i)
-       #     st=np.array([[2.1]])
-         #   args2={}
-        #    args2['start']=st
-       #     args2['i']=i
-       #     misc.AnOptWrapper(self,**args2)
+
             print i
 	    if self.misc.parallel:
 		self.optAnParal(i,self.opt.numberParallel)
@@ -88,11 +74,6 @@ class KG:
             return self.opt.functionGradientAscentVn(x,grad,self._VOI,i,L,self.dataObj,self.stat._k,
 						     temp1,temp2,a,
 						     onlyGradient)
-            #temp=self._VOI.VOIfunc(i,x,grad=grad)
-            #if grad==True:
-            #    return temp[0],temp[1]
-            #else:
-            #    return temp
         opt.run(f=g)
         self.optRuns.append(opt)
         xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
@@ -105,8 +86,6 @@ class KG:
 	A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
         L=np.linalg.cholesky(A)
 	args['L']=L
-#	args['data']=self.dataObj
-#	args['kern']=self.stat._k
 	
 	muStart=self.stat._k.mu
 	y=self.dataObj.yHist
@@ -126,21 +105,16 @@ class KG:
 	    temp2[i,:]=linalg.solve_triangular(L,B[i,:].T,lower=True)
 	    a[i]=muStart+np.dot(temp2[i,:],temp1)
 
-#	inv1=linalg.solve_triangular(L,B2.T,lower=True)
 	args['temp2']=temp2
 
 	args['a']=a
 	return args
-	#args['inv1']=
 
     def optVOInoParal(self,i):
 	n1=self._n1
-      #  n2=self._dimW
-     #   dim=self.dimension
 	args3=self.getParametersOptVoi(i)
 	Xst=self.Obj.sampleFromX(1)
 	st=Xst[0:1,:]
-	st=np.array([[ 1349,  1555,   504]])
 	args3['start']=st
 	self.optRuns.append(misc.VOIOptWrapper(self,**args3))
 	fl.writeNewPointKG(self,self.optRuns[0])
@@ -157,13 +131,8 @@ class KG:
 	    Xst=self.Obj.sampleFromX(nStart)
             jobs = []
             pool = mp.Pool(processes=numProcesses)
-            #New
-            
-           # wSt=self._simulatorW(nStart)
-            ######
             for j in range(nStart):
                 st=Xst[j:j+1,:]
-              #  print st
 		args2=args3.copy()
                 args2['start']=st
                 job = pool.apply_async(misc.VOIOptWrapper, args=(self,), kwds=args2)
@@ -195,12 +164,9 @@ class KG:
         opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
 				  xStart=start,xtol=self.opt.xtol,stopFunction=self.opt.functionConditionOpt)
         tempN=i+self.numberTraining
-        #A=self._k.A(self._XWhist[0:tempN,:],noise=self._varianceObservations[0:tempN])
-        #L=np.linalg.cholesky(A)
         def g(x,grad,onlyGradient=False):
             return self.opt.functionGradientAscentAn(x,grad,self.dataObj,
 						       self.stat,i,L,temp1,onlyGradient)
-         #   return self.functionGradientAscentMun(x,grad,self,i,L)
         opt.run(f=g)
         self.optRuns.append(opt)
         xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
@@ -209,7 +175,6 @@ class KG:
     def optAnnoParal(self,i):
 	tempN=self.numberTraining+i
 	n1=self._n1
-     #   dim=self.dimension
 	args3={}
 	args3['i']=i
 
@@ -249,12 +214,8 @@ class KG:
             pool = mp.Pool(processes=numProcesses)
             
             for j in range(nStart):
-           #     np.random.seed(seeds[j])
-           #     x1=np.random.uniform(self._constraintA,self._constraintB,(1,n1))
                 args2=args3.copy()
-               # x1=Xst[j,:]
                 args2['start']=Xst[j:j+1,:]
-             #   args2['i']=i
                 job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=args2)
                 jobs.append(job)
             
@@ -277,23 +238,6 @@ class KG:
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
 	    fl.writeSolution(self,self.optRuns[j])
-         #   temp=self.optRuns[j].xOpt
-          #  tempGrad=self.optRuns[j].gradOpt
-           # tempGrad=np.sqrt(np.sum(tempGrad**2))
-           # tempGrad=np.array([tempGrad,self.optRuns[j].nIterations])
-           # xTrans=self.transformationDomainX(self.optRuns[j].xOpt[0:1,0:self.dimXsteepest])
-        #    temp2=self.
-           # self._solutions.append(xTrans)
-           # with open(os.path.join(self.path,'%d'%self.randomSeed+"optimalSolutions.txt"), "a") as f:
-           #     np.savetxt(f,xTrans)
-           # with open(os.path.join(self.path,'%d'%self.randomSeed+"optimalValues.txt"), "a") as f:
-           #     result,var=self.estimationObjective(xTrans[0,:])
-           #     res=np.append(result,var)
-           #     np.savetxt(f,res)
-           # with open(os.path.join(self.path,'%d'%self.randomSeed+"optAngrad.txt"), "a") as f:
-           #     np.savetxt(f,tempGrad)
-           # self.optRuns=[]
-           # self.optPointsArray=[]
             
         self.optRuns=[]
         self.optPointsArray=[]
