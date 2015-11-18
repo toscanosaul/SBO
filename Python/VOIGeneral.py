@@ -396,18 +396,20 @@ class KG(VOI):
         b=np.zeros(m)
         tempKern=np.zeros(m)
         ##############
+        tempB=kern.K(x,xNew)
         for j in xrange(m):
           #  temp2=linalg.solve_triangular(L,B[j,:].T,lower=True)
             temp3=np.dot(temp2[j],temp5)
           #  tempKern[j]=kern.K(x[j:j+1,:],xNew)[:,0]
            # a[j]=muStart+np.dot(temp2[j],temp1)
-            b[j]=-temp3+kern.K(x[j:j+1,:],xNew)[:,0]
+       #     b[j]=-temp3+kern.K(x[j:j+1,:],xNew)[:,0]
+            b[j]=-temp3+tempB[j,:]
             b[j]=b[j]/sqrt(float(BN))
         ######error check again!!!!!!!!!!
         ######
-        return b,temp5,inner
+        return b,temp5,inner,tempB
       
-    def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,L,X,kern,temp22=None,inner=None,inv1=None,grad=True,onlyGrad=False):
+    def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,L,X,kern,tempB,temp22=None,inner=None,inv1=None,grad=True,onlyGrad=False):
         if grad==False:
             h=hvoi(b,c,keep1)
             return h
@@ -453,14 +455,17 @@ class KG(VOI):
         B2=np.zeros((1,tempN))
         temp54=np.zeros(M)
       #  sigmaXnew=sqrt(kern.K(np.array(pointNew).reshape((1,n1)))-np.dot(temp22.T,temp22))
-        sigmaXnew=sqrt(kern.K(np.array(pointNew).reshape((1,n1)))-inner)
+        kernNew=kern.K(np.array(pointNew).reshape((1,n1)))
+        sigmaXnew=sqrt(kernNew-inner)
    #     inv3=linalg.solve_triangular(L,B[0,:],lower=True)
         inv3=temp22
         beta1=(kern.A(pointNew)-np.dot(inv3.T,inv3))
         
         beta2=np.zeros(M)
-        for i in xrange(M):
-            beta2[i]=kern.K(self._points[keep[i]:keep[i]+1,:],pointNew)-np.dot(inv1[i,:],inv3)
+      #  for i in xrange(M):
+       #     beta2[i]=kern.K(self._points[keep[i]:keep[i]+1,:],pointNew)-np.dot(inv1[i,:],inv3)
+        beta2=tempB-np.dot(inv1,inv3)
+        grad2=self.gradXKernel2(pointNew,tempB[keep],points[keep,:],n1,M)
         for j in xrange(n1):
             inv2=linalg.solve_triangular(L,gradX[:,j],lower=True)
             auxTemp=2.0*np.dot(inv2.T,inv3)
@@ -471,8 +476,8 @@ class KG(VOI):
                 
 		tmp=np.dot(inv2.T,inv1[i,:])
     
-                temp53=self.gradXKern2(pointNew,i,keep,j,kern,self._points[keep[i],j])
-		tmp=(beta1**(-.5))*(temp53-tmp)
+              #  temp53=self.gradXKern2(pointNew,i,keep,j,kern,self._points[keep[i],j])
+		tmp=(beta1**(-.5))*(grad2[j,i]-tmp)
                 
                 tmp2=(.5)*(beta1**(-1.5))*beta2[i]*(auxTemp)
                 temp54[i]=tmp+tmp2
@@ -485,7 +490,7 @@ class KG(VOI):
     def VOIfunc(self,n,pointNew,L,data,kern,temp1,temp2,grad,a,onlyGrad=False):
         n1=self.n1
         tempN=n+self._numberTraining
-        b,temp5,inner=self.aANDb(n,self._points,pointNew,L,data,kern,temp1,temp2)
+        b,temp5,inner,tempB=self.aANDb(n,self._points,pointNew,L,data,kern,temp1,temp2)
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
@@ -497,11 +502,11 @@ class KG(VOI):
             for j in xrange(M):
                 inv1temp[j,:]=temp2[keep2[j],:]
         if onlyGrad:
-            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad,onlyGrad)
+            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,tempB,temp5,inner,inv1temp,grad,onlyGrad)
         if grad==False:
-            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,grad=False)
+            return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,tempB,grad=False)
 
-        return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,temp5,inner,inv1temp,grad)
+        return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,tempB,temp5,inner,inv1temp,grad)
 
 class PI(VOI):
     def __init__(self,gradXKern,*args,**kargs):
