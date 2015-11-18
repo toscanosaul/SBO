@@ -186,3 +186,29 @@ class data:
         varcopy=self.varHist.copy()
         temp=data(Xcopy,ycopy,varcopy)
         return temp
+    
+    def getTrainingData(self,trainingPoints,noisyG,numberSamplesForG,parallel):
+        Xtrain=self.Xhist
+        yTrain=np.zeros([0,1])
+        NoiseTrain=np.zeros(0)
+        if parallel:
+            jobs = []
+            pool = mp.Pool()
+            for i in xrange(trainingPoints):
+                job = pool.apply_async(noisyG,(Xtrain[i,:],numberSamplesForG))
+                jobs.append(job)
+            
+            pool.close()  # signal that no more data coming in
+            pool.join()  # wait for all the tasks to complete
+            for j in range(trainingPoints):
+                temp=jobs[j].get()
+                yTrain=np.vstack([yTrain,temp[0]])
+                NoiseTrain=np.append(NoiseTrain,temp[1])
+        else:
+            for i in xrange(trainingPoints):
+                temp=noisyG(Xtrain[i,:],numberSamplesForG)
+                yTrain=np.vstack([yTrain,temp[0]])
+                NoiseTrain=np.append(NoiseTrain,temp[1])
+        self.yHist=yTrain
+        self.varHist=NoiseTrain
+        

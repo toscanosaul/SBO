@@ -152,30 +152,12 @@ tempX=sampleFromX(trainingPoints)
 tempFour=numberBikes-np.sum(tempX,1)
 tempFour=tempFour.reshape((trainingPoints,1))
 Xtrain=np.concatenate((tempX,tempFour),1)
-yTrain=np.zeros([0,1])
-NoiseTrain=np.zeros(0)
+#yTrain=np.zeros([0,1])
+#NoiseTrain=np.zeros(0)
 
 
-if parallel:
-    jobs = []
-    pool = mp.Pool()
-    for i in xrange(trainingPoints):
-        job = pool.apply_async(noisyG,(Xtrain[i,:],numberSamplesForG))
-        jobs.append(job)
-    
-    pool.close()  # signal that no more data coming in
-    pool.join()  # wait for all the tasks to complete
-    for j in range(trainingPoints):
-        temp=jobs[j].get()
-        yTrain=np.vstack([yTrain,temp[0]])
-        NoiseTrain=np.append(NoiseTrain,temp[1])
-else:
-    for i in xrange(trainingPoints):
-        temp=noisyG(Xtrain[i,:],numberSamplesForG)
-        yTrain=np.vstack([yTrain,temp[0]])
-        NoiseTrain=np.append(NoiseTrain,temp[1])
-
-dataObj=inter.data(Xtrain,yTrain,NoiseTrain)
+dataObj=inter.data(Xtrain,yTrain=None,NoiseTrain=None)
+dataObj.getTrainingData(trainingPoints,noisyG,numberSamplesForG,parallel)
 
 """
 We define the statistical object.
@@ -184,20 +166,6 @@ We define the statistical object.
 dimensionKernel=n1
 
 scaleAlpha=1000.0
-#kernel=SK.SEK(n1,X=Xtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
-
-#def gradXKernel(x,n,kern,trainingPoints,X):
-#    alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
-#    tempN=n+trainingPoints
-##    gradX=np.zeros((tempN,n1))
-#    for j in xrange(n1):
-#        for i in xrange(tempN):
-#            gradX[i,j]=kern.K(x,X[i,:].reshape((1,n1)))*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
-#    return gradX
-
-
-#stat=stat.KG(kernel=kernel,dimKernel=dimensionKernel,numberTraining=trainingPoints,
-#                scaledAlpha=scaleAlpha, dimPoints=n1,gradXKern=gradXKernel)
 
 stat=stat.KG(dimKernel=dimensionKernel,numberTraining=trainingPoints,
                 scaledAlpha=scaleAlpha, dimPoints=n1,trainingData=dataObj)
@@ -207,19 +175,6 @@ We define the VOI object.
 """
 
 pointsVOI=np.loadtxt("pointsPoisson.txt")
-
-
-#def gradXKernel2(x,i,keep,j,kern,points,prod):
- #   alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
-  #  return kern.K(x,pointsVOI[keep[i]:keep[i]+1,:])*(-2.0*alpha[j]*(x[0,j]-points))
-
-def gradXKernel2(x,Btemp,points,nD,mD,kern):
-    alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
-    temp=np.zeros((nD,mD))
-    for i in xrange(nD):
-        temp[i,:]=(-2.0*alpha[i])*(x[0,i]-points[:,i])
-    return temp*Btemp[:,0]
-#    return Btemp*(-2.0*alpha[j])*(x[0,j]-points[:,j])
 
 voiObj=VOI.KG(numberTraining=trainingPoints,
            pointsApproximation=pointsVOI,dimX=n1)
