@@ -61,7 +61,7 @@ class objective:
         self.estimationObjective=estimationObjective
 
 class Miscellaneous:
-    def __init__(self,randomSeed,parallel,folder,create):
+    def __init__(self,randomSeed,parallel,create=True,nF=0,tP=0,ALG="SBO"):
         """
         Args:
             -randomSeed: Random seed used to run the problem. Only needed for the
@@ -75,6 +75,9 @@ class Miscellaneous:
         """
         self.rs=randomSeed
         self.parallel=parallel
+        
+        nameDirectory="Results"+'%d'%nF+"AveragingSamples"+'%d'%tP+"TrainingPoints"
+        folder=os.path.join(nameDirectory,ALG)
         self.folder=folder
         self.create=create
 

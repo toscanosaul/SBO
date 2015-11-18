@@ -157,10 +157,11 @@ parallel=False
 
 trainingPoints=nTemp2
 
-nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
-folder=os.path.join(nameDirectory,"SBO")
 
-misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
+#nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
+#folder=os.path.join(nameDirectory,"SBO")
+
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints)
 
 """
 We define the data object.
@@ -179,29 +180,6 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
-
-yTrain=np.zeros([0,1])
-NoiseTrain=np.zeros(0)
-
-if parallel:
-    jobs = []
-    pool = mp.Pool()
-    for i in xrange(trainingPoints):
-        job = pool.apply_async(noisyF,(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF))
-        jobs.append(job)
-    pool.close()  
-    pool.join()  
-    for j in range(trainingPoints):
-        temp=jobs[j].get()
-        yTrain=np.vstack([yTrain,temp[0]])
-        NoiseTrain=np.append(NoiseTrain,temp[1])
-else:
-    for i in xrange(trainingPoints):
-        temp=noisyF(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF)
-        yTrain=np.vstack([yTrain,temp[0]])
-        NoiseTrain=np.append(NoiseTrain,temp[1])
-
-#dataObj=inter.data(XWtrain,yTrain,NoiseTrain)
 
 """
 We define the statistical object.
