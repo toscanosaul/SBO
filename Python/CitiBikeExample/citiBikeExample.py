@@ -225,24 +225,6 @@ def B(x,XW,n1,n2,kernel,logproductExpectations=None):
         results[i]=logproductExpectations+np.log(variance0)-np.sum(alpha1*((x[i,:]-X)**2))
     return np.exp(results)
 
-###The function is the same for any squared exponential kernel
-def gradXBforAn(x,n,B,kern,X):
-    """Computes the gradient of B(x,i) for i in {1,...,n+nTraining}
-       where nTraining is the number of training points
-      
-       Args:
-          x: Argument of B
-          n: Current iteration of the algorithm
-          B: Vector {B(x,i)} for i in {1,...,n}
-          kern: kernel
-          X: Past observations X[i,:] for i in {1,..,n+nTraining}
-    """
-    gradXB=np.zeros((n1,n+trainingPoints))
-    alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
-    for i in xrange(n+trainingPoints):
-        gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
-    return gradXB
-
 def computeLogProductExpectationsForAn(W,N,kernel):
     """Computes the logarithm of the product of the
        expectations of np.exp(-alpha2[j]*((z-W[i,j])**2))
@@ -266,7 +248,7 @@ def computeLogProductExpectationsForAn(W,N,kernel):
 
 stat=stat.SBOGP(B=B,dimNoiseW=n2,dimPoints=n1,trainingData=dataObj,
                 dimKernel=n1+n2, numberTraining=trainingPoints,
-                gradXBforAn=gradXBforAn, computeLogProductExpectationsForAn=
+                computeLogProductExpectationsForAn=
                 computeLogProductExpectationsForAn,scaledAlpha=scaleAlpha)
 
 
@@ -369,9 +351,9 @@ def gradWB(new,kern,BN,keep,points):
             gradWBarray[j,i]=np.exp(gradWBarray[j,i])*productExpectations
     return gradWBarray
 
-VOIobj=VOI.VOISBO(gradXWSigmaOfunc=gradXWSigmaOfunc,dimX=n1,
-                  pointsApproximation=pointsVOI,gradXBfunc=gradXB,
-                  gradWBfunc=gradWB,dimW=n2,numberTraining=trainingPoints)
+VOIobj=VOI.VOISBO(dimX=n1, pointsApproximation=pointsVOI,
+                  gradWBfunc=gradWB,dimW=n2,
+                  numberTraining=trainingPoints)
 
 
 """
