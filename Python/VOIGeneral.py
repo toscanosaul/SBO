@@ -357,7 +357,7 @@ class EI(VOI):
         return temp1,temp10
  
 class KG(VOI):
-    def __init__(self,dimX,gradXKern2,pointsApproximation,gradXKern=None,
+    def __init__(self,dimX,pointsApproximation,gradXKern=None,gradXKern2=None,
                  SK=True,*args,**kargs):
         VOI.__init__(self,*args,**kargs)
         self.VOI_name="KG"
@@ -368,6 +368,7 @@ class KG(VOI):
         self.n1=dimX
         if SK:
             self.gradXKern=self.gradXKernelSEK
+            self.gradXKern2=self.gradXKern2
 
     def gradXKernelSEK(self,x,n,kern,trainingPoints,X):
         alpha=0.5*((kern.alpha)**2)/(kern.scaleAlpha)**2
@@ -378,6 +379,13 @@ class KG(VOI):
                 aux=kern.K(x,X[i,:].reshape((1,self.n1)))
                 gradX[i,j]=aux*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
         return gradX
+    
+    def gradXKernel2(x,Btemp,points,nD,mD,kern):
+        alpha=0.5*((kern.alpha)**2)/(kern.scaleAlpha)**2
+        temp=np.zeros((nD,mD))
+        for i in xrange(nD):
+            temp[i,:]=(-2.0*alpha[i])*(x[0,i]-points[:,i])
+        return temp*Btemp[:,0]
       
      ##return a_n and b_n
     ##x is a vector of points (x is as matrix) where a_n and sigma_n are evaluated  
