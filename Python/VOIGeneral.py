@@ -368,7 +368,7 @@ class KG(VOI):
         self.n1=dimX
         if SK:
             self.gradXKern=self.gradXKernelSEK
-            self.gradXKern2=self.gradXKern2SEK
+            self.gradXKern2=self.gradXKernel2SEK
 
     def gradXKernelSEK(self,x,n,kern,trainingPoints,X):
         alpha=0.5*((kern.alpha)**2)/(kern.scaleAlpha)**2
