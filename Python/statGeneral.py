@@ -226,8 +226,8 @@ class KG(GaussianProcess):
         self.gradXKern=gradXKern
         if SEK:
             self.gradXKern=self.gradXKernelSEK
-            self._k=SK.SEK(self._n,X=self.data.Xtrain,
-                           y=self.data.yTrain[:,0],
+            self._k=SK.SEK(self._n,X=self.data.Xhist,
+                           y=self.data.yHist[:,0],
                            noise=self.data.varHist,
                            scaleAlpha=self.scaledAlpha)
 
