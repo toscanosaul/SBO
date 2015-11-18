@@ -179,3 +179,10 @@ class data:
         self.Xhist=Xhist
         self.yHist=yHist
         self.varHist=varHist
+        
+    def copyData(self):
+        Xcopy=self.Xhist.copy()
+        ycopy=self.yHist.copy()
+        varcopy=self.varHist.copy()
+        temp=self.data(Xcopy,ycopy,varcopy)
+        return temp
