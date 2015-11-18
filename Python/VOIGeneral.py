@@ -373,7 +373,7 @@ class KG(VOI):
         alpha=0.5*((kern.alpha)**2)/(kern.scaleAlpha)**2
         tempN=n+trainingPoints
         gradX=np.zeros((tempN,n1))
-        for j in xrange(n1):
+        for j in xrange(self.n1):
             for i in xrange(tempN):
                 aux=kern.K(x,X[i,:].reshape((1,n1)))
                 gradX[i,j]=aux*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
