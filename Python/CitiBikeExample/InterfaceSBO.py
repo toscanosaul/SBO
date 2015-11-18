@@ -184,5 +184,5 @@ class data:
         Xcopy=self.Xhist.copy()
         ycopy=self.yHist.copy()
         varcopy=self.varHist.copy()
-        temp=self.data(Xcopy,ycopy,varcopy)
+        temp=data(Xcopy,ycopy,varcopy)
         return temp
