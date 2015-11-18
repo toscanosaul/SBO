@@ -17,7 +17,7 @@ import SquaredExponentialKernel as SK
 
 class GaussianProcess:
     def __init__(self,dimKernel,numberTraining,trainingData=None,
-                 kernel=None,SEK=True,scaledAlpha=1.0):
+                 kernel=None,scaledAlpha=1.0):
         """
         This class defines the statistical model used.
         
