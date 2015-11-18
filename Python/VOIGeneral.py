@@ -137,7 +137,7 @@ class VOISBO(VOI):
         tempN=self._numberTraining+n
         BN=np.zeros([m,1])
         n2=self.n2
-        BN[:,0]=B(x,np.concatenate((xNew,wNew),1),self.n1,n2) #B(x,n+1)
+        BN[:,0]=B(x,np.concatenate((xNew,wNew),1),self.n1,n2,kernel) #B(x,n+1)
  
         n1=self.n1
         n2=self.n2
