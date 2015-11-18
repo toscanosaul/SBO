@@ -189,7 +189,7 @@ class data:
         temp=data(Xcopy,ycopy,varcopy)
         return temp
     
-    def getTrainingData(self,trainingPoints,noisyG,numberSamplesForG,parallel):
+    def getTrainingDataKG(self,trainingPoints,noisyG,numberSamplesForG,parallel):
         Xtrain=self.Xhist
         yTrain=np.zeros([0,1])
         NoiseTrain=np.zeros(0)
@@ -214,3 +214,27 @@ class data:
         self.yHist=yTrain
         self.varHist=NoiseTrain
         
+    def getTrainingDataSBO(self,trainingPoints,noisyF,numberSamplesForF):
+        XWtrain=self.Xhist
+        yTrain=np.zeros([0,1])
+        NoiseTrain=np.zeros(0)
+        
+        if parallel:
+            jobs = []
+            pool = mp.Pool()
+            for i in xrange(trainingPoints):
+                job = pool.apply_async(noisyF,(XWtrain[i:i+1,:],numberSamplesForF))
+                jobs.append(job)
+            pool.close()  
+            pool.join()  
+            for j in range(trainingPoints):
+                temp=jobs[j].get()
+                yTrain=np.vstack([yTrain,temp[0]])
+                NoiseTrain=np.append(NoiseTrain,temp[1])
+        else:
+            for i in xrange(trainingPoints):
+                temp=noisyF(XWtrain[i,:].reshape((1,n1+n2)),numberSamplesForF)
+                yTrain=np.vstack([yTrain,temp[0]])
+                NoiseTrain=np.append(NoiseTrain,temp[1])
+        self.yHist=yTrain
+        self.varHist=NoiseTrain
