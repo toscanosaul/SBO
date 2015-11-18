@@ -221,7 +221,7 @@ def gradXKernel2(x,Btemp,points,nD,mD,kern):
     return temp*Btemp[:,0]
 #    return Btemp*(-2.0*alpha[j])*(x[0,j]-points[:,j])
 
-voiObj=VOI.KG(numberTraining=trainingPoints,gradXKern2=gradXKernel2,
+voiObj=VOI.KG(numberTraining=trainingPoints,
            pointsApproximation=pointsVOI,dimX=n1)
 
 """
