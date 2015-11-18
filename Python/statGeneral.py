@@ -226,10 +226,10 @@ class KG(GaussianProcess):
         self.gradXKern=gradXKern
         if SEK:
             self.gradXKern=self.gradXKernelSEK
-            self._k=SK.SEK(n1,X=self.data.Xtrain,
+            self._k=SK.SEK(self._n,X=self.data.Xtrain,
                            y=self.data.yTrain[:,0],
                            noise=self.data.varHist,
-                           scaleAlpha=scaleAlpha)
+                           scaleAlpha=self.scaledAlpha)
 
 
     def gradXKernelSEK(self,x,n,kern,trainingPoints,X):
