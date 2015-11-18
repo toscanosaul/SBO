@@ -214,7 +214,7 @@ class data:
         self.yHist=yTrain
         self.varHist=NoiseTrain
         
-    def getTrainingDataSBO(self,trainingPoints,noisyF,numberSamplesForF):
+    def getTrainingDataSBO(self,trainingPoints,noisyF,numberSamplesForF,parallel):
         XWtrain=self.Xhist
         yTrain=np.zeros([0,1])
         NoiseTrain=np.zeros(0)
