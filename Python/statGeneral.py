@@ -124,7 +124,7 @@ class SBOGP(GaussianProcess):
                 B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2)
         else:
             for i in xrange(n+self._numberTraining):
-                B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,logproductExpectations[i])
+                B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,self._k,logproductExpectations[i])
         
         inv1=linalg.solve_triangular(L,y2,lower=True)
 
