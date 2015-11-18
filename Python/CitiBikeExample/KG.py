@@ -140,7 +140,7 @@ class KG:
 	args3=self.getParametersOptVoi(i)
 	Xst=self.Obj.sampleFromX(1)
 	st=Xst[0:1,:]
-	st=np.array([[ 1349,  1555,   504]])
+	#st=np.array([[ 1349,  1555,   504]])
 	args3['start']=st
 	self.optRuns.append(misc.VOIOptWrapper(self,**args3))
 	fl.writeNewPointKG(self,self.optRuns[0])
