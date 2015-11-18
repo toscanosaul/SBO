@@ -367,7 +367,7 @@ class KG(VOI):
         self.sizeDiscretization=self._points.shape[0]
         self.n1=dimX
         if SK:
-            self.gradXKern=gradXKernelSEK
+            self.gradXKern=self.gradXKernelSEK
 
     def gradXKernelSEK(self,x,n,kern,trainingPoints,X):
         alpha=0.5*((kern.alpha)**2)/scaleAlpha**2
