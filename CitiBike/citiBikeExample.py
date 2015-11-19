@@ -148,7 +148,7 @@ Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,
 """
 We define the miscellaneous object.
 """
-parallel=False
+parallel=True
 
 trainingPoints=nTemp2
 
