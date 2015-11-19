@@ -277,14 +277,18 @@ class SEK:
             jobs = []
             args3=[]
             pool = mp.Pool(processes=numProcesses)
+            alpha=np.random.randn(numStarts,dim)
+            variance=np.random.rand(numStarts,1)
+            tempZero=np.zeros((numStarts,1))
+            st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),tempZero),1)
             for i in range(numStarts):
-                alpha=np.random.randn(dim)
-                variance=np.random.rand(1)
-                st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),[0.0]))
-                args2={}
-                args2['start']=st
-                args3.append(args2.copy())
-                job = pool.apply_async(misc.kernOptWrapper, args=(self,), kwds=args3[i])
+               # alpha=np.random.randn(dim)
+               # variance=np.random.rand(1)
+               # st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),[0.0]))
+               # args2={}
+               # args2['start']=st
+               # args3.append(args2.copy())
+                job = pool.apply_async(misc.kernOptWrapper, args=(self,st[i,:],))
                 jobs.append(job)
             
             pool.close()  # signal that no more data coming in
@@ -300,7 +304,7 @@ class SEK:
             except Exception as e:
                 print "what"
 
-                
+
         if len(self.optRuns):
             i = np.argmin([o.fOpt for o in self.optRuns])
             temp=self.optRuns[i].xOpt

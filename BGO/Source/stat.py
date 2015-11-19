@@ -14,6 +14,7 @@ import os
 import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 from matplotlib import pyplot as plt
 from . import SK
+from . import gradients
 
 class GaussianProcess:
     def __init__(self,dimKernel,numberTraining,trainingData=None,
@@ -91,24 +92,9 @@ class SBOGP(GaussianProcess):
                            y=self.data.yHist[:,0],
                            noise=self.data.varHist,
                            scaleAlpha=self.scaledAlpha)
-            self.gradXBforAn=self.gradXBforAnSEK
+            self.gradXBforAn=gradients.gradXBforAnSEK
             
-    def gradXBforAnSEK(self,x,n,B,kern,X):
-        """Computes the gradient of B(x,i) for i in {1,...,n+nTraining}
-           where nTraining is the number of training points
-          
-           Args:
-              x: Argument of B
-              n: Current iteration of the algorithm
-              B: Vector {B(x,i)} for i in {1,...,n}
-              kern: kernel
-              X: Past observations X[i,:] for i in {1,..,n+nTraining}
-        """
-        gradXB=np.zeros((self.n1,n+self._numberTraining))
-        alpha1=0.5*((kern.alpha[0:self.n1])**2)/(kern.scaleAlpha)**2
-        for i in xrange(n+self._numberTraining):
-            gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
-        return gradXB
+
         
 
     def aN_grad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
@@ -147,7 +133,9 @@ class SBOGP(GaussianProcess):
         inv1=linalg.solve_triangular(L,y2,lower=True)
 
         if onlyGradient:
-            gradXB=self.gradXBforAn(x,n,B,self._k,dataObj.Xhist[0:n+self._numberTraining,0:n1])
+            gradXB=self.gradXBforAn(x,n,B,self._k,
+                                    dataObj.Xhist[0:n+self._numberTraining,0:n1],
+                                    n1,self._numberTraining)
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
             gradAn=np.dot(inv1.transpose(),temp4)
             return gradAn
@@ -155,7 +143,9 @@ class SBOGP(GaussianProcess):
         inv2=linalg.solve_triangular(L,B.transpose(),lower=True)
         aN=muStart+np.dot(inv2.transpose(),inv1)
         if gradient==True:
-            gradXB=self.gradXBforAn(x,n,B,self._k,dataObj.Xhist[0:n+self._numberTraining,0:n1])
+            gradXB=self.gradXBforAn(x,n,B,self._k,
+                                    dataObj.Xhist[0:n+self._numberTraining,0:n1],
+                                    n1,self._numberTraining)
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
             gradAn=np.dot(inv1.transpose(),temp4)
             return aN,gradAn
@@ -184,7 +174,7 @@ class EIGP(GaussianProcess):
         GaussianProcess.__init__(self,*args,**kargs)
         self.SBOGP_name="GP_EI"
         self.n1=dimPoints
-        self.gradXKern=gradXKern
+        self.gradXKern=gradients.gradXKern
     
     def muN(self,x,n,grad=False):
         x=np.array(x)
@@ -249,22 +239,14 @@ class KG(GaussianProcess):
         self.n1=dimPoints
         self.gradXKern=gradXKern
         if SEK:
-            self.gradXKern=self.gradXKernelSEK
+            self.gradXKern=gradients.gradXKernelSEK
             self._k=SK.SEK(self._n,X=self.data.Xhist,
                            y=self.data.yHist[:,0],
                            noise=self.data.varHist,
                            scaleAlpha=self.scaledAlpha)
 
 
-    def gradXKernelSEK(self,x,n,kern,trainingPoints,X):
-        alpha=0.5*((kern.alpha)**2)/(kern.scaleAlpha)**2
-        tempN=n+trainingPoints
-        gradX=np.zeros((tempN,self.n1))
-        for j in xrange(self.n1):
-            for i in xrange(tempN):
-                aux=kern.K(x,X[i,:].reshape((1,self.n1)))
-                gradX[i,j]=aux*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
-        return gradX
+
 
 
     def muN(self,x,n,data,L,temp1,grad=True,onlyGradient=False):
@@ -272,7 +254,7 @@ class KG(GaussianProcess):
         x=np.array(x).reshape((1,self.n1))
         if onlyGradient:
             gradX=self.gradXKern(x,n,self._k,self._numberTraining,
-                                 data.Xhist[0:tempN,:])
+                                 data.Xhist[0:tempN,:],self.n1)
             gradi=np.zeros(self.n1)
             for j in xrange(self.n1):
                 temp2=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
@@ -291,7 +273,7 @@ class KG(GaussianProcess):
             return a
         
         gradX=self.gradXKern(x,n,self._k,self._numberTraining,
-                             data.Xhist[0:tempN,:])
+                             data.Xhist[0:tempN,:],self.n1)
         gradi=np.zeros(self.n1)
         for j in xrange(self.n1):
             temp2=linalg.solve_triangular(L,gradX[:,j].T,lower=True)

@@ -13,6 +13,8 @@ from . import stat
 from scipy import linalg
 from numpy import linalg as LA
 from scipy.stats import norm
+from . import gradients
+
 
 class VOI:
     def __init__(self,numberTraining):
@@ -101,63 +103,12 @@ class VOISBO(VOI):
         self.sizeDiscretization=self._points.shape[0]
         
         if SEK:
-            self._gradXWSigmaOfunc=self.gradXWSigmaOfuncSEK
-            self._gradXBfunc=self.gradXBSEK
+            self._gradXWSigmaOfunc=gradients.gradXWSigmaOfuncSEK
+            self._gradXBfunc=gradients.gradXBSEK
             
-    def gradXBSEK(self,new,kern,BN,keep,points):
-        """Computes the vector of gradients with respect to x_{n+1} of
-            B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
-            where x_{p} is a point in the discretization of the domain of x.
-            
-           Args:
-              new: Point (x_{n+1},w_{n+1})
-              kern: Kernel
-              keep: Indexes of the points keeped of the discretization of the domain of x,
-                    after using AffineBreakPoints
-              BN: Vector B(x_{p},n+1), where x_{p} is a point in the discretization of
-                  the domain of x.
-              points: Discretization of the domain of x
-        """
-        alpha1=0.5*((kern.alpha[0:self.n1])**2)/(kern.scaleAlpha)**2
-        xNew=new[0,0:self.n1].reshape((1,self.n1))
-        gradXBarray=np.zeros([len(keep),self.n1])
-        M=len(keep)
-        for i in xrange(self.n1):
-            for j in xrange(M):
-                gradXBarray[j,i]=-2.0*alpha1[i]*BN[keep[j],0]*(xNew[0,i]-points[keep[j],i])
-        return gradXBarray
 
-
-    def gradXWSigmaOfuncSEK(self,n,new,kern,Xtrain2,Wtrain2):
-        """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
-            all the past observations XW[i,]. Sigma_{0} is the covariance of
-            the GP on F.
-            
-           Args:
-              n: Number of iteration
-              new: Point where Sigma_{0} is evaluated
-              kern: Kernel
-              Xtrain2: Past observations of X
-              Wtrain2: Past observations of W
-              N: Number of observations
-        """
-        n1=self.n1
-        n2=self.n2
-        gradXSigma0=np.zeros([n+self._numberTraining+1,self.n1])
-        tempN=n+self._numberTraining
-        past=np.concatenate((Xtrain2,Wtrain2),1)
-        gamma=np.transpose(kern.A(new,past))
-        alpha1=0.5*((kern.alpha[0:n1])**2)/(kern.scaleAlpha)**2
-        gradWSigma0=np.zeros([n+self._numberTraining+1,self.n2])
-
-        alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha)**2
-        xNew=new[0,0:n1]
-        wNew=new[0,n1:n1+n2]
-        for i in xrange(n+self._numberTraining):
-            gradXSigma0[i,:]=-2.0*gamma[i]*alpha1*(xNew-Xtrain2[i,:])
-            gradWSigma0[i,:]=-2.0*gamma[i]*alpha2*(wNew-Wtrain2[i,:])
-        return gradXSigma0,gradWSigma0
-        
+    
+    
     def aANDb(self,n,x,xNew,wNew,L,temp2,past,kernel,B):
         """
         Output: A tuple with:
@@ -196,23 +147,28 @@ class VOISBO(VOI):
         tempN=self._numberTraining+n
         BN=np.zeros([m,1])
         n2=self.n2
-        BN[:,0]=B(x,np.concatenate((xNew,wNew),1),self.n1,n2,kernel) #B(x,n+1)
- 
+        BN[:,0]=B(x,np.concatenate((xNew,wNew)),self.n1,n2,kernel) #B(x,n+1)
         n1=self.n1
         n2=self.n2
-        new=np.concatenate((xNew,wNew),1).reshape((1,n1+n2))
+        new=np.concatenate((xNew,wNew)).reshape((1,n1+n2))
 
         gamma=np.transpose(kernel.A(new,past))
         temp1=linalg.solve_triangular(L,gamma,lower=True)
+
         b=(BN-np.dot(temp2.T,temp1))
+
         aux4=np.dot(temp1.T,temp1)
+
         b2=kernel.K(new)-aux4
         b2=np.clip(b2,0,np.inf)
+
         try:
             b=b/(np.sqrt(b2))
+
         except Exception as e:
             print "use a different point x"
             b=np.zeros((len(b),1))
+
         return b,gamma,BN,temp1,aux4
 
     def evalVOI(self,n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,inv,aux4,kern,XW,
@@ -278,14 +234,15 @@ class VOISBO(VOI):
         c=c[keep1+1]
         c2=np.abs(c[0:M-1])
         evalC=norm.pdf(c2)
-        
+
         nTraining=self._numberTraining
         tempN=nTraining+n
         gradXSigma0,gradWSigma0=self._gradXWSigmaOfunc(n,pointNew,
                                                        kern,XW[0:tempN,0:n1],
-                                                       XW[0:tempN,n1:n1+n2])
+                                                       XW[0:tempN,n1:n1+n2],
+                                                       n1,n2,nTraining)
 
-        gradXB=self._gradXBfunc(pointNew,kern,BN,keep,self._points)
+        gradXB=self._gradXBfunc(pointNew,kern,BN,keep,self._points,n1)
         gradWB=self._gradWBfunc(pointNew,kern,BN,keep,self._points)
 
         gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
@@ -356,9 +313,11 @@ class VOISBO(VOI):
                     -n2: Dimension of w
             -onlyGradient: True if we only want to compute the gradient; False otherwise.
         """
+        print "entro a VOI"
         n1=self.n1
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
                                     temp2=temp2,past=XW,kernel=kern,B=B)
+        print "calculo a and b"
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
@@ -426,25 +385,10 @@ class KG(VOI):
         self.sizeDiscretization=self._points.shape[0]
         self.n1=dimX
         if SK:
-            self.gradXKern=self.gradXKernelSEK
-            self.gradXKern2=self.gradXKernel2SEK
+            self.gradXKern=gradients.gradXKernelSEK
+            self.gradXKern2=gradients.gradXKernel2SEK
 
-    def gradXKernelSEK(self,x,n,kern,trainingPoints,X):
-        alpha=0.5*((kern.alpha)**2)/(kern.scaleAlpha)**2
-        tempN=n+trainingPoints
-        gradX=np.zeros((tempN,self.n1))
-        for j in xrange(self.n1):
-            for i in xrange(tempN):
-                aux=kern.K(x,X[i,:].reshape((1,self.n1)))
-                gradX[i,j]=aux*(-2.0*alpha[j]*(x[0,j]-X[i,j]))
-        return gradX
-    
-    def gradXKernel2SEK(self,x,Btemp,points,nD,mD,kern):
-        alpha=0.5*((kern.alpha)**2)/(kern.scaleAlpha)**2
-        temp=np.zeros((nD,mD))
-        for i in xrange(nD):
-            temp[i,:]=(-2.0*alpha[i])*(x[0,i]-points[:,i])
-        return temp*Btemp[:,0]
+
       
      ##return a_n and b_n
     ##x is a vector of points (x is as matrix) where a_n and sigma_n are evaluated  
@@ -523,7 +467,7 @@ class KG(VOI):
             
 #        temp22=linalg.solve_triangular(L,B,lower=True)
 
-        gradX=self.gradXKern(pointNew,n,kern,self._numberTraining,X)
+        gradX=self.gradXKern(pointNew,n,kern,self._numberTraining,X,n1)
         
         temp=np.zeros([tempN,n1])
        # tmp100=norm.pdf(c2)

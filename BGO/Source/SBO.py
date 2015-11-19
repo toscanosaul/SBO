@@ -125,6 +125,7 @@ import sys
 from . import optimization as op
 import multiprocessing as mp
 import os
+#os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 from . import misc
 from matplotlib import pyplot as plt
 from numpy import multiply
@@ -132,6 +133,7 @@ from numpy.linalg import inv
 from . import stat
 from . import VOI
 from . import files as fl
+from . import optAlg
 from AffineBreakPoints import *
 from scipy.stats import norm
 import pylab as plb
@@ -155,7 +157,7 @@ class SBO:
 	self.stat=statObj
 	self._VOI=VOIobj
 	self.opt=optObj
-	self.misc=miscObj
+	self.miscObj=miscObj
 	self.Obj=Objobj
 	
 	self._n1=Objobj.dimSeparation
@@ -172,7 +174,9 @@ class SBO:
 	self._solutions=[]
         self._valOpt=[]
 	
-	self.path=os.path.join(miscObj.folder,'%d'%self.misc.rs+"run")
+	self.path=os.path.join(miscObj.folder,'%d'%self.miscObj.rs+"run")
+	
+	self.parameters=None
 	if not os.path.exists(self.path):
 	    os.makedirs(self.path)
 
@@ -185,8 +189,8 @@ class SBO:
 	    nRepeat: Number of random restarts to optimize the hyperparameters.
 	    Train: True if we want to train the kernel; False otherwise.
         """
-	if self.misc.create: #Create files for the results
-	    fl.createNewFilesFunc(self.path,self.misc.rs) 
+	if self.miscObj.create: #Create files for the results
+	    fl.createNewFilesFunc(self.path,self.miscObj.rs) 
 	fl.writeTraining(self) #Write training data
         if Train is True:
             self.trainModel(numStarts=nRepeat,**kwargs) #Train model
@@ -194,19 +198,19 @@ class SBO:
         for i in range(m):
             print i
 	    #Optimize VOI
-	    if self.misc.parallel:
+	    if self.miscObj.parallel:
 		self.optVOIParal(i,self.opt.numberParallel) 
 	    else:
 		self.optVOInoParal(i)
             print i
 	    #Otimize a_{n}
-	    if self.misc.parallel:
+	    if self.miscObj.parallel:
 		self.optAnParal(i,self.opt.numberParallel)
 	    else:
 		self.optAnnoParal(i)
             print i
 	#Optimize a_{n}
-	if self.misc.parallel:
+	if self.miscObj.parallel:
 	    self.optAnParal(m,self.opt.numberParallel)
 	else:
 	    self.optAnnoParal(i)
@@ -229,11 +233,14 @@ class SBO:
 	    scratch: matrix where scratch[i,:] is the solution of the linear system
                      Ly=B[j,:].transpose() (See above for the definition of B and L)
         """
+
+	
         opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
 				  stopFunction=self.opt.functionConditionOpt,xStart=start,
 				  xtol=self.opt.xtol)
-	
+	print opt
         def g(x,grad,onlyGradient=False):
+	    print "aqui es g"
             return self.opt.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
 						 scratch=scratch,onlyGradient=onlyGradient,
 						 kern=self.stat._k,XW=self.dataObj.Xhist,
@@ -297,8 +304,8 @@ class SBO:
 	tempN=self.numberTraining+i
 	st=np.concatenate((x1,w1),1)
 	args2=self.getParametersOptVoi(i)
-	args2['start']=st
-	self.optRuns.append(misc.VOIOptWrapper(self,**args2))
+    #    args2['start']=st
+	self.optRuns.append(misc.VOIOptWrapper(self,st,**args2))
 	fl.writeNewPointSBO(self,self.optRuns[0])
 
     def optVOIParal(self,i,nStart,numProcesses=None):
@@ -315,19 +322,18 @@ class SBO:
             n1=self._n1
             n2=self._dimW
 	    tempN=self.numberTraining+i
+
             Xst=self.Obj.sampleFromX(nStart)
             wSt=self.Obj.simulatorW(nStart)
+	    XWst=np.concatenate((Xst,wSt),1)
 	    args3=self.getParametersOptVoi(i)
-	    listArgs=[args3.copy() for i in range(nStart)]
+	    
+	    pool = mp.Pool(processes=numProcesses)
 	    jobs = []
-            pool = mp.Pool(processes=numProcesses)
+
             for j in range(nStart):
-		args2=args3.copy()
-                x1=Xst[j:j+1,:]
-                w1=wSt[j:j+1,:]
-                st=np.concatenate((x1,w1),1)
-		listArgs[j]['start']=st
-                job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=listArgs[j])
+                job = pool.apply_async(misc.VOIOptWrapper, args=(self,XWst[j:j+1,:],),
+				       kwds=args3)
                 jobs.append(job)
             pool.close()  # signal that no more data coming in
             pool.join()  # wait for all the tasks to complete
@@ -335,6 +341,7 @@ class SBO:
             print "Ctrl+c received, terminating and joining pool."
             pool.terminate()
             pool.join()
+	jobs[0].get()
         for j in range(nStart):
             try:
                 self.optRuns.append(jobs[j].get())
@@ -400,11 +407,10 @@ class SBO:
 
 	Xst=self.Obj.sampleFromX(1)
 	args2={}
-	args2['start']=Xst[0:0+1,:]
 	args2['i']=i
 	args2['L']=L
 	args2['logProduct']=logProduct
-	self.optRuns.append(misc.AnOptWrapper(self,**args2))
+	self.optRuns.append(misc.AnOptWrapper(self,start=Xst[0:1,:],**args2))
 	fl.writeSolution(self,self.optRuns[0])
 
     def optAnParal(self,i,nStart,logProd=True,numProcesses=None):
@@ -436,12 +442,10 @@ class SBO:
 	    args3['L']=L
 	    args3['logProduct']=logProduct
 	    Xst=self.Obj.sampleFromX(nStart)
-	    listArgs=[args3.copy() for i in range(nStart)]
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             for j in range(nStart):
-                listArgs[j]['start']=Xst[j:j+1,:]
-                job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=listArgs[j])
+                job = pool.apply_async(misc.AnOptWrapper, args=(self,Xst[j:j+1,:],), kwds=args3)
                 jobs.append(job)
             pool.close()  # signal that no more data coming in
             pool.join()  # wait for all the tasks to complete
@@ -472,11 +476,11 @@ class SBO:
 	    numStarts: Number of random restarts to optimize
 		       the hyperparameters.
         """
-	if self.misc.parallel:
+	if self.miscObj.parallel:
 	    self.stat._k.train(scaledAlpha=self.stat.scaledAlpha,numStarts=numStarts,**kwargs)
 	else:
 	    self.stat._k.trainnoParallel(scaledAlpha=self.stat.scaledAlpha,**kwargs)
-        f=open(os.path.join(self.path,'%d'%self.misc.rs+"hyperparameters.txt"),'w')
+        f=open(os.path.join(self.path,'%d'%self.miscObj.rs+"hyperparameters.txt"),'w')
         f.write(str(self.stat._k.getParamaters()))
         f.close()
 

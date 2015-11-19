@@ -14,7 +14,7 @@ def logSumExp(x):
     y=c+np.log(np.sum(np.exp(x-c)))
     return y
 
-def kernOptWrapper(m,**kwargs):
+def kernOptWrapper(m,start,**kwargs):
     """
     This function just wraps the optimization procedure of a kernel
     object so that optimize() pickleable (necessary for multiprocessing).
@@ -22,10 +22,10 @@ def kernOptWrapper(m,**kwargs):
     Args:
         m: kernel object
     """
-    m.optimizeKernel(**kwargs)
+    m.optimizeKernel(start=start,**kwargs)
     return m.optRuns[-1]
 
-def VOIOptWrapper(m,**kwargs):
+def VOIOptWrapper(m,start,**kwargs):
     """
     This function just wraps the optimization procedure of a kernel
     object so that optimize() pickleable (necessary for multiprocessing).
@@ -33,10 +33,11 @@ def VOIOptWrapper(m,**kwargs):
     Args:
         m: global optimization object.
     """
-    m.optimizeVOI(**kwargs)
+    print start
+    m.optimizeVOI(start=start,**kwargs)
     return m.optRuns[-1]
 
-def AnOptWrapper(m,**kwargs):
+def AnOptWrapper(m,start,**kwargs):
     """
     This function just wraps the optimization procedure of a kernel
     object so that optimize() pickleable (necessary for multiprocessing).
@@ -44,5 +45,5 @@ def AnOptWrapper(m,**kwargs):
     Args:
         m: global optimization object.
     """
-    m.optimizeAn(**kwargs)
+    m.optimizeAn(start=start,**kwargs)
     return m.optRuns[-1]

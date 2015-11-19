@@ -22,11 +22,11 @@ def createNewFilesFunc(path,rs):
     f.close()
     
 def writeTraining(ALGObj):
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"XWHist.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"XWHist.txt"), "a") as f:
         np.savetxt(f,ALGObj.dataObj.Xhist)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"yhist.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"yhist.txt"), "a") as f:
         np.savetxt(f,ALGObj.dataObj.yHist)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"varHist.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"varHist.txt"), "a") as f:
         np.savetxt(f,ALGObj.dataObj.varHist)
         
         
@@ -43,15 +43,15 @@ def writeNewPointSBO(ALGObj,optim):
     y,var=ALGObj.Obj.noisyF(temp,ALGObj.Obj.numberEstimateF)
     ALGObj.dataObj.yHist=np.vstack([ALGObj.dataObj.yHist,y])
     ALGObj.dataObj.varHist=np.append(ALGObj.dataObj.varHist,var)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"varHist.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"varHist.txt"), "a") as f:
         var=np.array(var).reshape(1)
         np.savetxt(f,var)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"yhist.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"yhist.txt"), "a") as f:
         y=np.array(y).reshape(1)
         np.savetxt(f,y)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"XWHist.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"XWHist.txt"), "a") as f:
         np.savetxt(f,temp)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"optVOIgrad.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"optVOIgrad.txt"), "a") as f:
         np.savetxt(f,gradOpt)
     ALGObj.optRuns=[]
     ALGObj.optPointsArray=[]
@@ -79,15 +79,15 @@ def writeNewPointKG(ALG,optim):
     ALG.dataObj.varHist=np.append(ALG.dataObj.varHist,var)
    # self._VOI._noiseHist=self._varianceObservations
     #self._VOI._GP._noiseHist=self._varianceObservations
-    with open(os.path.join(ALG.path,'%d'%ALG.misc.rs+"varHist.txt"), "a") as f:
+    with open(os.path.join(ALG.path,'%d'%ALG.miscObj.rs+"varHist.txt"), "a") as f:
         var=np.array(var).reshape(1)
         np.savetxt(f,var)
-    with open(os.path.join(ALG.path,'%d'%ALG.misc.rs+"yhist.txt"), "a") as f:
+    with open(os.path.join(ALG.path,'%d'%ALG.miscObj.rs+"yhist.txt"), "a") as f:
         y=np.array(y).reshape(1)
         np.savetxt(f,y)
-    with open(os.path.join(ALG.path,'%d'%ALG.misc.rs+"XHist.txt"), "a") as f:
+    with open(os.path.join(ALG.path,'%d'%ALG.miscObj.rs+"XHist.txt"), "a") as f:
         np.savetxt(f,temp)
-    with open(os.path.join(ALG.path,'%d'%ALG.misc.rs+"optKGgrad.txt"), "a") as f:
+    with open(os.path.join(ALG.path,'%d'%ALG.miscObj.rs+"optKGgrad.txt"), "a") as f:
         np.savetxt(f,gradOpt)
     
 def writeSolution(ALGObj,optim):
@@ -97,13 +97,13 @@ def writeSolution(ALGObj,optim):
     tempGrad=np.array([tempGrad,optim.nIterations])
     xTrans=ALGObj.opt.transformationDomainX(optim.xOpt[0:1,0:ALGObj.opt.dimXsteepest])
     ALGObj._solutions.append(xTrans)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"optimalSolutions.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"optimalSolutions.txt"), "a") as f:
         np.savetxt(f,xTrans)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"optimalValues.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"optimalValues.txt"), "a") as f:
         result,var=ALGObj.Obj.estimationObjective(xTrans[0,:])
         res=np.append(result,var)
         np.savetxt(f,res)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.misc.rs+"optAngrad.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"optAngrad.txt"), "a") as f:
         np.savetxt(f,tempGrad)
     ALGObj.optRuns=[]
     ALGObj.optPointsArray=[]
