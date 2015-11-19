@@ -429,7 +429,7 @@ class SBO:
 	    if logProd:
 		tempX=self.dataObj.Xhist[0:tempN,n1:self._dimW+n1]
 		logProduct=self.stat.computeLogProductExpectationsForAn(tempX,
-							       tempN)
+							       tempN,self.stat._k)
 	    else:
 		logProduct=None
 
