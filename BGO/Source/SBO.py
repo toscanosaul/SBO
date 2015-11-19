@@ -237,9 +237,8 @@ class SBO:
         opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
 				  stopFunction=self.opt.functionConditionOpt,xStart=start,
 				  xtol=self.opt.xtol)
-	print opt
+
         def g(x,grad,onlyGradient=False):
-	    print "aqui es g"
             return self.opt.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
 						 scratch=scratch,onlyGradient=onlyGradient,
 						 kern=self.stat._k,XW=self.dataObj.Xhist,

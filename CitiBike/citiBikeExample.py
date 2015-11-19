@@ -208,19 +208,12 @@ def B(x,XW,n1,n2,kernel,logproductExpectations=None):
                                   where W[i,:] is a point in the history.
           
     """
-    print "entro a B"
     x=np.array(x).reshape((x.shape[0],n1))
     results=np.zeros(x.shape[0])
     parameterLamb=parameterSetsPoisson
-    print n1
-    print n2
     X=XW[0:n1]
     inda=n1+n2
-    print inda
-    print XW
-    print n1
     W=XW[n1:inda]
-    print W
     alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
     alpha1=0.5*((kernel.alpha[0:n1])**2)/scaleAlpha**2
     variance0=kernel.variance
@@ -374,10 +367,8 @@ def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGr
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
-    print "entro a g"
     temp=VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
                           kern=kern,XW=XW,B=Bfunc)
-    print "calculo VOIfun"
 
     if onlyGradient:
         t=np.diag(np.ones(n1-1))

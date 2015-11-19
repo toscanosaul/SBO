@@ -33,7 +33,6 @@ def VOIOptWrapper(m,start,**kwargs):
     Args:
         m: global optimization object.
     """
-    print start
     m.optimizeVOI(start=start,**kwargs)
     return m.optRuns[-1]
 

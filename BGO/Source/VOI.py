@@ -313,11 +313,9 @@ class VOISBO(VOI):
                     -n2: Dimension of w
             -onlyGradient: True if we only want to compute the gradient; False otherwise.
         """
-        print "entro a VOI"
         n1=self.n1
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
                                     temp2=temp2,past=XW,kernel=kern,B=B)
-        print "calculo a and b"
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
