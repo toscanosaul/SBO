@@ -153,7 +153,7 @@ Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,
 """
 We define the miscellaneous object.
 """
-parallel=False
+parallel=True
 
 trainingPoints=nTemp2
 
@@ -257,59 +257,6 @@ We define the VOI object.
 """
 
 pointsVOI=np.loadtxt("pointsPoisson.txt") #Discretization of the domain of X
-
-####The function is the same for any squared exponential kernel
-def gradXWSigmaOfunc(n,new,kern,Xtrain2,Wtrain2):
-    """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
-        all the past observations XW[i,]. Sigma_{0} is the covariance of
-        the GP on F.
-        
-       Args:
-          n: Number of iteration
-          new: Point where Sigma_{0} is evaluated
-          kern: Kernel
-          Xtrain2: Past observations of X
-          Wtrain2: Past observations of W
-          N: Number of observations
-    """
-    gradXSigma0=np.zeros([n+trainingPoints+1,n1])
-    tempN=n+trainingPoints
-    past=np.concatenate((Xtrain2,Wtrain2),1)
-    gamma=np.transpose(kern.A(new,past))
-    alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
-    gradWSigma0=np.zeros([n+trainingPoints+1,n2])
-    alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/scaleAlpha**2
-    xNew=new[0,0:n1]
-    wNew=new[0,n1:n1+n2]
-    for i in xrange(n+trainingPoints):
-        gradXSigma0[i,:]=-2.0*gamma[i]*alpha1*(xNew-Xtrain2[i,:])
-        gradWSigma0[i,:]=-2.0*gamma[i]*alpha2*(wNew-Wtrain2[i,:])
-    return gradXSigma0,gradWSigma0
-
-
-###The function is the same for any squared exponential kernel
-def gradXB(new,kern,BN,keep,points):
-    """Computes the vector of gradients with respect to x_{n+1} of
-	B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
-	where x_{p} is a point in the discretization of the domain of x.
-        
-       Args:
-          new: Point (x_{n+1},w_{n+1})
-          kern: Kernel
-          keep: Indexes of the points keeped of the discretization of the domain of x,
-                after using AffineBreakPoints
-          BN: Vector B(x_{p},n+1), where x_{p} is a point in the discretization of
-              the domain of x.
-          points: Discretization of the domain of x
-    """
-    alpha1=0.5*((kern.alpha[0:n1])**2)/scaleAlpha**2
-    xNew=new[0,0:n1].reshape((1,n1))
-    gradXBarray=np.zeros([len(keep),n1])
-    M=len(keep)
-    for i in xrange(n1):
-        for j in xrange(M):
-            gradXBarray[j,i]=-2.0*alpha1[i]*BN[keep[j],0]*(xNew[0,i]-points[keep[j],i])
-    return gradXBarray
 
 def gradWB(new,kern,BN,keep,points):
     """Computes the vector of gradients with respect to w_{n+1} of
