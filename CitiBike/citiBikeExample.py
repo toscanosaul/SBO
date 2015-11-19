@@ -42,6 +42,14 @@ from BGO.Source import *
 nTemp=int(sys.argv[1])  #random seed 
 nTemp2=int(sys.argv[2]) #number of training points
 nTemp3=int(sys.argv[3]) #number of samples to estimate F
+nTemp4=int(sys.argv[4]) #number of iterations
+nTemp5=sys.argv[5] #True if code is run in parallel; False otherwise.
+
+if nTemp5=='F':
+    nTemp5=False
+elif nTemp5=='T':
+    nTemp5=True
+
 
 randomSeed=nTemp
 np.random.seed(randomSeed)
@@ -148,7 +156,7 @@ Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,
 """
 We define the miscellaneous object.
 """
-parallel=True
+parallel=nTemp5
 
 trainingPoints=nTemp2
 
@@ -200,22 +208,28 @@ def B(x,XW,n1,n2,kernel,logproductExpectations=None):
                                   where W[i,:] is a point in the history.
           
     """
+    print "entro a B"
     x=np.array(x).reshape((x.shape[0],n1))
     results=np.zeros(x.shape[0])
     parameterLamb=parameterSetsPoisson
+    print n1
+    print n2
     X=XW[0:n1]
-    W=XW[n1:n1+n2]
+    inda=n1+n2
+    print inda
+    print XW
+    print n1
+    W=XW[n1:inda]
+    print W
     alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
     alpha1=0.5*((kernel.alpha[0:n1])**2)/scaleAlpha**2
     variance0=kernel.variance
-    
     if logproductExpectations is None:
         logproductExpectations=0.0
         for j in xrange(n2):
             G=poisson(parameterLamb[j])
             temp=G.dist.expect(lambda z: np.exp(-alpha2[j]*((z-W[j])**2)),G.args)
             logproductExpectations+=np.log(temp)
-            
     for i in xrange(x.shape[0]):
         results[i]=logproductExpectations+np.log(variance0)-np.sum(alpha1*((x[i,:]-X)**2))
     return np.exp(results)
@@ -360,8 +374,10 @@ def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGr
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
+    print "entro a g"
     temp=VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
                           kern=kern,XW=XW,B=Bfunc)
+    print "calculo VOIfun"
 
     if onlyGradient:
         t=np.diag(np.ones(n1-1))
@@ -461,7 +477,7 @@ def conditionOpt(x):
     """
     return np.max((np.floor(np.abs(x))))
 
-opt=inter.opt(10,dimXsteepest,transformationDomainX,transformationDomainW,projectGradientDescent,functionGradientAscentVn,
+opt=inter.opt(1,dimXsteepest,transformationDomainX,transformationDomainW,projectGradientDescent,functionGradientAscentVn,
               functionGradientAscentAn,conditionOpt,1.0)
 
 
@@ -484,6 +500,6 @@ sboObj=SBO.SBO(**l)
 We run the SBO algorithm.
 """
 
-sboObj.SBOAlg(20,nRepeat=10,Train=True)
+sboObj.SBOAlg(nTemp4,nRepeat=1,Train=True)
 
 
