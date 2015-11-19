@@ -133,7 +133,6 @@ from numpy.linalg import inv
 from . import stat
 from . import VOI
 from . import files as fl
-from . import optAlg
 from AffineBreakPoints import *
 from scipy.stats import norm
 import pylab as plb
