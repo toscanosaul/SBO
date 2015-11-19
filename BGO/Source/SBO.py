@@ -318,6 +318,7 @@ class SBO:
             Xst=self.Obj.sampleFromX(nStart)
             wSt=self.Obj.simulatorW(nStart)
 	    args3=self.getParametersOptVoi(i)
+	    listArgs=[args3.copy() for i in range(nStart)]
 	    jobs = []
             pool = mp.Pool(processes=numProcesses)
             for j in range(nStart):
@@ -325,8 +326,8 @@ class SBO:
                 x1=Xst[j:j+1,:]
                 w1=wSt[j:j+1,:]
                 st=np.concatenate((x1,w1),1)
-                args2['start']=st
-                job = pool.apply_async(misc.VOIOptWrapper, args=(self,), kwds=args2)
+		listArgs[j]['start']=st
+                job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=listArgs[j])
                 jobs.append(job)
             pool.close()  # signal that no more data coming in
             pool.join()  # wait for all the tasks to complete
@@ -435,13 +436,12 @@ class SBO:
 	    args3['L']=L
 	    args3['logProduct']=logProduct
 	    Xst=self.Obj.sampleFromX(nStart)
-	    
+	    listArgs=[args3.copy() for i in range(nStart)]
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             for j in range(nStart):
-		args2=args3.copy()
-                args2['start']=Xst[j:j+1,:]
-                job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=args2)
+                listArgs[j]['start']=Xst[j:j+1,:]
+                job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=listArgs[j])
                 jobs.append(job)
             pool.close()  # signal that no more data coming in
             pool.join()  # wait for all the tasks to complete

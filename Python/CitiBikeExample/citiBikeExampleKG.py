@@ -152,12 +152,9 @@ tempX=sampleFromX(trainingPoints)
 tempFour=numberBikes-np.sum(tempX,1)
 tempFour=tempFour.reshape((trainingPoints,1))
 Xtrain=np.concatenate((tempX,tempFour),1)
-#yTrain=np.zeros([0,1])
-#NoiseTrain=np.zeros(0)
-
 
 dataObj=inter.data(Xtrain,yHist=None,varHist=None)
-dataObj.getTrainingData(trainingPoints,noisyG,numberSamplesForG,parallel)
+dataObj.getTrainingDataKG(trainingPoints,noisyG,numberSamplesForG,parallel)
 
 """
 We define the statistical object.

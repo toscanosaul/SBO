@@ -73,6 +73,8 @@ class SEK:
         if noise is None:
             K=self.K(X,X2,alpha=alpha,variance=variance)
         else:
+            print X
+            print X2
             K=self.K(X,X2,alpha=alpha,variance=variance)+np.diag(noise)
         return K
     
@@ -175,10 +177,25 @@ class SEK:
         self.optRuns.append(opt)
         self.optPointsArray.append(opt.xOpt)
         
+        
+    def trainnoParallel(self,scaledAlpha,**kwargs):
+        dim=self.dimension
+        alpha=np.random.randn(dim)
+        variance=np.random.rand(1)
+        st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),[0.0]))
+        args2={}
+        args2['start']=st
+        job=misc.kernOptWrapper(self,**args2)
+        temp=job.xOpt
+        self.alpha=np.sqrt(np.exp(np.array(temp[0:self.dimension])))
+        self.variance=np.exp(np.array(temp[self.dimension]))
+        self.mu=np.array(temp[self.dimension+1])
+
+    
     
     ###Train the hyperparameters using MLE
     ###noise is an array. X is a matrix y is an array
-    def train(self,numStarts=None,numProcesses=None,**kwargs):
+    def train(self,scaledAlpha,numStarts=None,numProcesses=None,**kwargs):
         if numStarts is None:
             numStarts=self.restarts
         

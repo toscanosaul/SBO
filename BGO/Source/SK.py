@@ -272,10 +272,10 @@ class SEK:
         """
         if numStarts is None:
             numStarts=self.restarts
-        
         try:
             dim=self.dimension
             jobs = []
+            args3=[]
             pool = mp.Pool(processes=numProcesses)
             for i in range(numStarts):
                 alpha=np.random.randn(dim)
@@ -283,8 +283,8 @@ class SEK:
                 st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),[0.0]))
                 args2={}
                 args2['start']=st
-
-                job = pool.apply_async(misc.kernOptWrapper, args=(self,), kwds=args2)
+                args3.append(args2.copy())
+                job = pool.apply_async(misc.kernOptWrapper, args=(self,), kwds=args3[i])
                 jobs.append(job)
             
             pool.close()  # signal that no more data coming in
