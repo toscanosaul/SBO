@@ -239,7 +239,7 @@ class SBO:
 				  xtol=self.opt.xtol)
 	#####new line
 	print start
-	opt=op.SLSP(xStart)
+	opt=op.SLSP(start)
 	#####
         def g(x,grad,onlyGradient=False):
             return self.opt.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
