@@ -26,7 +26,6 @@ dataObj: Data object (See InterfaceSBO).
 import sys
 sys.path.append("..")
 import numpy as np
-from grid import *
 from simulationPoissonProcess import *
 from math import *
 from matplotlib import pyplot as plt
