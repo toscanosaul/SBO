@@ -237,7 +237,7 @@ class SBO:
             return self.opt.functionGradientAscentVn(x,i=i,VOI=self._VOI,L=L,temp2=temp2,a=a,
 						 scratch=scratch,onlyGradient=onlyGradient,
 						 kern=self.stat._k,XW=self.dataObj.Xhist,
-						 Bfunc=self.stat.B)
+						 Bfunc=self.stat.B,grad=grad)
 
 	if self.opt.MethodVn=="SLSQP":
 	    opt=op.SLSP(start)
@@ -348,7 +348,6 @@ class SBO:
             print "Ctrl+c received, terminating and joining pool."
             pool.terminate()
             pool.join()
-	jobs[0].get()
         for j in range(nStart):
             try:
                 self.optRuns.append(jobs[j].get())
