@@ -349,8 +349,7 @@ def transformationDomainW(w):
     """
     return np.round(w)
 
-
-opt=inter.opt(nTemp6,transformationDomainX,transformationDomainW,None,functionGradientAscentVn,
+opt=inter.opt(nTemp6,None,transformationDomainX,transformationDomainW,None,functionGradientAscentVn,
               functionGradientAscentAn,None,None,cons)
 
 
