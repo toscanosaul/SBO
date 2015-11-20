@@ -125,8 +125,8 @@ def sampleFromX(n):
     	temp[:,n1-1]=numberBikes-np.sum(temp[:,0:n1-1],1)
     #	temp=np.floor(temp)
      #   temp=np.concatenate((temp,numberBikes-np.sum(temp)))
-	aux1=np.concatenate((aux1,temp),0)
-    return aux1
+	#aux1=np.concatenate((aux1,temp),0)
+    return temp
 
 def simulatorW(n):
     """Simulate n vectors w
