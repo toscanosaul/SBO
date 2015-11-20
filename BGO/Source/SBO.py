@@ -356,7 +356,6 @@ class SBO:
                 print "Error optimizing VOI"
                 
         if len(self.optRuns):
-	    print [o.fOpt for o in self.optRuns]
             j = np.argmax([o.fOpt for o in self.optRuns])
 	    fl.writeNewPointSBO(self,self.optRuns[j])
         self.optRuns=[]
