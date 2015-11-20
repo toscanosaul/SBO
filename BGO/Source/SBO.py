@@ -238,7 +238,7 @@ class SBO:
 				  stopFunction=self.opt.functionConditionOpt,xStart=start,
 				  xtol=self.opt.xtol)
 	#####new line
-	opt=op.OptBFGS(xStart=start)
+	opt=op.SLSP(xStart=start)
 	#####
         def g(x,grad,onlyGradient=False):
             return self.opt.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
