@@ -44,6 +44,7 @@ nTemp2=int(sys.argv[2]) #number of training points
 nTemp3=int(sys.argv[3]) #number of samples to estimate F
 nTemp4=int(sys.argv[4]) #number of iterations
 nTemp5=sys.argv[5] #True if code is run in parallel; False otherwise.
+nTemp6=int(sys.argv[6]) #number of restarts for the optimization method
 
 if nTemp5=='F':
     nTemp5=False
@@ -468,7 +469,7 @@ def conditionOpt(x):
     """
     return np.max((np.floor(np.abs(x))))
 
-opt=inter.opt(1,dimXsteepest,transformationDomainX,transformationDomainW,projectGradientDescent,functionGradientAscentVn,
+opt=inter.opt(nTemp6,dimXsteepest,transformationDomainX,transformationDomainW,projectGradientDescent,functionGradientAscentVn,
               functionGradientAscentAn,conditionOpt,1.0)
 
 
@@ -491,6 +492,6 @@ sboObj=SBO.SBO(**l)
 We run the SBO algorithm.
 """
 
-sboObj.SBOAlg(nTemp4,nRepeat=1,Train=True)
+sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True)
 
 
