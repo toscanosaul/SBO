@@ -58,7 +58,7 @@ class SLSP(Optimization):
         self.xOpt=np.array(optResult.x).reshape([1,len(optResult.x)])
 	print self.xOpt
         self.fOpt = -1.0*optResult.fun
-	print self.fopt
+	print self.fOpt
         self.gradOpt=optResult.jac
         self.nIterations=optResult.nit
        # self.status=statuses[optResult[2]['warnflag']]
