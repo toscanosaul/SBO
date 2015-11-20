@@ -34,7 +34,7 @@ class Optimization:
         self.opt(**kwargs)
     
         
-    def opt(self,f=None,fp=None):
+    def opt(self,f=None,fp=None,cons=None):
 	"""
 	Optimizes f.
 	
