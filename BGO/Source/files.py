@@ -37,7 +37,7 @@ def writeNewPointSBO(ALGObj,optim):
     gradOpt=np.sqrt(np.sum(gradOpt**2))
     gradOpt=np.array([gradOpt,numberIterations])
     xTrans=ALGObj.opt.transformationDomainXVn(optim.xOpt[0:1,0:ALGObj.opt.dimXsteepestVn])
-    wTrans=ALGObj.opt.transformationDomainW(optim.xOpt[0:1,ALGObj.opt.dimXsteepest:ALGObj.opt.dimXsteepestVn
+    wTrans=ALGObj.opt.transformationDomainW(optim.xOpt[0:1,ALGObj.opt.dimXsteepestVn:ALGObj.opt.dimXsteepestVn
                                                        +ALGObj._dimW])
     temp=np.concatenate((xTrans,wTrans),1)
     ALGObj.dataObj.Xhist=np.vstack([ALGObj.dataObj.Xhist,temp])
