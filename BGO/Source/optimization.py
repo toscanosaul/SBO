@@ -45,6 +45,22 @@ class Optimization:
         raise NotImplementedError, "optimize needs to be implemented"
     
 
+class SLSP(Optimization):
+    def __init__(self,xStart):
+	Optimization.__init__(self,xStart)
+	self.Name="SLSP"
+	
+    def opt(self,f=None,df=None,cons=None):
+	
+        statuses = ['Converged', 'Maximum number of f evaluations reached', 'Error']
+	optResult=fmin_slsqp(f,self.xStart,jac=df,constraints=cons)
+	
+        self.xOpt=optResult[0]
+        self.fOpt = optResult[1]
+        self.status=statuses[optResult[2]['warnflag']]
+	return 0
+
+
 class OptBFGS(Optimization):
     def __init__(self, xStart,maxfun=1e4,gtol=None,bfgsFactor=None):
         Optimization.__init__(self,xStart)

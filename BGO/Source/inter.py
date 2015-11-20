@@ -87,9 +87,10 @@ class Miscellaneous:
         self.create=create
 
 class opt:
-    def __init__(self,numberParallel,dimXsteepest,transformationDomainX,
-                 transformationDomainW,projectGradient,functionGradientAscentVn,
-                 functionGradientAscentAn,functionConditionOpt,xtol):
+    def __init__(self,numberParallel,dimXsteepest=None,transformationDomainX=None,
+                 transformationDomainW=None,projectGradient=None,functionGradientAscentVn=None,
+                 functionGradientAscentAn=None,functionConditionOpt=None,xtol=None,
+                 cons=None):
         """
         Args:
         -numberParallel: Number of starting points for the multistart gradient
@@ -167,6 +168,8 @@ class opt:
                                Its arguments is:
                                 -x: Point where the condition is evaluated.
         -xtol: Tolerance of x for the convergence of the steepest ascent method.
+        -cons: Constraints of the problem if slsqp is used. See
+               http://docs.scipy.org/doc/scipy-0.14.0/reference/tutorial/optimize.html#tutorial-sqlsp
         """
         self.numberParallel=numberParallel
         self.dimXsteepest=dimXsteepest
@@ -177,6 +180,7 @@ class opt:
         self.functionGradientAscentAn=functionGradientAscentAn
         self.functionConditionOpt=functionConditionOpt
         self.xtol=xtol
+        self.cons=cons
 
 class data:
     def __init__(self,Xhist,yHist,varHist):

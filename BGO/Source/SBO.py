@@ -237,17 +237,34 @@ class SBO:
         opt=op.OptSteepestDescent(n1=self.opt.dimXsteepest,projectGradient=self.opt.projectGradient,
 				  stopFunction=self.opt.functionConditionOpt,xStart=start,
 				  xtol=self.opt.xtol)
-
+	#####new line
+	opt=op.OptBFGS(xStart=start)
+	#####
         def g(x,grad,onlyGradient=False):
             return self.opt.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
 						 scratch=scratch,onlyGradient=onlyGradient,
 						 kern=self.stat._k,XW=self.dataObj.Xhist,
 						 Bfunc=self.stat.B)
+	
+	#####new functions
+	####for this method x must be an array
+	def g1(x):
+	    return -1.0*g(x,grad=False)
+	
+	def dg(x):
+	    return -1.0*g(x,grad=True,onlyGradient=True)
+	
+	cons=self.opt.cons
+	
+	#####
 
-        opt.run(f=g)
+       # opt.run(f=g)
+	###new line
+	opt.run(f=g1,df=dg,cons=cons)
+	####
         self.optRuns.append(opt)
-        xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
-        self.optPointsArray.append(xTrans)
+   #     xTrans[0,0:self._n1]=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
+  #      self.optPointsArray.append(xTrans)
 
     def getParametersOptVoi(self,i):
 	"""
@@ -347,6 +364,7 @@ class SBO:
                 print "Error optimizing VOI"
                 
         if len(self.optRuns):
+	    print [o.fOpt for o in self.optRuns]
             j = np.argmax([o.fOpt for o in self.optRuns])
 	    fl.writeNewPointSBO(self,self.optRuns[j])
         self.optRuns=[]
