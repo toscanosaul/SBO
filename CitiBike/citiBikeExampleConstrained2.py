@@ -352,7 +352,7 @@ def projectGradientDescent(x,direction,xo):
 	return x
     return xo+direction*min(alph)
 
-def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradient=False):
+def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradient=False,grad=None):
     """ Evaluates the VOI and it can compute its derivative. It evaluates the VOI,
         when grad and onlyGradient are False; it evaluates the VOI and computes its
         derivative when grad is True and onlyGradient is False, and computes only its
@@ -379,6 +379,7 @@ def functionGradientAscentVn(x,grad,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGr
                      Ly=B[j,:].transpose() (See above for the definition of B and L)
             onlyGradient: True if we only want to compute the gradient; False otherwise.
     """
+    grad=onlyGradient
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
     tempX=x[0:1,0:n1-1]
     x2=np.concatenate((tempX,x4),1)

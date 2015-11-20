@@ -365,7 +365,7 @@ def projectGradientDescent(x,direction,xo):
 	return x
     return xo+direction*min(alph)
 
-def functionGradientAscentVn(x,i,VOI,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradient=False):
+def functionGradientAscentVn(x,i,VOI,L,temp2,a,kern,XW,scratch,Bfunc,grad=None,onlyGradient=False):
     temp=VOI.VOIfunc(i,x,L=L,temp2=temp2,a=a,grad=onlyGradient,scratch=scratch,
                      onlyGradient=onlyGradient,kern=kern,XW=XW,B=Bfunc)
     return temp
