@@ -324,8 +324,12 @@ def functionGradientAscentAn(x,L,i,dataObj,onlyGrad,logproductExpectations=None)
                       logproductExpectations=logproductExpectations)
     return temp
 
+def const(x):
+    return np.sum(x[0:n1])-numberBikes
+
 cons=({'type':'eq',
-       'fun':lambda x:np.sum(x[0:n1])-numberBikes,
+#      'fun':lambda x:np.sum(x[0:n1])-numberBikes,
+        'fun': const,
        'jac':lambda x:np.array([1,1,1,1,0,0,0,0])})
 
 
