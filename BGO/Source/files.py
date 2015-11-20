@@ -6,7 +6,7 @@ import numpy as np
 def createNewFilesFunc(path,rs):
     f=open(os.path.join(path,'%d'%rs+"hyperparameters.txt"),'w')
     f.close()
-    f=open(os.path.join(path,'%d'%rs+"XWHist.txt"),'w')
+    f=open(os.path.join(path,'%d'%rs+"XHist.txt"),'w')
     f.close()
     f=open(os.path.join(path,'%d'%rs+"yhist.txt"),'w')
     f.close()
@@ -22,7 +22,7 @@ def createNewFilesFunc(path,rs):
     f.close()
     
 def writeTraining(ALGObj):
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"XWHist.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"XHist.txt"), "a") as f:
         np.savetxt(f,ALGObj.dataObj.Xhist)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"yhist.txt"), "a") as f:
         np.savetxt(f,ALGObj.dataObj.yHist)
@@ -36,8 +36,9 @@ def writeNewPointSBO(ALGObj,optim):
     numberIterations=optim.nIterations
     gradOpt=np.sqrt(np.sum(gradOpt**2))
     gradOpt=np.array([gradOpt,numberIterations])
-    xTrans=ALGObj.opt.transformationDomainX(optim.xOpt[0:1,0:ALGObj.opt.dimXsteepest])
-    wTrans=ALGObj.opt.transformationDomainW(optim.xOpt[0:1,ALGObj.opt.dimXsteepest:ALGObj.opt.dimXsteepest+ALGObj._dimW])
+    xTrans=ALGObj.opt.transformationDomainXVn(optim.xOpt[0:1,0:ALGObj.opt.dimXsteepestVn])
+    wTrans=ALGObj.opt.transformationDomainW(optim.xOpt[0:1,ALGObj.opt.dimXsteepest:ALGObj.opt.dimXsteepestVn
+                                                       +ALGObj._dimW])
     temp=np.concatenate((xTrans,wTrans),1)
     ALGObj.dataObj.Xhist=np.vstack([ALGObj.dataObj.Xhist,temp])
     y,var=ALGObj.Obj.noisyF(temp,ALGObj.Obj.numberEstimateF)
@@ -49,7 +50,7 @@ def writeNewPointSBO(ALGObj,optim):
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"yhist.txt"), "a") as f:
         y=np.array(y).reshape(1)
         np.savetxt(f,y)
-    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"XWHist.txt"), "a") as f:
+    with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"XHist.txt"), "a") as f:
         np.savetxt(f,temp)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"optVOIgrad.txt"), "a") as f:
         np.savetxt(f,gradOpt)
@@ -62,7 +63,7 @@ def writeNewPointKG(ALG,optim):
     numberIterations=optim.nIterations
     gradOpt=np.sqrt(np.sum(gradOpt**2))
     gradOpt=np.array([gradOpt,numberIterations])
-    xTrans=ALG.opt.transformationDomainX(optim.xOpt[0:1,0:ALG.opt.dimXsteepest])
+    xTrans=ALG.opt.transformationDomainXVn(optim.xOpt[0:1,0:ALG.opt.dimXsteepestVn])
  #   wTrans=self.transformationDomainW(self.optRuns[j].xOpt[0:1,self.dimXsteepest:self.dimXsteepest+self._dimW])
     ###falta transformar W
     temp=xTrans
@@ -87,7 +88,7 @@ def writeNewPointKG(ALG,optim):
         np.savetxt(f,y)
     with open(os.path.join(ALG.path,'%d'%ALG.miscObj.rs+"XHist.txt"), "a") as f:
         np.savetxt(f,temp)
-    with open(os.path.join(ALG.path,'%d'%ALG.miscObj.rs+"optKGgrad.txt"), "a") as f:
+    with open(os.path.join(ALG.path,'%d'%ALG.miscObj.rs+"optVOIgrad.txt"), "a") as f:
         np.savetxt(f,gradOpt)
     
 def writeSolution(ALGObj,optim):
@@ -95,7 +96,7 @@ def writeSolution(ALGObj,optim):
     tempGrad=optim.gradOpt
     tempGrad=np.sqrt(np.sum(tempGrad**2))
     tempGrad=np.array([tempGrad,optim.nIterations])
-    xTrans=ALGObj.opt.transformationDomainX(optim.xOpt[0:1,0:ALGObj.opt.dimXsteepest])
+    xTrans=ALGObj.opt.transformationDomainXAn(optim.xOpt[0:1,0:ALGObj.opt.dimXsteepestAn])
     ALGObj._solutions.append(xTrans)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"optimalSolutions.txt"), "a") as f:
         np.savetxt(f,xTrans)
