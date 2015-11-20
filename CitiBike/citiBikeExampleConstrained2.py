@@ -380,6 +380,7 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
             onlyGradient: True if we only want to compute the gradient; False otherwise.
     """
     grad=onlyGradient
+    x=np.array(x).reshape([1,n1-1])
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
     tempX=x[0:1,0:n1-1]
     x2=np.concatenate((tempX,x4),1)
