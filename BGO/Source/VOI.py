@@ -314,6 +314,7 @@ class VOISBO(VOI):
             -onlyGradient: True if we only want to compute the gradient; False otherwise.
         """
         n1=self.n1
+        print pointNew
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
                                     temp2=temp2,past=XW,kernel=kern,B=B)
         a,b,keep=AffineBreakPointsPrep(a,b)
