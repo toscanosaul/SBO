@@ -192,7 +192,8 @@ class opt:
         -ConsAn: Constraints for optimization of An (only SLSQP)
         """
         self.numberParallel=numberParallel
-        self.dimXsteepest=dimXsteepest
+        self.dimXsteepestVn=dimXsteepestVn
+        self.dimXsteepestAn=dimXsteepestAn
         self.transformationDomainXVn=transformationDomainXVn
         self.transformationDomainXAn=transformationDomainXAn
         self.transformationDomainW=transformationDomainW
