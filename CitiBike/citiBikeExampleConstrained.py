@@ -420,7 +420,7 @@ def conditionOpt(x):
     return np.max((np.floor(np.abs(x))))
 
 opt=inter.opt(nTemp6,n1,n1-1,transformationDomainXVn,transformationDomainXAn,
-              transformationDomainW,projectGradient,functionGradientAscentVn,
+              transformationDomainW,projectGradientDescent,functionGradientAscentVn,
               functionGradientAscentAn,conditionOpt,1.0,cons,None,"SLSP","OptSteepestDescent")
 
 
