@@ -120,17 +120,11 @@ def sampleFromXVn(n):
     aux1=(numberBikes/float(n1))*np.ones((1,n1))
     if n>1:
         temp=np.random.dirichlet(np.ones(n1),n-1)
-        print temp
 	temp=(numberBikes-500.0*n1)*temp+500.0
         temp[:,0:n1-1]=np.floor(temp[:,0:n1-1])
     	temp[:,n1-1]=numberBikes-np.sum(temp[:,0:n1-1],1)
-        print temp
-        print aux1
-    #	temp=np.floor(temp)
-     #   temp=np.concatenate((temp,numberBikes-np.sum(temp)))
 	aux1=np.concatenate((aux1,temp),0)
-    print n
-    return temp
+    return aux1
 
 def sampleFromXAn(n):
     """Chooses n points in the domain of x at random
