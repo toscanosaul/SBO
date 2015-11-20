@@ -125,7 +125,7 @@ def sampleFromXVn(n):
     	temp[:,n1-1]=numberBikes-np.sum(temp[:,0:n1-1],1)
     #	temp=np.floor(temp)
      #   temp=np.concatenate((temp,numberBikes-np.sum(temp)))
-	#aux1=np.concatenate((aux1,temp),0)
+	aux1=np.concatenate((aux1,temp),0)
     return temp
 
 def sampleFromXAn(n):
@@ -199,8 +199,6 @@ tempX=sampleFromXVn(trainingPoints)
 #tempFour=tempFour.reshape((trainingPoints,1))
 #Xtrain=np.concatenate((tempX,tempFour),1)
 Wtrain=simulatorW(trainingPoints)
-print tempX
-print Wtrain
 XWtrain=np.concatenate((tempX,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
