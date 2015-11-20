@@ -238,6 +238,7 @@ class SBO:
 				  stopFunction=self.opt.functionConditionOpt,xStart=start,
 				  xtol=self.opt.xtol)
 	#####new line
+	print start
 	opt=op.SLSP(xStart=start)
 	#####
         def g(x,grad,onlyGradient=False):
