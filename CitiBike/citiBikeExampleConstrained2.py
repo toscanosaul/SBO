@@ -195,7 +195,7 @@ tempFour=numberBikes-np.sum(tempX,1)
 tempFour=tempFour.reshape((trainingPoints,1))
 Xtrain=np.concatenate((tempX,tempFour),1)
 Wtrain=simulatorW(trainingPoints)
-XWtrain=np.concatenate((tempX,Wtrain),1)
+XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
