@@ -152,6 +152,10 @@ def simulatorW(n):
         wPrior[:,i]=np.random.poisson(parameterSetsPoisson[i],n)
     return wPrior
 
+def g2(x,w):
+    return g(TimeHours,w,x,nSets,lamb,A,"2014-05",exponentialTimes,
+                         data,cluster,bikeData)
+
 def estimationObjective(x,N=1000):
     """Estimate g(x)=E(f(x,w,z))
       
@@ -162,9 +166,16 @@ def estimationObjective(x,N=1000):
     estimator=N
     W=simulatorW(estimator)
     result=np.zeros(estimator)
+    pool = mp.Pool()
+    jobs = []
+    for j in range(estimator):
+        job = pool.apply_async(g2, args=(x,W[j,:],))
+        jobs.append(job)
+    pool.close()  # signal that no more data coming in
+    pool.join()  # wait for all the tasks to complete
+    
     for i in range(estimator):
-        result[i]=g(TimeHours,W[i,:],x,nSets,lamb,A,"2014-05",exponentialTimes,
-                         data,cluster,bikeData)
+        result[i]=jobs[i].get()
     
     return np.mean(result),float(np.var(result))/estimator
 
