@@ -362,10 +362,45 @@ def functionGradientAscentVn(x,i,VOI,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
     return temp
     
 
-def functionGradientAscentAn(x,L,i,dataObj,onlyGrad,logproductExpectations=None):
-    temp=stat.aN_grad(x,L,i,dataObj,gradient=onlyGrad,onlyGradient=onlyGrad,
-                      logproductExpectations=logproductExpectations)
-    return temp
+def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logproductExpectations=None):
+    """ Evaluates a_{i} and its derivative, which is the expectation of the GP on g(x).
+        It evaluates a_{i}, when grad and onlyGradient are False; it evaluates the a_{i}
+        and computes its derivative when grad is True and onlyGradient is False, and
+        computes only its gradient when gradient and onlyGradient are both True.
+    
+        Args:
+            x: a_{i} is evaluated at (x,numberBikes-sum(x)).Note that we reduce the dimension
+               of the space of x.
+            grad: True if we want to compute the gradient; False otherwise.
+            i: Iteration of the SBO algorithm.
+            L: Cholesky decomposition of the matrix A, where A is the covariance
+               matrix of the past obsevations (x,w).
+            dataObj: Data object.
+            stat: Statistical object.
+            onlyGradient: True if we only want to compute the gradient; False otherwise.
+            logproductExpectations: Vector with the logarithm of the product of the
+                                    expectations of np.exp(-alpha2[j]*((z-W[i,j])**2))
+                                    where W[i,:] is a point in the history.
+    """
+    x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
+    x=np.concatenate((x,x4),1)
+    if onlyGradient:
+        temp=stat.aN_grad(x,L,i,dataObj,grad,onlyGradient,logproductExpectations)
+        t=np.diag(np.ones(n1-1))
+        s=-1.0*np.ones((1,n1-1))
+        L2=np.concatenate((t,s))
+        grad2=np.dot(temp,L2)
+        return grad2
+
+    temp=stat.aN_grad(x,L,i,dataObj,gradient=grad,logproductExpectations=logproductExpectations)
+    if grad==False:
+        return temp
+    else:
+        t=np.diag(np.ones(n1-1))
+        s=-1.0*np.ones((1,n1-1))
+        L2=np.concatenate((t,s))
+        grad2=np.dot(temp[1],L2)
+        return temp[0],grad2
 
 def const(x):
     return np.sum(x[0:n1])-numberBikes
