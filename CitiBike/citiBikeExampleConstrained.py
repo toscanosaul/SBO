@@ -199,6 +199,8 @@ tempX=sampleFromXVn(trainingPoints)
 #tempFour=tempFour.reshape((trainingPoints,1))
 #Xtrain=np.concatenate((tempX,tempFour),1)
 Wtrain=simulatorW(trainingPoints)
+print tempX
+print Wtrain
 XWtrain=np.concatenate((tempX,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
