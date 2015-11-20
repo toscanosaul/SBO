@@ -126,6 +126,7 @@ def sampleFromXVn(n):
     #	temp=np.floor(temp)
      #   temp=np.concatenate((temp,numberBikes-np.sum(temp)))
 	aux1=np.concatenate((aux1,temp),0)
+    print temp
     return temp
 
 def sampleFromXAn(n):
