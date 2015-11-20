@@ -117,9 +117,9 @@ def sampleFromX(n):
        Args:
           n: Number of points chosen
     """
-    aux1=(numberBikes/float(n1))*np.ones((1,n1))
-    if n>1:
-        temp=np.random.dirichlet(np.ones(n1),n-1)
+ #   aux1=(numberBikes/float(n1))*np.ones((1,n1))
+    if n>=1:
+        temp=np.random.dirichlet(np.ones(n1),n)
 	temp=(numberBikes-500.0*n1)*temp+500.0
         temp[:,0:n1-1]=np.floor(temp[:,0:n1-1])
     	temp[:,n1-1]=numberBikes-np.sum(temp[:,0:n1-1],1)
