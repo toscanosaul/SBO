@@ -22,7 +22,7 @@ class KG:
 	self.stat=statObj
 	self._VOI=VOIobj
 	self.opt=optObj
-	self.misc=miscObj
+	self.miscObj=miscObj
 	self.Obj=Objobj
 	
 	self._n1=Objobj.dimSeparation
@@ -39,25 +39,25 @@ class KG:
 
 
     def KGAlg(self,m,nRepeat=1,Train=True,**kwargs):
-	if self.misc.create:
-	    fl.createNewFilesFunc(self.path,self.misc.rs)
+	if self.miscObj.create:
+	    fl.createNewFilesFunc(self.path,self.miscObj.rs)
 	fl.writeTraining(self)
         if Train is True:
 	    self.trainModel(numStarts=nRepeat,**kwargs)
         for i in range(m):
             print i
-	    if self.misc.parallel:
+	    if self.miscObj.parallel:
 		self.optVOIParal(i,self.opt.numberParallel)
 	    else:
 		 self.optVOInoParal(i)
 
             print i
-	    if self.misc.parallel:
+	    if self.miscObj.parallel:
 		self.optAnParal(i,self.opt.numberParallel)
 	    else:
 		self.optAnnoParal(i)
             print i
-	if self.misc.parallel:
+	if self.miscObj.parallel:
 	    self.optAnParal(i,self.opt.numberParallel)
 	else:
 	    self.optAnnoParal(i)
@@ -233,13 +233,13 @@ class KG:
         self.optPointsArray=[]
     
     def trainModel(self,numStarts,**kwargs):
-	if self.misc.parallel:
+	if self.miscObj.parallel:
 	    self.stat._k.train(scaledAlpha=self.stat.scaledAlpha,
 			       numStarts=numStarts,**kwargs)
 	else:
 	    self.stat._k.trainnoParallel(scaledAlpha=self.stat.scaledAlpha,**kwargs)
         
-        f=open(os.path.join(self.path,'%d'%self.misc.rs+"hyperparameters.txt"),'w')
+        f=open(os.path.join(self.path,'%d'%self.miscObj.rs+"hyperparameters.txt"),'w')
         f.write(str(self.stat._k.getParamaters()))
         f.close()
         
