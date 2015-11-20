@@ -113,8 +113,7 @@ class KG:
 	args3=self.getParametersOptVoi(i)
 	Xst=self.Obj.sampleFromX(1)
 	st=Xst[0:1,:]
-	args3['start']=st
-	self.optRuns.append(misc.VOIOptWrapper(self,**args3))
+	self.optRuns.append(misc.VOIOptWrapper(self,st,**args3))
 	fl.writeNewPointKG(self,self.optRuns[0])
 	
         self.optRuns=[]
@@ -130,10 +129,7 @@ class KG:
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             for j in range(nStart):
-                st=Xst[j:j+1,:]
-		args2=args3.copy()
-                args2['start']=st
-                job = pool.apply_async(misc.VOIOptWrapper, args=(self,), kwds=args2)
+                job = pool.apply_async(misc.VOIOptWrapper, args=(self,Xst[j:j+1,:],), kwds=args3)
                 jobs.append(job)
             
             pool.close()  # signal that no more data coming in
@@ -186,15 +182,13 @@ class KG:
 	temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	args3['temp1']=temp1
 	Xst=self.Obj.sampleFromX(1)
-	args3['start']=Xst[0:1,:]
-	self.optRuns.append(misc.AnOptWrapper(self,**args3))
+	self.optRuns.append(misc.AnOptWrapper(self,Xst[0:1,:],**args3))
 	fl.writeSolution(self,self.optRuns[0])
     
     def optAnParal(self,i,nStart,numProcesses=None):
         try:
 	    tempN=self.numberTraining+i
             n1=self._n1
-         #   dim=self.dimension
 	    args3={}
 	    args3['i']=i
 
@@ -212,9 +206,7 @@ class KG:
             pool = mp.Pool(processes=numProcesses)
             
             for j in range(nStart):
-                args2=args3.copy()
-                args2['start']=Xst[j:j+1,:]
-                job = pool.apply_async(misc.AnOptWrapper, args=(self,), kwds=args2)
+                job = pool.apply_async(misc.AnOptWrapper, args=(self,Xst[j:j+1,:],), kwds=args3)
                 jobs.append(job)
             
             pool.close()  # signal that no more data coming in

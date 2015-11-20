@@ -41,6 +41,15 @@ from BGO.Source import *
 nTemp=int(sys.argv[1])
 nTemp2=int(sys.argv[2])
 nTemp3=int(sys.argv[3])
+nTemp4=int(sys.argv[4]) #number of iterations
+nTemp5=sys.argv[5] #True if code is run in parallel; False otherwise.
+
+if nTemp5=='F':
+    nTemp5=False
+    nTemp6=1
+elif nTemp5=='T':
+    nTemp6=int(sys.argv[6]) #number of restarts for the optimization method
+    nTemp5=True
 
 randomSeed=nTemp
 np.random.seed(randomSeed)
@@ -127,14 +136,14 @@ Objective=inter.objective(g,n1,noisyG,numberSamplesForG,sampleFromX,
 """
 We define the miscellaneous object.
 """
-parallel=True
+parallel=nTemp5
 
 trainingPoints=nTemp2
 
-nameDirectory="Results"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
-folder=os.path.join(nameDirectory,"KG")
+#nameDirectory="Results"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
+#folder=os.path.join(nameDirectory,"KG")
 
-misc=inter.Miscellaneous(randomSeed,parallel,folder,True)
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,ALG="KG")
 
 """
 We define the data object.
@@ -248,7 +257,7 @@ def conditionOpt(x):
     return np.max((np.floor(np.abs(x))))
 ###returns the value and the variance
 
-opt=inter.opt(10,dimXsteepest,transformationDomainX,None,projectGradientDescent,functionGradientAscentVn,
+opt=inter.opt(nTemp6,dimXsteepest,transformationDomainX,None,projectGradientDescent,functionGradientAscentVn,
               functionGradientAscentMuN,conditionOpt,1.0)
 
 
@@ -264,5 +273,5 @@ l['dataObj']=dataObj
 
 kgObj=KG.KG(**l)
 
-kgObj.KGAlg(20,nRepeat=10,Train=True)
+kgObj.KGAlg(nTemp4,nRepeat=10,Train=True)
 
