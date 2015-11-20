@@ -111,7 +111,7 @@ def noisyF(XW,n):
                          data,cluster,bikeData)
     return np.mean(simulations),float(np.var(simulations))/n
 
-def sampleFromX(n):
+def sampleFromXVn(n):
     """Chooses n points in the domain of x at random
       
        Args:
@@ -127,6 +127,21 @@ def sampleFromX(n):
      #   temp=np.concatenate((temp,numberBikes-np.sum(temp)))
 	#aux1=np.concatenate((aux1,temp),0)
     return temp
+
+def sampleFromXAn(n):
+    """Chooses n points in the domain of x at random
+      
+       Args:
+          n: Number of points chosen
+    """
+    aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
+    if n>1:
+        temp=np.random.dirichlet(np.ones(n1),n-1)
+	temp=(numberBikes-500.0*n1)*temp+500.0
+    	temp=temp[:,0:n1-1]
+    	temp=np.floor(temp)
+	aux1=np.concatenate((aux1,temp),0)
+    return aux1
 
 def simulatorW(n):
     """Simulate n vectors w
@@ -155,8 +170,8 @@ def estimationObjective(x,N=100):
     
     return np.mean(result),float(np.var(result))/estimator
 
-Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromX,
-                          simulatorW,estimationObjective)
+Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
+                          simulatorW,estimationObjective,sampleFromXAn)
 
 """
 We define the miscellaneous object.
@@ -179,7 +194,7 @@ We define the data object.
 Generate the training data
 """
 
-tempX=sampleFromX(trainingPoints)
+tempX=sampleFromXVn(trainingPoints)
 #tempFour=numberBikes-np.sum(tempX,1)
 #tempFour=tempFour.reshape((trainingPoints,1))
 #Xtrain=np.concatenate((tempX,tempFour),1)
@@ -312,7 +327,35 @@ VOIobj=VOI.VOISBO(dimX=n1, pointsApproximation=pointsVOI,
 
 """
 We define the Opt object.
+
 """
+
+dimXsteepestAn=n1-1 #Dimension of x when the VOI and a_{n} are optimized.
+
+def projectGradientDescent(x,direction,xo):
+    """ Project a point x to its domain (which is the simplex)
+        at each step of the gradient ascent method if needed.
+        
+       Args:
+          x: Point that is projected
+          direction: Gradient of the function at xo
+          xo: Starting point at the iteration of the gradient ascent method
+    """
+    minx=np.min(x)
+    alph=[]
+    if (minx < 0):
+ 	ind=np.where(direction<0)[0]
+	quotient=xo[ind].astype(float)/direction[ind]
+	alp=-1.0*np.max(quotient)
+	alph.append(alp)
+    if (np.sum(x[0:n1])>numberBikes):
+	if (np.sum(direction[0:n1])>0):
+	    alph2=(float(numberBikes)-np.sum(xo[0:n1]))/(np.sum(direction[0:n1]).astype(float))	        
+    	    alph.append(alph2)
+    if (len(alph)==0):
+	return x
+    return xo+direction*min(alph)
+
 def functionGradientAscentVn(x,i,VOI,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradient=False):
     temp=VOI.VOIfunc(i,x,L=L,temp2=temp2,a=a,grad=onlyGradient,scratch=scratch,
                      onlyGradient=onlyGradient,kern=kern,XW=XW,B=Bfunc)
@@ -336,7 +379,7 @@ cons=({'type':'eq',
        'jac': jac})
 
 
-def transformationDomainX(x):
+def transformationDomainXVn(x):
     """ Transforms the point x given by the steepest ascent method to
         the right domain of x.
         
@@ -345,6 +388,17 @@ def transformationDomainX(x):
     """
     x4=np.array(numberBikes-np.sum(np.floor(x[0:1,0:n1-1]))).reshape((1,1))
     x=np.concatenate((np.floor(x[0:1,0:n1-1]),x4),1)
+    return x
+
+def transformationDomainXAn(x):
+    """ Transforms the point x given by the steepest ascent method to
+        the right domain of x.
+        
+       Args:
+          x: Point to be transformed.
+    """
+    x4=np.array(numberBikes-np.sum(np.floor(x))).reshape((1,1))
+    x=np.concatenate((np.floor(x),x4),1)
     return x
 
 def transformationDomainW(w):
@@ -356,8 +410,18 @@ def transformationDomainW(w):
     """
     return np.round(w)
 
-opt=inter.opt(nTemp6,n1,transformationDomainX,transformationDomainW,None,functionGradientAscentVn,
-              functionGradientAscentAn,None,None,cons)
+def conditionOpt(x):
+    """ Gives the stopping rule for the steepest ascent method, e.g.
+        the function could be the Euclidean norm. 
+        
+       Args:
+          x: Point where the condition is evaluated.
+    """
+    return np.max((np.floor(np.abs(x))))
+
+opt=inter.opt(nTemp6,n1,n1-1,transformationDomainXVn,transformationDomainXAn,
+              transformationDomainW,projectGradient,functionGradientAscentVn,
+              functionGradientAscentAn,conditionOpt,1.0,cons,None,"SLSP","OptSteepestDescent")
 
 
 """
