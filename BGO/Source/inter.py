@@ -25,8 +25,8 @@ import os
 import multiprocessing as mp
 
 class objective:
-    def __init__(self, fobj,dimSeparation,noisyF,numberEstimateF,SampleFromX,
-                 simulatorW,estimationObjective):
+    def __init__(self, fobj,dimSeparation,noisyF,numberEstimateF,SampleFromXVn,
+                 simulatorW,estimationObjective,SampleFromXAn=None):
         """
         Args:
             -fobj: The simulator or objective function.
@@ -40,9 +40,14 @@ class objective:
                         -Estimator of F.
                         -Estimator of the variance of the output.
             -numberEstimateF: Number of samples used to estimate F.
-            -sampleFromX: Chooses a point x at random.
-                          Its argument is:
-                            -N: Number of points chosen.
+            -sampleFromXVn: Chooses a point x at random, used for the
+                            optimization method of Vn.
+                            Its argument is:
+                              -N: Number of points chosen.
+            -sampleFromXAn: Chooses a point x at random, used for the
+                            optimization method of An.
+                            Its argument is:
+                              -N: Number of points chosen.
             -simulatorW: Simulates a random vector w.
                          Its argument is:
                             -N: Number of simulations taken.
@@ -58,7 +63,10 @@ class objective:
         self.dimSeparation=dimSeparation
         self.noisyF=noisyF
         self.numberEstimateF=numberEstimateF
-        self.sampleFromX=SampleFromX
+        self.sampleFromXVn=SampleFromXVn
+        if SampleFromXAn is None:
+            SampleFromXAn=SampleFromXVn
+        self.sampleFromXAn=SampleFromXAn
         self.simulatorW=simulatorW
         self.estimationObjective=estimationObjective
 
@@ -87,17 +95,25 @@ class Miscellaneous:
         self.create=create
 
 class opt:
-    def __init__(self,numberParallel,dimXsteepest=None,transformationDomainX=None,
-                 transformationDomainW=None,projectGradient=None,functionGradientAscentVn=None,
-                 functionGradientAscentAn=None,functionConditionOpt=None,xtol=None,
-                 cons=None):
+    def __init__(self,numberParallel,dimXsteepestVn=None,dimXsteepestAn=None,
+                 transformationDomainXVn=None,transformationDomainXAn=None,
+                 transformationDomainW=None,projectGradient=None,
+                 functionGradientAscentVn=None,functionGradientAscentAn=None,
+                 functionConditionOpt=None,xtol=None,consVn=None,consAn=None,
+                 MethodVn=None,MethodAn=None):
         """
         Args:
         -numberParallel: Number of starting points for the multistart gradient
                          ascent algorithm.
-        -dimXsteepest: Dimension of x when the VOI and a_{n} are optimized. We
-                       may want to reduce the dimension of the original problem.
-        -transformationDomainX: Transforms the point x given by the steepest ascent
+        -dimXsteepestVn: Dimension of x when VOI is optimized. We may want to reduce
+                         the dimension of the original problem.
+        -dimXsteepestAn: Dimension of x when a_{n} is optimized. We may want to reduce
+                         the dimension of the original problem.
+        -transformationDomainXVn: Transforms the point x given by the steepest ascent
+                                method to the right domain of x.
+                                Its arugment its:
+                                    -x: The point to be transformed
+        -transformationDomainXAn: Transforms the point x given by the steepest ascent
                                 method to the right domain of x.
                                 Its arugment its:
                                     -x: The point to be transformed
@@ -170,17 +186,25 @@ class opt:
         -xtol: Tolerance of x for the convergence of the steepest ascent method.
         -cons: Constraints of the problem if slsqp is used. See
                http://docs.scipy.org/doc/scipy-0.14.0/reference/tutorial/optimize.html#tutorial-sqlsp
+        -MethodVn: "SLSQP" or "OptSteepestDescent".
+        -MethodAn: "SLSQP" or "OptSteepestDescent".
+        -ConsVn: Constraints for optimization of Vn (only SLSQP)
+        -ConsAn: Constraints for optimization of An (only SLSQP)
         """
         self.numberParallel=numberParallel
         self.dimXsteepest=dimXsteepest
-        self.transformationDomainX=transformationDomainX
+        self.transformationDomainXVn=transformationDomainXVn
+        self.transformationDomainXAn=transformationDomainXAn
         self.transformationDomainW=transformationDomainW
         self.projectGradient=projectGradient
         self.functionGradientAscentVn=functionGradientAscentVn
         self.functionGradientAscentAn=functionGradientAscentAn
         self.functionConditionOpt=functionConditionOpt
         self.xtol=xtol
-        self.cons=cons
+        self.consVn=consVn
+        self.consAn=consAn
+        self.MethodVn=MethodVn
+        self.MethodAn=MethodAn
 
 class data:
     def __init__(self,Xhist,yHist,varHist):
