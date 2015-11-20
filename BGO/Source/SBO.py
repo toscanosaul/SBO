@@ -242,7 +242,7 @@ class SBO:
 	opt=op.SLSP(start)
 	#####
         def g(x,grad,onlyGradient=False):
-            return self.opt.functionGradientAscentVn(x,grad,self._VOI,i,L,temp2,a,
+            return self.opt.functionGradientAscentVn(x,i=i,VOI=self._VOI,L=L,temp2=temp2,a=a,
 						 scratch=scratch,onlyGradient=onlyGradient,
 						 kern=self.stat._k,XW=self.dataObj.Xhist,
 						 Bfunc=self.stat.B)
