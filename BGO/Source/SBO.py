@@ -388,7 +388,7 @@ class SBO:
 
         opt.run(f=g)
         self.optRuns.append(opt)
-        xTrans=self.opt.transformationDomainX(opt.xOpt[0:1,0:self.opt.dimXsteepest])
+        xTrans=self.opt.transformationDomainXAn(opt.xOpt[0:1,0:self.opt.dimXsteepestAn])
         self.optPointsArray.append(xTrans)
     
     def optAnnoParal(self,i,logProd=True):
