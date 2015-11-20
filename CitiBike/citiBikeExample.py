@@ -44,11 +44,13 @@ nTemp2=int(sys.argv[2]) #number of training points
 nTemp3=int(sys.argv[3]) #number of samples to estimate F
 nTemp4=int(sys.argv[4]) #number of iterations
 nTemp5=sys.argv[5] #True if code is run in parallel; False otherwise.
-nTemp6=int(sys.argv[6]) #number of restarts for the optimization method
+
 
 if nTemp5=='F':
     nTemp5=False
+    nTemp6=1
 elif nTemp5=='T':
+    nTemp6=int(sys.argv[6]) #number of restarts for the optimization method
     nTemp5=True
 
 
