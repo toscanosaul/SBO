@@ -414,13 +414,15 @@ def projectGradientDescent(x,direction,xo):
     if (upperX[2]<xcop[2]):
 	alp=(upperX[2]-xo[2])/direction[2]
 	alph.append(alp)
+	
     if len(alph)==0:
 	xcop=x.copy()
     else:
 	xcop=xo+direction*min(alph)
+	
     if (numberBikes-np.sum(xcop[0:dimXsteepestAn])>upperX[3]):
 	if (np.sum(direction[0:dimXsteepestAn])>0):
-	    alph2=(-float(upperX[3])-np.sum(xo[0:dimXsteepestAn])+numberBikes)/(np.sum(direction[0:dimXsteepestAn]).astype(float))
+	    alph2=(numberBikes-float(upperX[3])-np.sum(xo[0:dimXsteepestAn]))/(np.sum(direction[0:dimXsteepestAn]).astype(float))
     	    alph.append(alph2)
 	   # upperX[0]
 
