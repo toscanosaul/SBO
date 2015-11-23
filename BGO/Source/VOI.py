@@ -314,11 +314,12 @@ class VOISBO(VOI):
             -onlyGradient: True if we only want to compute the gradient; False otherwise.
         """
         print "VOI"
-        print n,pointNew,grad,L,temp2,a,scratch,kern,XW,B
         n1=self.n1
         pointNew=pointNew.reshape([1,n1+self.n2])
+        print "aandb"
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
                                     temp2=temp2,past=XW,kernel=kern,B=B)
+        print "endandb"
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
@@ -326,6 +327,7 @@ class VOISBO(VOI):
         nTraining=self._numberTraining
         tempN=nTraining+n
         keep2=keep[keep1]
+        print grad,onlyGradient
         if grad:
             scratch1=np.zeros((M,tempN))
             for j in xrange(M):
@@ -337,7 +339,7 @@ class VOISBO(VOI):
         if grad==False:
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,inv=temp1,
                                 kern=kern,XW=XW)
-      
+
         return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,
                             inv=temp1,scratch=scratch1,grad=True,
                             kern=kern,XW=XW)
