@@ -138,11 +138,8 @@ def sampleFromXAn(n):
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
     if n>1:
         temp=np.random.dirichlet(np.ones(n1),n-1)
-	print temp
 	for i in xrange(n1):
-	    temp[:,i]=(upperX[i]-500.0*n1)*temp[:,i]+500.0
-	print temp
-	print upperX
+	    temp[:,i]=np.min((numberBikes-500.0*n1)*temp[:,i]+500.0,upperX[i])
     	temp=temp[:,0:n1-1]
     	temp=np.floor(temp)
 	aux1=np.concatenate((aux1,temp),0)
