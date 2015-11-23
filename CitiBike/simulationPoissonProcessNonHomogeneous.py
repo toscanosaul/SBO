@@ -125,8 +125,15 @@ def startInitialConfiguration (X,m,data,cluster,bikeData,files=False):
         -files: True if we want to save the initial configuration;
                 False otherwise.
     """
+    print "initial"
+    print "X is"
+    print X
+    print "m is"
+    print m
+
     A=np.zeros((nStations,2))
     A[:,0]=bikeData[:,2]
+    print A[:,0]
    # for i in range(nStations):
     #    A[:,0]=
     if files:
@@ -312,6 +319,17 @@ def expectation(z,alpha,parLambda,nDays,L=650,M=8900):
         probs[i]=computeProbability(w[i],parLambda,nDays)
     return np.dot(aux,probs)
 
+def writeProbabilities(poissonParameters,nDays):
+    L=650
+    M=8900
+    wTemp=np.array(range(L,M))
+    probsTemp=np.zeros(M-L)
+    for i in range(M-L):
+        probsTemp[i]=computeProbability(wTemp[i],poissonParameters,nDays)
+    f=open(os.path.join("NonHomegeneousPP","probabilitiesExpectations.txt"),'w')
+    np.savetxt(f,probsTemp)
+    f.close()
+
 
 if __name__ == '__main__':
     np.random.seed(9)
@@ -358,8 +376,8 @@ if __name__ == '__main__':
     
     #print computeProbability(N[0],T,poissonParameters,nDays)
    # print cumProba(T,poissonParameters,nDays)
-    print expectation(8000,1.0/8000,poissonParameters,nDays)
+   # print expectation(8000,1.0/8000,poissonParameters,nDays)
    # print unhappyPeople (T,N,np.array([1500,1500,1500,1500]),m,
     #                     data,cluster,bikeData,poissonParameters,nDays)
-    
+    writeProbabilities(poissonParameters,nDays)
     #X=PoissonProcess(T,lamb[0],A[0],N[0])
