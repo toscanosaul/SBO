@@ -392,6 +392,8 @@ def projectGradientDescent(x,direction,xo):
           direction: Gradient of the function at xo
           xo: Starting point at the iteration of the gradient ascent method
     """
+    print "aqui"
+    print x
     minx=np.min(x)
     alph=[]
     if (minx < 0):
@@ -403,6 +405,9 @@ def projectGradientDescent(x,direction,xo):
 	if (np.sum(direction[0:n1])>0):
 	    alph2=(float(numberBikes)-np.sum(xo[0:n1]))/(np.sum(direction[0:n1]).astype(float))	        
     	    alph.append(alph2)
+	    upperX[0]
+#    if (upperX[0]<x[0]):
+	
     if (len(alph)==0):
 	return x
     return xo+direction*min(alph)
@@ -500,11 +505,11 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
                                     expectations of np.exp(-alpha2[j]*((z-W[i,j])**2))
                                     where W[i,:] is a point in the history.
     """
-    print "x is"
+   
 
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
-    print x
+   
     if onlyGradient:
         temp=stat.aN_grad(x,L,i,dataObj,grad,onlyGradient,logproductExpectations)
         t=np.diag(np.ones(n1-1))
