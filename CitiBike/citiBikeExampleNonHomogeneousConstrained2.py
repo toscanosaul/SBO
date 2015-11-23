@@ -336,7 +336,7 @@ def gradWB(new,kern,BN,keep,points):
     wNew=new[0,n1:n1+n2].reshape((1,n2))
     gradWBarray=np.zeros([len(keep),n2])
     M=len(keep)
-    parameterLamb=parameterSetsPoisson
+   # parameterLamb=parameterSetsPoisson
     X=new[0,0:n1]
     W=new[0,n1:n1+n2]
    
