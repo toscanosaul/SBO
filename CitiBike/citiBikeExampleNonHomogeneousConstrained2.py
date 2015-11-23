@@ -98,6 +98,16 @@ TimeHours=4.0
 numberBikes=6000
 
 poissonParameters*=TimeHours
+
+
+###upper bounds for X
+upperX=np.zeros(n1)
+temBikes=bikeData[:,2]
+for i in xrange(n1):
+    temp=cluster[i]
+    indsTemp=np.array([a[0] for a in temp])
+    upperX[i]=np.sum(temBikes[indsTemp])
+
 """
 We define the objective object.
 """
@@ -539,6 +549,30 @@ def const5(x):
 def jac5(x):
     return np.array([0,0,0,1])
 
+
+def const6(x):
+    return upperX[0]-x[0]
+
+def jac6(x):
+    return np.array([-1,0,0,0])
+
+def const7(x):
+    return upperX[1]-x[1]
+
+def jac7(x):
+    return np.array([0,-1,0,0])
+
+def const8(x):
+    return upperX[2]-x[2]
+
+def jac8(x):
+    return np.array([0,0,-1,0])
+
+print "bounds"
+print upperX
+print np.sum(upperX)
+print np.sum(bikeData[:,2])
+
 cons=({'type':'ineq',
         'fun': const1,
        'jac': jac1},
@@ -553,7 +587,16 @@ cons=({'type':'ineq',
        'jac': jac4},
         {'type':'ineq',
         'fun': const5,
-       'jac': jac5})
+       'jac': jac5},
+        {'type':'ineq',
+        'fun': const6,
+       'jac': jac6},
+        {'type':'ineq',
+        'fun': const7,
+       'jac': jac7},
+        {'type':'ineq',
+        'fun': const8,
+       'jac': jac8})
 
 
 def transformationDomainXAn(x):
