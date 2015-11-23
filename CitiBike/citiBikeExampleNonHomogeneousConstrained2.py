@@ -392,8 +392,6 @@ def projectGradientDescent(x,direction,xo):
           direction: Gradient of the function at xo
           xo: Starting point at the iteration of the gradient ascent method
     """
-    print "aqui"
-    print x
     minx=np.min(x)
     alph=[]
     if (minx < 0):
