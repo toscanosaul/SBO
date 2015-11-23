@@ -138,7 +138,8 @@ def sampleFromXAn(n):
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
     if n>1:
         temp=np.random.dirichlet(np.ones(n1),n-1)
-	temp=(numberBikes-500.0*n1)*temp+500.0
+	temp[0]=(upperX[0])
+	temp=(upperX-500.0*n1)*temp+500.0
     	temp=temp[:,0:n1-1]
     	temp=np.floor(temp)
 	aux1=np.concatenate((aux1,temp),0)
@@ -568,6 +569,12 @@ def const8(x):
 def jac8(x):
     return np.array([0,0,-1,0])
 
+def const9(x):
+    return -numberBikes+np.sum(x[0:n1-1])+upperX[3]
+
+def jac9(x):
+    return np.array([1,1,1,0])
+
 print "bounds"
 print upperX
 print np.sum(upperX)
@@ -596,7 +603,10 @@ cons=({'type':'ineq',
        'jac': jac7},
         {'type':'ineq',
         'fun': const8,
-       'jac': jac8})
+       'jac': jac8},
+        {'type':'ineq',
+        'fun': const9,
+       'jac': jac9})
 
 
 def transformationDomainXAn(x):
