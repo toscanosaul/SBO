@@ -226,6 +226,8 @@ We define the statistical object.
 """
 
 dimensionKernel=n1+n2
+print "dimension kernel"
+print dimensionKernel
 scaleAlpha=TimeHours*2000.0
 #kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
@@ -432,6 +434,8 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
     xFinal=np.concatenate((x2,tempW),1)
     temp=VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
                           kern=kern,XW=XW,B=Bfunc)
+    print "ok eval g"
+    
 
     if onlyGradient:
         t=np.diag(np.ones(n1-1))
@@ -444,10 +448,14 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
         sub=np.concatenate((subMatrix,temDiag))
         L=np.concatenate((L,sub),1)
         grad2=np.dot(temp,L)
+	print "aver"
+	print grad2
         return grad2
         
 
     if grad==True:
+	
+	print "aqui no"
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L=np.concatenate((t,s))
@@ -460,6 +468,8 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
         grad2=np.dot(temp[1],L)
         return temp[0],grad2
     else:
+	print "only eval"
+	print temp
         return temp
     
 
