@@ -237,16 +237,15 @@ class VOISBO(VOI):
 
         nTraining=self._numberTraining
         tempN=nTraining+n
-        print "gradSigma0"
+    
         gradXSigma0,gradWSigma0=self._gradXWSigmaOfunc(n,pointNew,
                                                        kern,XW[0:tempN,0:n1],
                                                        XW[0:tempN,n1:n1+n2],
                                                        n1,n2,nTraining)
-        print "endgradSigma0"
-        print "gradB"
+
         gradXB=self._gradXBfunc(pointNew,kern,BN,keep,self._points,n1)
         gradWB=self._gradWBfunc(pointNew,kern,BN,keep,self._points)
-        print "endGradB"
+
 
         gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
 
@@ -254,7 +253,7 @@ class VOISBO(VOI):
         beta1=(kern.A(pointNew)-aux4)
         gradient=np.zeros(M)
         result=np.zeros(n1+n2)
-        print "first components"
+
         for i in xrange(n1):
             inv2=linalg.solve_triangular(L,gradientGamma[i,0:tempN].transpose(),lower=True)
             aux5=np.dot(inv2.T,inv3)
@@ -265,8 +264,7 @@ class VOISBO(VOI):
                 tmp2=(.5)*(beta1**(-1.5))*beta2*(2.0*aux5)
                 gradient[j]=tmp+tmp2
             result[i]=np.dot(np.diff(gradient),evalC)
-        print "first components end"
-        print "first components"
+
         for i in xrange(n2):
             inv2=linalg.solve_triangular(L,gradientGamma[i+n1,0:tempN].transpose(),lower=True)
             aux5=np.dot(inv2.T,inv3)
@@ -277,10 +275,9 @@ class VOISBO(VOI):
                 tmp2=(.5)*(beta1**(-1.5))*(2.0*aux5)*beta2
                 gradient[j]=tmp+tmp2
             result[i+n1]=np.dot(np.diff(gradient),evalC)
-        print "first components end"
+
         if onlyGradient:
-            print "grad"
-            print result
+
             return result
         h=hvoi(bPrev,cPrev,keep1) 
         return h,result
@@ -319,13 +316,13 @@ class VOISBO(VOI):
                     -n2: Dimension of w
             -onlyGradient: True if we only want to compute the gradient; False otherwise.
         """
-        print "VOI"
+
         n1=self.n1
         pointNew=pointNew.reshape([1,n1+self.n2])
-        print "aandb"
+
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
                                     temp2=temp2,past=XW,kernel=kern,B=B)
-        print "endandb"
+
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)
@@ -333,7 +330,6 @@ class VOISBO(VOI):
         nTraining=self._numberTraining
         tempN=nTraining+n
         keep2=keep[keep1]
-        print grad,onlyGradient
         if grad:
             scratch1=np.zeros((M,tempN))
             for j in xrange(M):
