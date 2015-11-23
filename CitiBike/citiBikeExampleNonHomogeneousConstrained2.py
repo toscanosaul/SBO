@@ -240,6 +240,7 @@ for i in range(M-L):
     probsTemp[i]=computeProbability(wTemp[i],poissonParameters,nDays)
 
 def expectation(z,alpha,parLambda,nDays,probs,L=650,M=8900):
+    w=np.array(range(L,M))
     aux=np.exp(-alpha*((z-w)**2))
     return np.dot(aux,probs)
 
@@ -311,6 +312,7 @@ pointsVOI=np.loadtxt("pointsPoisson.txt") #Discretization of the domain of X
 
 
 def expectation2(z,alpha,parLambda,nDays,probs):
+    w=np.array(range(L,M))
     aux=-2.0*alpha*(z-w)*np.exp(-alpha*((z-w)**2))
     return np.dot(aux,probs)
 
