@@ -279,6 +279,8 @@ class VOISBO(VOI):
             result[i+n1]=np.dot(np.diff(gradient),evalC)
         print "first components end"
         if onlyGradient:
+            print "grad"
+            print result
             return result
         h=hvoi(bPrev,cPrev,keep1) 
         return h,result
@@ -343,7 +345,7 @@ class VOISBO(VOI):
         if grad==False:
             return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,inv=temp1,
                                 kern=kern,XW=XW)
-
+        
         return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,
                             inv=temp1,scratch=scratch1,grad=True,
                             kern=kern,XW=XW)
