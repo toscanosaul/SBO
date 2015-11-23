@@ -52,10 +52,6 @@ class SLSP(Optimization):
 	
     def opt(self,f=None,df=None,cons=None):
         statuses = ['Converged', 'Maximum number of f evaluations reached', 'Error']
-	print f
-	print self.xStart
-	print df
-	print cons
 	optResult=minimize(f,self.xStart,jac=df,constraints=cons,method='SLSQP')
         self.xOpt=np.array(optResult.x).reshape([1,len(optResult.x)])
 
