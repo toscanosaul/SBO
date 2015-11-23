@@ -216,18 +216,16 @@ Wtrain=simulatorW(trainingPoints)
 XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
-print "train"
+
 #dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
 dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,True)
-print "endtrain"
+
 
 """
 We define the statistical object.
 """
 
 dimensionKernel=n1+n2
-print "dimension kernel"
-print dimensionKernel
 scaleAlpha=TimeHours*2000.0
 #kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
@@ -236,14 +234,14 @@ def computeProbability(w,parLambda,nDays):
     probs=poisson.pmf(w,mu=np.array(parLambda))
     probs*=(1.0/nDays)
     return np.sum(probs)
-print "comp prob"
+
 L=650
 M=8900
 wTemp=np.array(range(L,M))
 probsTemp=np.zeros(M-L)
 for i in range(M-L):
     probsTemp[i]=computeProbability(wTemp[i],poissonParameters,nDays)
-print "end cprob"
+
 
 def expectation(z,alpha,parLambda,nDays,probs,L=650,M=8900):
     w=np.array(range(L,M))
@@ -434,7 +432,7 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
     xFinal=np.concatenate((x2,tempW),1)
     temp=VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
                           kern=kern,XW=XW,B=Bfunc)
-    print "ok eval g"
+
     
 
     if onlyGradient:
@@ -448,14 +446,13 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
         sub=np.concatenate((subMatrix,temDiag))
         L=np.concatenate((L,sub),1)
         grad2=np.dot(temp,L)
-	print "aver"
-	print grad2
+
         return grad2
         
 
     if grad==True:
 	
-	print "aqui no"
+
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L=np.concatenate((t,s))
@@ -468,8 +465,7 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
         grad2=np.dot(temp[1],L)
         return temp[0],grad2
     else:
-	print "only eval"
-	print temp
+
         return temp
     
 
