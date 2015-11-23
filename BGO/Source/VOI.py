@@ -313,6 +313,8 @@ class VOISBO(VOI):
                     -n2: Dimension of w
             -onlyGradient: True if we only want to compute the gradient; False otherwise.
         """
+        print "VOI"
+        print n,pointNew,grad,L,temp2,a,scratch,kern,XW,B
         n1=self.n1
         pointNew=pointNew.reshape([1,n1+self.n2])
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
