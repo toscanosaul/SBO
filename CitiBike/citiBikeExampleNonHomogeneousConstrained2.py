@@ -261,7 +261,7 @@ def B(x,XW,n1,n2,kernel,logproductExpectations=None):
     """
     x=np.array(x).reshape((x.shape[0],n1))
     results=np.zeros(x.shape[0])
-    parameterLamb=parameterSetsPoisson
+    #parameterLamb=parameterSetsPoisson
     X=XW[0:n1]
     inda=n1+n2
     W=XW[n1:inda]
@@ -289,7 +289,7 @@ def computeLogProductExpectationsForAn(W,N,kernel):
     """
     alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
     logproductExpectations=np.zeros(N)
-    parameterLamb=parameterSetsPoisson
+  #  parameterLamb=parameterSetsPoisson
     for i in xrange(N):
         logproductExpectations[i]=0.0
         for j in xrange(n2):
