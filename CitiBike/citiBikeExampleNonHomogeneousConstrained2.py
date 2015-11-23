@@ -161,7 +161,7 @@ def g2(x,w,index):
     return g(TimeHours,w,x,nSets,
                          data,cluster,bikeData,poissonParameters,nDays)
 
-def estimationObjective(x,N=1000):
+def estimationObjective(x,N=100):
     """Estimate g(x)=E(f(x,w,z))
       
        Args:
@@ -216,7 +216,9 @@ Wtrain=simulatorW(trainingPoints)
 XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
+print "train"
 dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
+print "endtrain"
 
 """
 We define the statistical object.
@@ -231,13 +233,14 @@ def computeProbability(w,parLambda,nDays):
     probs=poisson.pmf(w,mu=np.array(parLambda))
     probs*=(1.0/nDays)
     return np.sum(probs)
-
+print "comp prob"
 L=650
 M=8900
 wTemp=np.array(range(L,M))
 probsTemp=np.zeros(M-L)
 for i in range(M-L):
     probsTemp[i]=computeProbability(wTemp[i],poissonParameters,nDays)
+print "end cprob"
 
 def expectation(z,alpha,parLambda,nDays,probs,L=650,M=8900):
     w=np.array(range(L,M))
