@@ -517,25 +517,31 @@ def const1(x):
     return numberBikes-np.sum(x[0:n1-1])
 
 def jac1(x):
-    return np.array([-1,-1,-1,0,0,0,0])
+    return np.array([-1,-1,-1,0])
 
 def const2(x):
     return x[0]
 
 def jac2(x):
-    return np.array([1,0,0,0,0,0,0])
+    return np.array([1,0,0,0])
 
 def const3(x):
     return x[1]
 
 def jac3(x):
-    return np.array([0,1,0,0,0,0,0])
+    return np.array([0,1,0,0])
 
 def const4(x):
     return x[2]
 
 def jac4(x):
-    return np.array([0,0,1,0,0,0,0])
+    return np.array([0,0,1,0])
+
+def const5(x):
+    return x[3]
+
+def jac5(x):
+    return np.array([0,0,0,1])
 
 cons=({'type':'ineq',
         'fun': const1,
@@ -548,7 +554,10 @@ cons=({'type':'ineq',
        'jac': jac3},
     {'type':'ineq',
         'fun': const4,
-       'jac': jac4})
+       'jac': jac4},
+        {'type':'ineq',
+        'fun': const5,
+       'jac': jac5})
 
 
 def transformationDomainXAn(x):
