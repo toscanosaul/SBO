@@ -125,11 +125,7 @@ def startInitialConfiguration (X,m,data,cluster,bikeData,files=False):
         -files: True if we want to save the initial configuration;
                 False otherwise.
     """
-    print "initial"
-    print "X is"
-    print X
-    print "m is"
-    print m
+
 
     A=np.zeros((nStations,2))
     A[:,0]=bikeData[:,2]
@@ -146,9 +142,6 @@ def startInitialConfiguration (X,m,data,cluster,bikeData,files=False):
        # setBikes=X[i]/len(temp)
         
         resT=X[i]
-        print "bikes"
-        print i
-        print resT
         inds=np.array([a[0] for a in temp])
         indx=np.where(A[inds,0]>0)[0]
         nElm=len(indx)
@@ -162,12 +155,6 @@ def startInitialConfiguration (X,m,data,cluster,bikeData,files=False):
                 break
             index2=np.where((A[indx2,0]-setBikes)<0)[0] #indices where no all bikes can be placed
             index3=set(range(0,nElm))-set(index2) #indices where all bikes can be placed
-            print "indexes"
-            print indx2
-            print index2
-            print index3
-            print "nelm"
-            print nElm
             index3=np.array(list(index3))
             tempA=A[indx2[index2],0]
             A[indx2[index2],1]+=tempA
