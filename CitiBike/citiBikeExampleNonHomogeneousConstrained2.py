@@ -167,7 +167,7 @@ def simulatorW(n,ind=False):
     else:
 	return wPrior
 
-def g2(x,w,index):
+def g2(x,w):
     return g(TimeHours,w,x,nSets,
                          data,cluster,bikeData,poissonParameters,nDays)
 
