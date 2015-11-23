@@ -500,8 +500,11 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
                                     expectations of np.exp(-alpha2[j]*((z-W[i,j])**2))
                                     where W[i,:] is a point in the history.
     """
+    print "x is"
+
     x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
     x=np.concatenate((x,x4),1)
+    print x
     if onlyGradient:
         temp=stat.aN_grad(x,L,i,dataObj,grad,onlyGradient,logproductExpectations)
         t=np.diag(np.ones(n1-1))
@@ -575,10 +578,7 @@ def const9(x):
 def jac9(x):
     return np.array([1,1,1,0])
 
-print "bounds"
-print upperX
-print np.sum(upperX)
-print np.sum(bikeData[:,2])
+
 
 cons=({'type':'ineq',
         'fun': const1,
