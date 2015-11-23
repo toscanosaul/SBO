@@ -41,6 +41,9 @@ def writeNewPointSBO(ALGObj,optim):
                                                        +ALGObj._dimW])
     temp=np.concatenate((xTrans,wTrans),1)
     ALGObj.dataObj.Xhist=np.vstack([ALGObj.dataObj.Xhist,temp])
+    print xTrans,wTrans
+    print temp
+    print ALGObj.Obj.numberEstimateF
     y,var=ALGObj.Obj.noisyF(temp,ALGObj.Obj.numberEstimateF)
     ALGObj.dataObj.yHist=np.vstack([ALGObj.dataObj.yHist,y])
     ALGObj.dataObj.varHist=np.append(ALGObj.dataObj.varHist,var)
