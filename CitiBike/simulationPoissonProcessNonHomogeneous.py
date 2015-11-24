@@ -221,7 +221,7 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,
     probs=probs/np.sum(probs)
 
     ind=np.random.choice(range(nDays),size=1,p=probs)
-    exponentialTimes=timesArray[ind]
+    exponentialTimes=timesArray[ind][0]
     print exponentialTimes
     poissonParam=poissonArray[ind]
   #  fil="day"+"%d"%ind+"PoissonParametersNonHom.txt"
