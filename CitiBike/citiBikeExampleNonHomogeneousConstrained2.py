@@ -137,11 +137,19 @@ def sampleFromXAn(n):
     """
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
     if n>1:
+	sind=np.argmax(upperX)
+        a=range(n1)
+        del a[sind]
         temp=np.random.dirichlet(np.ones(n1),n-1)
-	for i in xrange(n1):
+	for i in a[0:n1-2]:
 	    temp[:,i]=min((numberBikes-500.0*n1)*temp[:,i]+500.0,upperX[i])
-    	temp=temp[:,0:n1-1]
+	temp[:,sind]=min((numberBikes-500.0*n1)*temp[:,sind]+500.0,upperX[sind])
+	
+	temp[:,sind]=max(temp[:,sind],upperX[a[n1-2]])
+	a.append(sind)
+    	temp=temp[:,a]
     	temp=np.floor(temp)
+
 	aux1=np.concatenate((aux1,temp),0)
     return aux1
 
@@ -392,8 +400,6 @@ def projectGradientDescent(x,direction,xo):
           direction: Gradient of the function at xo
           xo: Starting point at the iteration of the gradient ascent method
     """
-    print "here0"
-    print x
     minx=np.min(x)
     alph=[]
     if (minx < 0):
@@ -423,7 +429,6 @@ def projectGradientDescent(x,direction,xo):
 	xcop=xo+direction*min(alph)
 	
     if (numberBikes-np.sum(xcop[0:dimXsteepestAn])>upperX[3]):
-	print "entro"
 #	if (np.sum(direction[0:dimXsteepestAn])>0):
 	alph2=(numberBikes-float(upperX[3])-np.sum(xo[0:dimXsteepestAn]))/(np.sum(direction[0:dimXsteepestAn]).astype(float))
 	alph.append(alph2)
@@ -431,8 +436,6 @@ def projectGradientDescent(x,direction,xo):
 
     if (len(alph)==0):
 	return x
-    print "here2"
-    print xo+direction*min(alph)
     return xo+direction*min(alph)
 
 def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradient=False,grad=None):
