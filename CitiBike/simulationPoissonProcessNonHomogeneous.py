@@ -222,7 +222,10 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,
 
     ind=np.random.choice(range(nDays),size=1,p=probs)
     exponentialTimes=timesArray[ind][0]
-    print exponentialTimes
+    exponentialTimes2=np.zeros((nStations,nStations))
+    nExp=len(exponentialTimes[0,:])
+    for i in range(nExp):
+        exponentialTimes2[exponentialTimes[1,i],exponentialTimes[2,i]]=exponentialTimes[0,i]
     poissonParam=poissonArray[ind]
   #  fil="day"+"%d"%ind+"PoissonParametersNonHom.txt"
   #  fil=os.path.join("NonHomegeneousPP",fil)
@@ -274,8 +277,8 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,
         if state[bikePickUp,1]==0:
             unHappy+=1
             continue
-        
-        timeUsed=np.random.exponential(exponentialTimes[bikePickUp,bikeDrop])
+        indi=exponentialTimes[1,]
+        timeUsed=np.random.exponential(exponentialTimes2[bikePickUp,bikeDrop])
         dropTimes.append((currentTime+timeUsed,bikeDrop))
         dropTimes=sorted(dropTimes, key=lambda x:x[0])
         
