@@ -197,10 +197,10 @@ class SBO:
         for i in range(m):
             print i
 	    #Optimize VOI
-	    if self.miscObj.parallel:
-		self.optVOIParal(i,self.opt.numberParallel) 
-	    else:
-		self.optVOInoParal(i)
+#	    if self.miscObj.parallel:
+#		self.optVOIParal(i,self.opt.numberParallel) 
+#	    else:
+#		self.optVOInoParal(i)
             print i
 	    #Otimize a_{n}
 	    if self.miscObj.parallel:
@@ -374,9 +374,7 @@ class SBO:
                         expectations of np.exp(-alpha2[j]*((z-W[i,j])**2))
                         where W[i,:] is a point in the history.
         """
-        opt=op.OptSteepestDescent(n1=self.opt.dimXsteepestAn,projectGradient=self.opt.projectGradient,
-				  xStart=start,xtol=self.opt.xtol,
-				  stopFunction=self.opt.functionConditionOpt)
+
         tempN=i+self.numberTraining
 
         def g(x,grad,onlyGradient=False):
@@ -394,9 +392,9 @@ class SBO:
 	    cons=self.opt.consAn
 	    opt.run(f=g1,df=dg,cons=cons)
 	else:
-	    opt=op.OptSteepestDescent(n1=self.opt.dimXsteepestVn,projectGradient=self.opt.projectGradient,
-				      stopFunction=self.opt.functionConditionOpt,xStart=start,
-				      xtol=self.opt.xtol)
+	    opt=op.OptSteepestDescent(n1=self.opt.dimXsteepestAn,projectGradient=self.opt.projectGradient,
+				  xStart=start,xtol=self.opt.xtol,
+				  stopFunction=self.opt.functionConditionOpt)
 	    opt.run(f=g)
 
         #opt.run(f=g)
