@@ -142,11 +142,7 @@ def sampleFromXAn(n):
 	for j in range(n-1):
 	    a=range(n1)
 	    del a[sind]
-	    print sind
-	    print temp.shape
-	    print a[0:n1-2]
 	    for i in a[0:n1-2]:
-		
 		temp[j,i]=min((numberBikes-500.0*n1)*temp[j,i]+500.0,upperX[i])
 	    temp[j,sind]=min((numberBikes-500.0*n1)*temp[j,sind]+500.0,upperX[sind])
 	    temp[j,sind]=max(temp[j,sind],upperX[a[n1-2]])
