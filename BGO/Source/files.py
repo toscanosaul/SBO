@@ -101,8 +101,6 @@ def writeSolution(ALGObj,optim):
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"optimalSolutions.txt"), "a") as f:
         np.savetxt(f,xTrans)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"optimalValues.txt"), "a") as f:
-        print "point"
-        print xTrans
         result,var=ALGObj.Obj.estimationObjective(xTrans[0,:])
         res=np.append(result,var)
         np.savetxt(f,res)
