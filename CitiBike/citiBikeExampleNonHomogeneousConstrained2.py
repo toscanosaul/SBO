@@ -224,7 +224,7 @@ Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
                           simulatorW,estimationObjective,sampleFromXAn)
 
 
-print estimationObjective(np.array([1500,1500,1500]))
+print estimationObjective(np.array([1500,1500,1500,1500]))
 """
 We define the miscellaneous object.
 """
