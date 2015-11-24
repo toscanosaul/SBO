@@ -554,9 +554,12 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
                                     where W[i,:] is a point in the history.
     """
    
-
-    x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
-    x=np.concatenate((x,x4),1)
+    x=np.array(x).reshape([1,n1-1])
+    x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
+    tempX=x[0:1,0:n1-1]
+    x=np.concatenate((tempX,x4),1)
+  #  x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
+   # x=np.concatenate((x,x4),1)
    
     if onlyGradient:
         temp=stat.aN_grad(x,L,i,dataObj,grad,onlyGradient,logproductExpectations)
