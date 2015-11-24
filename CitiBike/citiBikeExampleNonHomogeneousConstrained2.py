@@ -223,8 +223,9 @@ def estimationObjective(x,N=1000):
 Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
                           simulatorW,estimationObjective,sampleFromXAn)
 
-
-print estimationObjective(np.array([1500,1500,1500,1500]))
+W=simulatorW(1)
+X=np.array([1500,1500,1500,1500])
+print g2(X,W[0,:])
 """
 We define the miscellaneous object.
 """
