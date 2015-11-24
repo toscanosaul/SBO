@@ -36,6 +36,7 @@ import os
 from scipy.stats import poisson
 import json
 from BGO.Source import *
+import timeit
 
 ##################
 
@@ -223,9 +224,14 @@ def estimationObjective(x,N=1000):
 Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
                           simulatorW,estimationObjective,sampleFromXAn)
 
-W=simulatorW(1)
 X=np.array([1500,1500,1500,1500])
-print estimationObjective(X)
+
+start = timeit.timeit()
+a,b=estimationObjective(X)
+end = timeit.timeit()
+print end - start
+print a,b
+
 """
 We define the miscellaneous object.
 """
