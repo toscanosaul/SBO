@@ -36,7 +36,7 @@ import os
 from scipy.stats import poisson
 import json
 from BGO.Source import *
-import timeit
+import time
 
 ##################
 
@@ -226,9 +226,9 @@ Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
 
 X=np.array([1500,1500,1500,1500])
 
-start = timeit.timeit()
+start = time.time()
 a,b=estimationObjective(X)
-end = timeit.timeit()
+end = timeit.time()
 print end - start
 print a,b
 
