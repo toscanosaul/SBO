@@ -424,10 +424,10 @@ def projectGradientDescent(x,direction,xo):
 	
     if (numberBikes-np.sum(xcop[0:dimXsteepestAn])>upperX[3]):
 	print "entro"
-	if (np.sum(direction[0:dimXsteepestAn])>0):
-	    alph2=(numberBikes-float(upperX[3])-np.sum(xo[0:dimXsteepestAn]))/(np.sum(direction[0:dimXsteepestAn]).astype(float))
-    	    alph.append(alph2)
-	print alph2
+#	if (np.sum(direction[0:dimXsteepestAn])>0):
+	alph2=(numberBikes-float(upperX[3])-np.sum(xo[0:dimXsteepestAn]))/(np.sum(direction[0:dimXsteepestAn]).astype(float))
+	alph.append(alph2)
+#	print alph2
 
     if (len(alph)==0):
 	return x
