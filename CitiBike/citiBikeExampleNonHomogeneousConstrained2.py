@@ -225,7 +225,7 @@ Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
 
 W=simulatorW(1)
 X=np.array([1500,1500,1500,1500])
-print g2(X,W[0,:])
+print estimationObjective(X)
 """
 We define the miscellaneous object.
 """
@@ -256,8 +256,8 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 
-#dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
-dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,True)
+dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
+#dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,True)
 
 
 """
