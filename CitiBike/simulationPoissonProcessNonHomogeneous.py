@@ -57,7 +57,7 @@ def PoissonProcess(T,lamb,A,N):
     ##Time is a list where each entry represets a station A[i]
     return TIME,nArrivals
 
-PoissonProcess(T,lamb,A[i],N[i])
+
 
 ####No use
 def generateSets(n,fil):
