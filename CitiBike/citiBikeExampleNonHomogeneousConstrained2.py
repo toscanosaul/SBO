@@ -146,6 +146,7 @@ def sampleFromXAn(n):
 	temp[:,sind]=min((numberBikes-500.0*n1)*temp[:,sind]+500.0,upperX[sind])
 	
 	temp[:,sind]=max(temp[:,sind],upperX[a[n1-2]])
+	del a[n1-2]
 	a.append(sind)
     	temp=temp[:,a]
     	temp=np.floor(temp)
