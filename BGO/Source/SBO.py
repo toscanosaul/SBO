@@ -383,11 +383,26 @@ class SBO:
             return self.opt.functionGradientAscentAn(x,grad,self.stat,i,L,self.dataObj,
 						     onlyGradient=onlyGradient,
 						     logproductExpectations=logProduct)
+	if self.opt.MethodAn=="SLSQP":
+	    opt=op.SLSP(start)
+	    def g1(x):
+		return -1.0*g(x,grad=False)
+	    
+	    def dg(x):
+		return -1.0*g(x,grad=True,onlyGradient=True)
+	    
+	    cons=self.opt.consAn
+	    opt.run(f=g1,df=dg,cons=cons)
+	else:
+	    opt=op.OptSteepestDescent(n1=self.opt.dimXsteepestVn,projectGradient=self.opt.projectGradient,
+				      stopFunction=self.opt.functionConditionOpt,xStart=start,
+				      xtol=self.opt.xtol)
+	    opt.run(f=g)
 
-        opt.run(f=g)
+        #opt.run(f=g)
         self.optRuns.append(opt)
-        xTrans=self.opt.transformationDomainXAn(opt.xOpt[0:1,0:self.opt.dimXsteepestAn])
-        self.optPointsArray.append(xTrans)
+       # xTrans=self.opt.transformationDomainXAn(opt.xOpt[0:1,0:self.opt.dimXsteepestAn])
+       # self.optPointsArray.append(xTrans)
     
     def optAnnoParal(self,i,logProd=True):
 	"""
