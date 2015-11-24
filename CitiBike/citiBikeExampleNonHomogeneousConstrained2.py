@@ -228,7 +228,7 @@ X=np.array([1500,1500,1500,1500])
 
 start = time.time()
 a,b=estimationObjective(X)
-end = timeit.time()
+end = time.time()
 print end - start
 print a,b
 
