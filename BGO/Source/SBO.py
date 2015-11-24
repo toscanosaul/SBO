@@ -197,10 +197,10 @@ class SBO:
         for i in range(m):
             print i
 	    #Optimize VOI
-#	    if self.miscObj.parallel:
-#		self.optVOIParal(i,self.opt.numberParallel) 
-#	    else:
-#		self.optVOInoParal(i)
+	    if self.miscObj.parallel:
+		self.optVOIParal(i,self.opt.numberParallel) 
+	    else:
+		self.optVOInoParal(i)
             print i
 	    #Otimize a_{n}
 	    if self.miscObj.parallel:
