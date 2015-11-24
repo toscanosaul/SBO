@@ -16,6 +16,7 @@ from numpy import linalg as LA
 from scipy.stats import poisson
 from scipy.stats import rv_discrete
 import os
+from scipy.sparse import csr_matrix as csr
 
 nBikes=6000
 nStations=329
@@ -39,10 +40,11 @@ def PoissonProcess(T,lamb,A,N):
                 (lamb[i] is related to the ith entry of A)
     """
     n=len(A) ##cardinality of A
-    prob=np.ones(n)
-    lambSum=(np.sum(lamb))
-    for i in xrange(n):
-        prob[i]=(float(lamb[i])/(lambSum))
+    prob=np.zeros(n)
+    lambSum=(np.sum(lamb[0][0,:]))
+    nElements=len(lamb[0][0,:])
+    for j in xrange(nElements):
+        prob[lamb[0][2,j]+(lamb[0][1,j])*nElements]=(float(lamb[0][0,j])/(lambSum))
     X=np.random.multinomial(N,prob,size=1)[0]
     nArrivals=np.sum(X)
     TIME=[]
@@ -53,7 +55,9 @@ def PoissonProcess(T,lamb,A,N):
             TIME.append([A[i],temp])
 
     ##Time is a list where each entry represets a station A[i]
-    return TIME,nArrivals 
+    return TIME,nArrivals
+
+PoissonProcess(T,lamb,A[i],N[i])
 
 ####No use
 def generateSets(n,fil):
@@ -189,7 +193,7 @@ def findBikeStation(state,currentBikeStation):
             k+=1
     return 0
 
-def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays):
+def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,timesArray):
     """
     Counts the number of people who doesn't find a bike or an available dock.
     We divide the bike stations in m groups according to K-means algorithm.
@@ -217,13 +221,14 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays):
     probs=probs/np.sum(probs)
 
     ind=np.random.choice(range(nDays),size=1,p=probs)
-
-    fil="day"+"%d"%ind+"PoissonParametersNonHom.txt"
-    fil=os.path.join("NonHomegeneousPP",fil)
-    fil2="day"+"%d"%ind+"ExponentialTimesNonHom.txt"
-    exponentialTimes=np.loadtxt(os.path.join("NonHomegeneousPP",fil2))
+    exponentialTimes=timesArray[ind]
+    poissonParam=poissonArray[ind]
+  #  fil="day"+"%d"%ind+"PoissonParametersNonHom.txt"
+  #  fil=os.path.join("NonHomegeneousPP",fil)
+  #  fil2="day"+"%d"%ind+"ExponentialTimesNonHom.txt"
+   # exponentialTimes=np.loadtxt(os.path.join("NonHomegeneousPP",fil2))
     
-    lamb,A=generateParametersPoisson(fil)
+   # lamb,A=generateParametersPoisson(fil)
     unHappy=0
     state=startInitialConfiguration(X,m,data,cluster,bikeData,nDays)
   #  exponentialTimes=np.loadtxt(date+"ExponentialTimes.txt")
@@ -232,7 +237,7 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays):
     times=[]
     nTimes=0
     for i in range(nSets):
-        temp=PoissonProcess(T,lamb,A[i],N[i])
+        temp=PoissonProcess(T,poissonParam,A[i],N[i])
     #    print temp[0]
         nTimes+=temp[1]
         times.extend(temp[0])
@@ -324,6 +329,29 @@ def writeProbabilities(poissonParameters,nDays):
     f=open(os.path.join("NonHomegeneousPP","probabilitiesExpectations.txt"),'w')
     np.savetxt(f,probsTemp)
     f.close()
+    
+def writeSparseMatrix(nDays):
+    for i in range(nDays):
+        fil="day"+"%d"%i+"PoissonParametersNonHom.txt"
+        A=np.loadtxt(os.path.join("NonHomegeneousPP",fil))
+        fil2="daySparse"+"%d"%i+"PoissonParametersNonHom.txt"
+        f=open(os.path.join("NonHomogeneousPP2",fil2),'w')
+        A=csr(A)
+        temp=A.nonzero()
+        temp2=np.array([A.data,temp[0],temp[1]])
+        np.savetxt(f,temp2)
+        f.close()
+
+        fil="day"+"%d"%i+"ExponentialTimesNonHom.txt"
+        A=np.loadtxt(os.path.join("NonHomegeneousPP",fil))
+        fil2="daySparse"+"%d"%i+"ExponentialTimesNonHom.txt"
+        f=open(os.path.join("NonHomogeneousPP2",fil2),'w')
+        A=csr(A)
+        temp=A.nonzero()
+        temp2=np.array([A.data,temp[0],temp[1]])
+        
+        np.savetxt(f,temp2)
+        f.close()
 
 
 if __name__ == '__main__':
@@ -368,11 +396,11 @@ if __name__ == '__main__':
         lamb,A=generateParametersPoisson(fil)
         N[i]=SimulateNt(A[i],lamb,T)
     #print N[0]
-    
+    writeSparseMatrix(nDays)
     #print computeProbability(N[0],T,poissonParameters,nDays)
    # print cumProba(T,poissonParameters,nDays)
    # print expectation(8000,1.0/8000,poissonParameters,nDays)
    # print unhappyPeople (T,N,np.array([1500,1500,1500,1500]),m,
     #                     data,cluster,bikeData,poissonParameters,nDays)
-    writeProbabilities(poissonParameters,nDays)
+  #  writeProbabilities(poissonParameters,nDays)
     #X=PoissonProcess(T,lamb[0],A[0],N[0])

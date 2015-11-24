@@ -63,7 +63,7 @@ n1=4
 n2=1
 numberSamplesForF=nTemp3
 
-
+nDays=153
 """
 We define the variables needed for the queuing simulation. 
 """
@@ -76,6 +76,26 @@ nSets=4
 fil="poissonDays.txt"
 fil=os.path.join("NonHomegeneousPP",fil)
 poissonParameters=np.loadtxt(fil)
+
+###readData
+
+poissonArray=[[] for i in xrange(nDays)]
+exponentialTimes=[[] for i in xrange(nDays)]
+
+for i in xrange(nDays):
+    fil="daySparse"+"%d"%i+"ExponentialTimesNonHom.txt"
+    fil2=os.path.join("NonHomogeneousPP2",fil)
+    poissonArray[i].append(np.loadtxt(fil2))
+    
+    fil="daySparse"+"%d"%i+"PoissonParametersNonHom.txt"
+    fil2=os.path.join("NonHomogeneousPP2",fil)
+    exponentialTimes[i].append(np.loadtxt(fil2))
+
+numberStations=329
+Avertices=[[]]
+for j in range(numberStations):
+    for k in range(numberStations):
+	Avertices[0].append((j,k))
 
 #A,lamb=generateSets(nSets,fil)
 
@@ -112,7 +132,7 @@ for i in xrange(n1):
 We define the objective object.
 """
 
-nDays=153
+
 
 def noisyF(XW,n):
     """Estimate F(x,w)=E(f(x,w,z)|w)
@@ -126,7 +146,8 @@ def noisyF(XW,n):
     w=XW[0,n1:n1+n2]
     for i in xrange(n):
         simulations[i]=g(TimeHours,w,x,nSets,
-                         data,cluster,bikeData,poissonParameters,nDays)
+                         data,cluster,bikeData,poissonParameters,nDays,
+			 Avertices,poissonArray,exponentialTimes)
     return np.mean(simulations),float(np.var(simulations))/n
 
 def sampleFromXAn(n):
@@ -164,13 +185,8 @@ def simulatorW(n,ind=False):
     wPrior=np.zeros((n,n2))
     indexes=np.random.randint(0,nDays,n)
     for i in range(n):
-	fil="day"+"%d"%indexes[i]+"PoissonParametersNonHom.txt"
-	fil=os.path.join("NonHomegeneousPP",fil)
-	fil2="day"+"%d"%indexes[i]+"ExponentialTimesNonHom.txt"
-	exponentialTimes=np.loadtxt(os.path.join("NonHomegeneousPP",fil2))
-	lamb,A=generateParametersPoisson(fil)
 	for j in range(n2):
-	    wPrior[i,j]=np.random.poisson(TimeHours*np.sum(lamb),1)
+	    wPrior[i,j]=np.random.poisson(poissonParameters[indexes[i]],1)
     if ind:
 	return wPrior,indexes
     else:
@@ -178,7 +194,8 @@ def simulatorW(n,ind=False):
 
 def g2(x,w):
     return g(TimeHours,w,x,nSets,
-                         data,cluster,bikeData,poissonParameters,nDays)
+                         data,cluster,bikeData,poissonParameters,nDays,
+			 Avertices,poissonArray,exponentialTimes)
 
 def estimationObjective(x,N=1000):
     """Estimate g(x)=E(f(x,w,z))
@@ -205,6 +222,9 @@ def estimationObjective(x,N=1000):
 
 Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
                           simulatorW,estimationObjective,sampleFromXAn)
+
+
+print estimationObjective(sampleFromXAn)
 
 """
 We define the miscellaneous object.
