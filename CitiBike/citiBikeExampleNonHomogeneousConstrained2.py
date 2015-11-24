@@ -401,10 +401,12 @@ def projectGradientDescent(x,direction,xo):
 	quotient=xo[ind].astype(float)/direction[ind]
 	alp=-1.0*np.max(quotient)
 	alph.append(alp)
+	
     if len(alph)==0:
 	xcop=x.copy()
     else:
 	xcop=xo+direction*min(alph)
+	
     if (upperX[0]<xcop[0]):
 	alp=(upperX[0]-xo[0])/direction[0]
 	alph.append(alp)
@@ -416,7 +418,7 @@ def projectGradientDescent(x,direction,xo):
 	alph.append(alp)
 	
     if len(alph)==0:
-	xcop=x.copy()
+	xcop=xcop
     else:
 	xcop=xo+direction*min(alph)
 	
