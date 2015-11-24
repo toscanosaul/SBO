@@ -32,10 +32,10 @@ if __name__ == "__main__":
             for k in xrange(max(nBikes-i-j-upperX[3],0),min(nBikes-i-j,upperX[2])+1):
                 l=nBikes-i-j-k
                 with open("pointsPoissonNew.txt","a") as f:
-                    f.write("%d",i)
-                    f.write("%d",j)
-                    f.write("%d",k)
-                    f.write("%d\n",l)
+                    f.write("%d" %i)
+                    f.write("%d" %j)
+                    f.write("%d" %k)
+                    f.write("%d\n" %l)
                     f.close()
    # l=np.linspace(1,max(upperX),max(upperX))
    # a,b,c= np.meshgrid(l,l,l)
