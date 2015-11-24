@@ -138,19 +138,18 @@ def sampleFromXAn(n):
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
     if n>1:
 	sind=np.argmax(upperX)
-        a=range(n1)
-        del a[sind]
         temp=np.random.dirichlet(np.ones(n1),n-1)
-	for i in a[0:n1-2]:
-	    temp[:,i]=min((numberBikes-500.0*n1)*temp[:,i]+500.0,upperX[i])
-	temp[:,sind]=min((numberBikes-500.0*n1)*temp[:,sind]+500.0,upperX[sind])
-	
-	temp[:,sind]=max(temp[:,sind],upperX[a[n1-2]])
-	del a[n1-2]
-	a.append(sind)
-    	temp=temp[:,a]
+	for j in range(n-1):
+	    a=range(n1)
+	    del a[sind]
+	    for i in a[0:n1-2]:
+		temp[j,i]=np.min((numberBikes-500.0*n1)*temp[j,i]+500.0,upperX[i])
+	    temp[j,sind]=np.min((numberBikes-500.0*n1)*temp[j,sind]+500.0,upperX[sind])
+	    temp[j,sind]=np.max(temp[j,sind],upperX[a[n1-2]])
+	    del a[n1-2]
+	    a.append(sind)
+	temp=temp[:,a]
     	temp=np.floor(temp)
-
 	aux1=np.concatenate((aux1,temp),0)
     return aux1
 
