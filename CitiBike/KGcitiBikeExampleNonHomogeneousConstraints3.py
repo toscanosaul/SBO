@@ -165,7 +165,7 @@ def noisyG(X,n):
     W=simulatorW(estimator)
     result=np.zeros(estimator)
     for i in range(estimator):
-        result[i] = g(TimeHours,X[i,:],X,nSets,
+        result[i] = g(TimeHours,W[i,:],X,nSets,
                          data,cluster,bikeData,poissonParameters,nDays,
 			 Avertices,poissonArray,exponentialTimes)
     return np.mean(result),float(np.var(result))/estimator
