@@ -26,7 +26,7 @@ if __name__ == "__main__":
     s=np.random.dirichlet(np.ones(4),nPoints)
     s[:,0]=s[:,0]*upperX[0]+(1-s[:,0])*500
     s[:,0]=np.floor(s[:,0])
-    s[:,1]=s[:,0]*upperX[1]+(1-s[:,0])*500
+    s[:,1]=s[:,1]*upperX[1]+(1-s[:,1])*500
     s[:,1]=np.floor(s[:,1])
     for j in range(nPoints):
         s[j,2]=s[j,2]*min(nBikes-s[j,0]-s[j,1],upperX[2])+(1-s[j,2])*max(nBikes-s[j,0]-s[j,1]-upperX[3],500)
