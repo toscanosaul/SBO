@@ -150,7 +150,7 @@ def noisyF(XW,n):
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2]
     
-    result=np.zeros(estimator)
+    result=np.zeros(n)
     pool = mp.Pool()
     jobs = []
     
