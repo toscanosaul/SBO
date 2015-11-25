@@ -26,7 +26,7 @@ dataObj: Data object (See InterfaceSBO).
 import sys
 sys.path.append("..")
 import numpy as np
-from simulationPoissonProcess import *
+from simulationPoissonProcessNonHomogeneous import *
 from math import *
 from matplotlib import pyplot as plt
 import scipy.stats as stats
