@@ -22,18 +22,21 @@ if __name__ == "__main__":
     result=[]
     np.random.seed(1)
     nBikes=6000
-    nPoints=10000
+    nPoints=100000
   #  s=np.random.dirichlet(np.ones(4),nPoints)
     s=np.random.uniform(0,1,(nPoints,4))
-    s[:,0]=s[:,0]*upperX[0]+(1-s[:,0])*500
+    lower=1000
+    s[:,0]=s[:,0]*upperX[0]+(1-s[:,0])*lower
     s[:,0]=np.floor(s[:,0])
-    s[:,1]=s[:,1]*upperX[1]+(1-s[:,1])*500
-    s[:,1]=np.floor(s[:,1])
+
+    
     for j in range(nPoints):
-        s[j,2]=s[j,2]*min(nBikes-s[j,0]-s[j,1],upperX[2])+(1-s[j,2])*max(nBikes-s[j,0]-s[j,1]-upperX[3],500)
+        s[j,1]=s[j,1]*min(upperX[1],4000-s[j,0])+(1-s[j,1])*lower
+        s[j,1]=np.floor(s[j,1])
+        s[j,2]=s[j,2]*min(nBikes-s[j,0]-s[j,1]-lower,upperX[2])+(1-s[j,2])*max(nBikes-s[j,0]-s[j,1]-upperX[3],lower)
         s[j,2]=np.floor(s[j,2])
         s[j,3]=nBikes-np.sum(s[j,0:3])
-        
+
     
     f=open("lowerBoundNewRandompointsPoisson1000.txt","w")
     np.savetxt(f,s)
