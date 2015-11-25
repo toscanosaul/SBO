@@ -266,7 +266,7 @@ We define the statistical object.
 """
 
 dimensionKernel=n1+n2
-scaleAlpha=TimeHours*2000.0
+scaleAlpha=2000.0
 #kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
 ##probability of w
@@ -579,31 +579,32 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
         return temp[0],grad2
 
 def const1(x):
-    return numberBikes-np.sum(x[0:n1-1])
+    return numberBikes-lower-np.sum(x[0:n1-1])
 
 def jac1(x):
     return np.array([-1,-1,-1,0])
 
+lower=1000
 def const2(x):
-    return x[0]
+    return x[0]-lower
 
 def jac2(x):
     return np.array([1,0,0,0])
 
 def const3(x):
-    return x[1]
+    return x[1]-lower
 
 def jac3(x):
     return np.array([0,1,0,0])
 
 def const4(x):
-    return x[2]
+    return x[2]-lower
 
 def jac4(x):
     return np.array([0,0,1,0])
 
 def const5(x):
-    return x[3]
+    return x[3]-lower
 
 def jac5(x):
     return np.array([0,0,0,1])
@@ -632,6 +633,8 @@ def const9(x):
 
 def jac9(x):
     return np.array([1,1,1,0])
+
+
 
 
 
@@ -697,25 +700,25 @@ def conditionOpt(x):
 
 
 def const1A(x):
-    return numberBikes-np.sum(x[0:n1-1])
+    return numberBikes-lower-np.sum(x[0:n1-1])
 
 def jac1A(x):
     return np.array([-1,-1,-1])
 
 def const2A(x):
-    return x[0]
+    return x[0]-lower
 
 def jac2A(x):
     return np.array([1,0,0])
 
 def const3A(x):
-    return x[1]
+    return x[1]-lower
 
 def jac3A(x):
     return np.array([0,1,0])
 
 def const4A(x):
-    return x[2]
+    return x[2]-lower
 
 def jac4A(x):
     return np.array([0,0,1])
