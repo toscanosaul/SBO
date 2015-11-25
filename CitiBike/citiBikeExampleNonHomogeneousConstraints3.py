@@ -160,12 +160,12 @@ def sampleFromXAn(n):
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
     if n>1:
         s=np.random.dirichlet(np.ones(4),n-1)
-        s[:,0]*=upperX[0]
+        s[:,0]=s[:,0]*upperX[0]+(1-s[:,0])*500
         s[:,0]=np.floor(s[:,0])
-        s[:,1]*=upperX[1]
+        s[:,1]=s[:,0]*upperX[1]+(1-s[:,0])*500
         s[:,1]=np.floor(s[:,1])
         for j in range(n-1):
-            s[j,2]=s[j,2]*min(nBikes-s[j,0]-s[j,1],upperX[2])+(1-s[j,2])*max(nBikes-s[j,0]-s[j,1]-upperX[3],0)
+            s[j,2]=s[j,2]*min(nBikes-s[j,0]-s[j,1],upperX[2])+(1-s[j,2])*max(nBikes-s[j,0]-s[j,1]-upperX[3],500)
             s[j,2]=np.floor(s[j,2])
             s[j,3]=nBikes-np.sum(s[j,0:3])
     s=np.concatenate((s[:,0:n1-1],aux1),0)
