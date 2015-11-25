@@ -169,6 +169,7 @@ def sampleFromXAn(n):
             s[j,2]=np.floor(s[j,2])
             s[j,3]=nBikes-np.sum(s[j,0:3])
     s=np.concatenate((s[:,0:n1-1],aux1),0)
+    print s
     return s
 
 sampleFromXVn=sampleFromXAn
@@ -349,7 +350,7 @@ stat=stat.SBOGP(B=B,dimNoiseW=n2,dimPoints=n1,trainingData=dataObj,
 We define the VOI object.
 """
 
-pointsVOI=np.loadtxt("NewRandompointsPoisson1000.txt") #Discretization of the domain of X
+pointsVOI=np.loadtxt("lowerBoundNewRandompointsPoisson1000.txt") #Discretization of the domain of X
 
 
 def expectation2(z,alpha,parLambda,nDays,probs):
