@@ -255,7 +255,7 @@ def estimationObjective(x,N=1000):
     
     return np.mean(result),float(np.var(result))/estimator
 
-Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
+Objective=inter.objective(g,n1,noisyFTrain,numberSamplesForF,sampleFromXVn,
                           simulatorW,estimationObjective,sampleFromXAn)
 
 X=np.array([1500,1500,1500,1500])
@@ -273,7 +273,7 @@ trainingPoints=nTemp2
 #nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 #folder=os.path.join(nameDirectory,"SBO")
 
-misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,prefix="TesNonHomogeneous2")
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,prefix="FinalNonHomogeneous2")
 
 """
 We define the data object.
@@ -292,7 +292,7 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 
-dataObj.getTrainingDataSBO(trainingPoints,noisyFTrain,numberSamplesForF,False)
+dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,Parallel)
 #dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,True)
 
 
