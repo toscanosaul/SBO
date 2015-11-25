@@ -23,7 +23,8 @@ if __name__ == "__main__":
     np.random.seed(1)
     nBikes=6000
     nPoints=10000
-    s=np.random.dirichlet(np.ones(4),nPoints)
+  #  s=np.random.dirichlet(np.ones(4),nPoints)
+    s=np.random.uniform(0,1,(nPoints,4))
     s[:,0]=s[:,0]*upperX[0]+(1-s[:,0])*500
     s[:,0]=np.floor(s[:,0])
     s[:,1]=s[:,1]*upperX[1]+(1-s[:,1])*500
