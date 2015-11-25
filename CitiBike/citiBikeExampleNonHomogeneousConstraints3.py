@@ -673,7 +673,7 @@ def transformationDomainXAn(x):
           x: Point to be transformed.
     """
     x4=np.array(numberBikes-np.sum(np.rint(x))).reshape((1,1))
-    x=np.concatenate((np.floor(x),x4),1)
+    x=np.concatenate((np.rint(x),x4),1)
     return x
 
 transformationDomainXVn=transformationDomainXAn
