@@ -134,6 +134,10 @@ We define the objective object.
 """
 
 
+def g2(x,w):
+    return g(TimeHours,w,x,nSets,
+                         data,cluster,bikeData,poissonParameters,nDays,
+			 Avertices,poissonArray,exponentialTimes)
 
 def noisyF(XW,n):
     """Estimate F(x,w)=E(f(x,w,z)|w)
@@ -145,11 +149,25 @@ def noisyF(XW,n):
     simulations=np.zeros(n)
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2]
+    
+    result=np.zeros(estimator)
+    pool = mp.Pool()
+    jobs = []
+    
     for i in xrange(n):
-        simulations[i]=g(TimeHours,w,x,nSets,
-                         data,cluster,bikeData,poissonParameters,nDays,
-			 Avertices,poissonArray,exponentialTimes)
-    return np.mean(simulations),float(np.var(simulations))/n
+        job = pool.apply_async(g2, args=(x,w,))
+        jobs.append(job)
+      #  simulations[i]=g(TimeHours,w,x,nSets,
+      #                   data,cluster,bikeData,poissonParameters,nDays,
+#			 Avertices,poissonArray,exponentialTimes)
+        
+    pool.close()  # signal that no more data coming in
+    pool.join()  # wait for all the tasks to complete
+    
+    for i in range(estimator):
+        result[i]=jobs[i].get()
+        
+    return np.mean(result),float(np.var(result))/n
 
 def sampleFromXAn(n):
     """Chooses n points in the domain of x at random
@@ -192,10 +210,7 @@ def simulatorW(n,ind=False):
     else:
 	return wPrior
 
-def g2(x,w):
-    return g(TimeHours,w,x,nSets,
-                         data,cluster,bikeData,poissonParameters,nDays,
-			 Avertices,poissonArray,exponentialTimes)
+
 
 def estimationObjective(x,N=1000):
     """Estimate g(x)=E(f(x,w,z))
