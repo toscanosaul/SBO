@@ -170,7 +170,7 @@ def sampleFromXAn(n):
             s[j,3]=nBikes-np.sum(s[j,0:3])
     print s
     print aux1
-    s=np.concatenate((s,aux1),0)
+    s=np.concatenate((s[:,0:n1-1],aux1),0)
     return s
 
 sampleFromXVn=sampleFromXAn
