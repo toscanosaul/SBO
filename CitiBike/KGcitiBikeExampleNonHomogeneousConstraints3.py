@@ -268,7 +268,7 @@ def projectGradientDescent(x,direction,xo):
 
 ##EI object
 def functionGradientAscentVn(x,grad,VOI,i,L,data,kern,temp1,temp2,a,onlyGrad):
-    grad=onlyGradient
+    grad=onlyGrad
     x=np.array(x).reshape([1,n1-1])
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
     tempX=x[0:1,0:n1-1]
