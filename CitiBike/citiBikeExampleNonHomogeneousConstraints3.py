@@ -139,7 +139,7 @@ def g2(x,w):
                          data,cluster,bikeData,poissonParameters,nDays,
 			 Avertices,poissonArray,exponentialTimes)
 
-def noisyF(XW,n):
+def noisyFTrain(XW,n):
     """Estimate F(x,w)=E(f(x,w,z)|w)
       
        Args:
@@ -168,6 +168,26 @@ def noisyF(XW,n):
         result[i]=jobs[i].get()
         
     return np.mean(result),float(np.var(result))/n
+
+def noisyF(XW,n):
+    """Estimate F(x,w)=E(f(x,w,z)|w)
+      
+       Args:
+          XW: Vector (x,w)
+          n: Number of samples to estimate F
+    """
+    simulations=np.zeros(n)
+    x=XW[0,0:n1]
+    w=XW[0,n1:n1+n2]
+
+    
+    for i in xrange(n):
+        simulations[i]=g(TimeHours,w,x,nSets,
+                         data,cluster,bikeData,poissonParameters,nDays,
+			 Avertices,poissonArray,exponentialTimes)
+
+    
+    return np.mean(simulations),float(np.var(simulations))/n
 
 def sampleFromXAn(n):
     """Chooses n points in the domain of x at random
@@ -272,7 +292,7 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 
-dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
+dataObj.getTrainingDataSBO(trainingPoints,noisyFTrain,numberSamplesForF,False)
 #dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,True)
 
 
