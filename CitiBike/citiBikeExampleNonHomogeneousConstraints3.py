@@ -164,7 +164,7 @@ def noisyF(XW,n):
     pool.close()  # signal that no more data coming in
     pool.join()  # wait for all the tasks to complete
     
-    for i in range(estimator):
+    for i in range(n):
         result[i]=jobs[i].get()
         
     return np.mean(result),float(np.var(result))/n
