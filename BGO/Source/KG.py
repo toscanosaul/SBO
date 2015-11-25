@@ -118,7 +118,7 @@ class KG:
     def optVOInoParal(self,i):
 	n1=self._n1
 	args3=self.getParametersOptVoi(i)
-	Xst=self.Obj.sampleFromX(1)
+	Xst=self.Obj.sampleFromXVn(1)
 	st=Xst[0:1,:]
 	self.optRuns.append(misc.VOIOptWrapper(self,st,**args3))
 	fl.writeNewPointKG(self,self.optRuns[0])
@@ -131,7 +131,7 @@ class KG:
           #  n2=self._dimW
          #   dim=self.dimension
 	    args3=self.getParametersOptVoi(i)
-	    Xst=self.Obj.sampleFromX(nStart)
+	    Xst=self.Obj.sampleFromXVn(nStart)
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             for j in range(nStart):
@@ -195,7 +195,7 @@ class KG:
 	y=self.dataObj.yHist[0:tempN,:]
 	temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	args3['temp1']=temp1
-	Xst=self.Obj.sampleFromX(1)
+	Xst=self.Obj.sampleFromXAn(1)
 	self.optRuns.append(misc.AnOptWrapper(self,Xst[0:1,:],**args3))
 	fl.writeSolution(self,self.optRuns[0])
     
@@ -215,7 +215,7 @@ class KG:
 	    y=self.dataObj.yHist[0:tempN,:]
 	    temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	    args3['temp1']=temp1
-	    Xst=self.Obj.sampleFromX(nStart)
+	    Xst=self.Obj.sampleFromXAn(nStart)
             jobs = []
             pool = mp.Pool(processes=numProcesses)
             
