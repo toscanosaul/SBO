@@ -22,7 +22,7 @@ if __name__ == "__main__":
     result=[]
     np.random.seed(1)
     nBikes=6000
-    nPoints=1000
+    nPoints=10000
     s=np.random.dirichlet(np.ones(4),nPoints)
     s[:,0]*=upperX[0]
     s[:,0]=np.floor(s[:,0])
