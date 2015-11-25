@@ -22,7 +22,7 @@ if __name__ == "__main__":
     result=[]
     np.random.seed(1)
     nBikes=6000
-    nPoints=100000
+    nPoints=10000
   #  s=np.random.dirichlet(np.ones(4),nPoints)
     s=np.random.uniform(0,1,(nPoints,4))
     lower=1000
