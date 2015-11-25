@@ -90,6 +90,8 @@ def writeNewPointKG(ALG,optim):
         np.savetxt(f,temp)
     with open(os.path.join(ALG.path,'%d'%ALG.miscObj.rs+"optVOIgrad.txt"), "a") as f:
         np.savetxt(f,gradOpt)
+    ALG.optRuns=[]
+    ALG.optPointsArray=[]
     
 def writeSolution(ALGObj,optim):
     temp=optim.xOpt
