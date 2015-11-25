@@ -672,7 +672,7 @@ def transformationDomainXAn(x):
        Args:
           x: Point to be transformed.
     """
-    x4=np.array(numberBikes-np.sum(np.floor(x))).reshape((1,1))
+    x4=np.array(numberBikes-np.sum(np.rint(x))).reshape((1,1))
     x=np.concatenate((np.floor(x),x4),1)
     return x
 
@@ -685,7 +685,7 @@ def transformationDomainW(w):
        Args:
           w: Point to be transformed.
     """
-    return np.round(w)
+    return np.rint(w)
 
 def conditionOpt(x):
     """ Gives the stopping rule for the steepest ascent method, e.g.
