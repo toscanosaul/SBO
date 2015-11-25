@@ -27,9 +27,10 @@ if __name__ == "__main__":
     configurations=[]
     f=open("pointsPoissonNew.txt","w")
     f.close()
-    for i in xrange(0,upperX[0]+1):
-        for j in xrange(0,upperX[1]+1):
-            for k in xrange(max(nBikes-i-j-upperX[3],0),min(nBikes-i-j,upperX[2])+1):
+    lower=1000
+    for i in xrange(lower,upperX[0]+1):
+        for j in xrange(lower,upperX[1]+1):
+            for k in xrange(max(nBikes-i-j-upperX[3],lower),min(nBikes-i-j-lower,upperX[2])+1):
                 l=nBikes-i-j-k
                 with open("pointsPoissonNew.txt","a") as f:
                     f.write("%d " %i)
