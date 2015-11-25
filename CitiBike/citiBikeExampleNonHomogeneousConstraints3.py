@@ -159,21 +159,16 @@ def sampleFromXAn(n):
     """
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
     if n>1:
-	sind=np.argmax(upperX)
-        temp=np.random.dirichlet(np.ones(n1),n-1)
-	for j in range(n-1):
-	    a=range(n1)
-	    del a[sind]
-	    for i in a[0:n1-2]:
-		temp[j,i]=min((numberBikes-500.0*n1)*temp[j,i]+500.0,upperX[i])
-	    temp[j,sind]=min((numberBikes-500.0*n1)*temp[j,sind]+500.0,upperX[sind])
-	    temp[j,sind]=max(temp[j,sind],upperX[a[n1-2]])
-	    del a[n1-2]
-	    a.append(sind)
-	temp=temp[:,a]
-    	temp=np.floor(temp)
-	aux1=np.concatenate((aux1,temp),0)
-    return aux1
+        s=np.random.dirichlet(np.ones(4),n-1)
+        s[:,0]*=upperX[0]
+        s[:,0]=np.floor(s[:,0])
+        s[:,1]*=upperX[1]
+        s[:,1]=np.floor(s[:,1])
+        for j in range(n-1):
+            s[j,2]=s[j,2]*min(nBikes-s[j,0]-s[j,1],upperX[2])+(1-s[j,2])*max(nBikes-s[j,0]-s[j,1]-upperX[3],0)
+            s[j,2]=np.floor(s[j,2])
+            s[j,3]=nBikes-np.sum(s[j,0:3])
+    return s
 
 sampleFromXVn=sampleFromXAn
 
@@ -353,7 +348,7 @@ stat=stat.SBOGP(B=B,dimNoiseW=n2,dimPoints=n1,trainingData=dataObj,
 We define the VOI object.
 """
 
-pointsVOI=np.loadtxt("pointsPoisson.txt") #Discretization of the domain of X
+pointsVOI=np.loadtxt("NewRandompointsPoisson1000.txt") #Discretization of the domain of X
 
 
 def expectation2(z,alpha,parLambda,nDays,probs):
