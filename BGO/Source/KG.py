@@ -73,7 +73,7 @@ class KG:
 						     temp1,temp2,a,
 						     onlyGradient)
         if self.opt.MethodVn=="SLSQP":
-	    opt=opt.SLSP(start)
+	    opt=op.SLSP(start)
 	    def g1(x):
 		return -1.0*g(x,grad=False)
 	    def dg(x):
