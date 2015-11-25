@@ -239,7 +239,7 @@ stat=stat.KG(dimKernel=dimensionKernel,numberTraining=trainingPoints,
 We define the VOI object.
 """
 
-pointsVOI=np.loadtxt("pointsPoisson.txt")
+pointsVOI=np.loadtxt("lowerBoundNewRandompointsPoisson1000.txt")
 
 voiObj=VOI.KG(numberTraining=trainingPoints,
            pointsApproximation=pointsVOI,dimX=n1)
