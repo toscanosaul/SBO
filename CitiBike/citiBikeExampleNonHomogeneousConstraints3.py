@@ -168,6 +168,7 @@ def sampleFromXAn(n):
             s[j,2]=s[j,2]*min(nBikes-s[j,0]-s[j,1],upperX[2])+(1-s[j,2])*max(nBikes-s[j,0]-s[j,1]-upperX[3],0)
             s[j,2]=np.floor(s[j,2])
             s[j,3]=nBikes-np.sum(s[j,0:3])
+    print s
     s=np.concatenate((s,aux1),0)
     return s
 
