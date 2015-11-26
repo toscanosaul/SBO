@@ -873,7 +873,7 @@ We run the SBO algorithm.
 tempN=sboObj.numberTraining
 A=sboObj.stat._k.A(sboObj.dataObj.Xhist[0:tempN,:],noise=sboObj.dataObj.varHist[0:tempN])
 L=np.linalg.cholesky(A)
-
+print A
 print L
 
 #sboObj.SBOAlg(nTemp4,nRepeat=10,Train=False)
