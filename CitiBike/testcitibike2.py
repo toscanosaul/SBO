@@ -305,7 +305,7 @@ def readTrainingData(n,directory):
 
 XWtrain,yHist,varHist=readTrainingData(8,directory)
 
-dataObj=inter.data(XWtrain,yHist=None,varHist=None)
+dataObj=inter.data(XWtrain,yHist=yHist,varHist=varHist)
 
 #dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
 #dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,True)
