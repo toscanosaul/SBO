@@ -53,6 +53,9 @@ elif nTemp5=='T':
 randomSeed=nTemp
 np.random.seed(randomSeed)
 
+print "random seed is"
+print nTemp
+
 ######
 
 n1=4
