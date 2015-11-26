@@ -54,6 +54,8 @@ elif nTemp5=='T':
     nTemp6=int(sys.argv[6]) #number of restarts for the optimization method
     nTemp5=True
 
+print "random seed is "
+print nTemp
 
 randomSeed=nTemp
 np.random.seed(randomSeed)
@@ -258,7 +260,7 @@ def estimationObjective(x,N=1000):
 Objective=inter.objective(g,n1,noisyFTrain,numberSamplesForF,sampleFromXVn,
                           simulatorW,estimationObjective,sampleFromXAn)
 
-X=np.array([1500,1500,1500,1500])
+
 
 
 
