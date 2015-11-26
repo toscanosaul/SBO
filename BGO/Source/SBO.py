@@ -270,11 +270,7 @@ class SBO:
 	n2=self._dimW
 	tempN=self.numberTraining+i
 	A=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
-	f=open("testData.txt",'w')
-	np.savetxt(f,A)
-	f.close()
 	L=np.linalg.cholesky(A)
-	print L
 	m=self._VOI._points.shape[0]
 	for j in xrange(self.histSaved,tempN):
 	    temp=self.stat.B(self._VOI._points,self.dataObj.Xhist[j,:],self._n1,
