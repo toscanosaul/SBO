@@ -325,7 +325,7 @@ def readKernelParam(file1,dimKernel):
     v=f.read()
     val=v.split(':')
     temp=val[1].split(",")
-    alpha=bike.np.zeros(dimKernel)
+    alpha=np.zeros(dimKernel)
     alpha[0]=float(temp[0].split("[")[1])
     for i in range(dimKernel-2):
         alpha[i+1]=float(temp[i+1])
