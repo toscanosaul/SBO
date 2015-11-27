@@ -188,10 +188,11 @@ def estimationObjective(x,N=1000):
     estimator=N
     W=simulatorW(estimator)
     result=np.zeros(estimator)
+    rseed=np.random.randint(1,4294967290,size=N)
     pool = mp.Pool()
     jobs = []
     for j in range(estimator):
-        job = pool.apply_async(g2, args=(x,W[j,:],))
+        job = pool.apply_async(g2, args=(x,W[j,:],rseed[j],))
         jobs.append(job)
     pool.close()  # signal that no more data coming in
     pool.join()  # wait for all the tasks to complete
