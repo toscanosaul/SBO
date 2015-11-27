@@ -25,7 +25,7 @@ if __name__ == "__main__":
     nPoints=10000
   #  s=np.random.dirichlet(np.ones(4),nPoints)
     s=np.random.uniform(0,1,(nPoints,4))
-    lower=1000
+    lower=100
     s[:,0]=s[:,0]*upperX[0]+(1-s[:,0])*lower
     s[:,0]=np.floor(s[:,0])
 
