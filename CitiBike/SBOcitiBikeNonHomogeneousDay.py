@@ -141,7 +141,7 @@ We define the objective object.
 
 def g2(x,w,i):
     w1=w[0:n2-1]
-    day=w[n2-1]
+    day=int(w[n2-1])
     return g(TimeHours,w1,x,nSets,
                          data,cluster,bikeData,poissonParameters,nDays,
 			 Avertices,poissonArray,exponentialTimes,day,i)
@@ -157,8 +157,8 @@ def noisyF(XW,n):
     simulations=np.zeros(n)
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2-1]
-    day=XW[0,n1+n2-1]
-
+    day=int(XW[0,n1+n2-1])
+    
 
     for i in xrange(n):
         simulations[i]=g(TimeHours,w,x,nSets,
