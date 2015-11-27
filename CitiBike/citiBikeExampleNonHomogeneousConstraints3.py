@@ -131,19 +131,7 @@ for i in xrange(n1):
     indsTemp=np.array([a[0] for a in temp])
     upperX[i]=np.sum(temBikes[indsTemp])
     
-######
-probs=poisson.pmf(int(N[0]),mu=np.array(parLambda))
-probs=probs/np.sum(probs)
 
-ind=np.random.choice(range(nDays),size=1,p=probs)
-exponentialTimes=timesArray[ind][0]
-exponentialTimes2=np.zeros((nStations,nStations))
-nExp=len(exponentialTimes[0,:])
-for i in range(nExp):
-    exponentialTimes2[exponentialTimes[1,i],exponentialTimes[2,i]]=exponentialTimes[0,i]
-poissonParam=poissonArray[ind]
-
-####
 
 """
 We define the objective object.
