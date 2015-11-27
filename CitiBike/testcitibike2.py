@@ -168,8 +168,13 @@ def noisyFTrain(XW,n):
     
     for i in range(n):
         result[i]=jobs[i].get()
-        
+    print result
     return np.mean(result),float(np.var(result))/n
+
+XW=np.array([[1000,2000,1000,2000]])
+temp= noisyFTrain(XW,numberSamplesForF)
+print temp[0]
+print temp[1]
 
 def noisyF(XW,n):
     """Estimate F(x,w)=E(f(x,w,z)|w)
@@ -873,8 +878,13 @@ We run the SBO algorithm.
 tempN=sboObj.numberTraining
 A=sboObj.stat._k.A(sboObj.dataObj.Xhist[0:tempN,:],noise=sboObj.dataObj.varHist[0:tempN])
 L=np.linalg.cholesky(A)
+
+
+
 print A
 print L
+
+
 
 
 A2=np.loadtxt("testData.txt")
