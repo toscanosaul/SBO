@@ -145,7 +145,7 @@ def sampleFromXAn(n):
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
     if n>1:
         #s=np.random.dirichlet(np.ones(4),n-1)
-        lower=1000
+        lower=100
         s=np.random.uniform(0,1,(n-1,4))
         s[:,0]=s[:,0]*upperX[0]+(1-s[:,0])*lower
         s[:,0]=np.floor(s[:,0])
@@ -173,10 +173,10 @@ def noisyG(X,n):
 			 Avertices,poissonArray,exponentialTimes)
     return np.mean(result),float(np.var(result))/estimator
 
-def g2(x,w):
+def g2(x,w,i):
     return g(TimeHours,w,x,nSets,
                          data,cluster,bikeData,poissonParameters,nDays,
-			 Avertices,poissonArray,exponentialTimes)
+			 Avertices,poissonArray,exponentialTimes,i)
 
 def estimationObjective(x,N=1000):
     """Estimate g(x)=E(f(x,w,z))
@@ -215,7 +215,7 @@ trainingPoints=nTemp2
 #nameDirectory="Results"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 #folder=os.path.join(nameDirectory,"KG")
 
-misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="KG",prefix="FinalNonHomogeneous2")
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="KG",prefix="TestFinalNonHomogeneous3")
 
 """
 We define the data object.
@@ -330,7 +330,7 @@ def transformationDomainXAn(x):
 transformationDomainXVn=transformationDomainXAn
 
 
-lower=1000
+lower=100
 
 def conditionOpt(x):
     return np.max((np.floor(np.abs(x))))
