@@ -253,7 +253,7 @@ trainingPoints=nTemp2
 #nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 #folder=os.path.join(nameDirectory,"SBO")
 
-misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,prefix="TestFinalNonHomogeneous3")
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,prefix="TestFinalNonHomogeneous3Day")
 
 """
 We define the data object.
