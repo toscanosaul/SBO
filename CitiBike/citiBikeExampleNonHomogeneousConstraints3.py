@@ -173,7 +173,7 @@ def sampleFromXAn(n):
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
     if n>1:
         #s=np.random.dirichlet(np.ones(4),n-1)
-        lower=1000
+        lower=100
         s=np.random.uniform(0,1,(n-1,4))
         s[:,0]=s[:,0]*upperX[0]+(1-s[:,0])*lower
         s[:,0]=np.floor(s[:,0])
@@ -589,13 +589,15 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
         grad2=np.dot(temp[1],L2)
         return temp[0],grad2
 
+lower=100
+
 def const1(x):
     return numberBikes-lower-np.sum(x[0:n1-1])
 
 def jac1(x):
     return np.array([-1,-1,-1,0])
 
-lower=1000
+
 def const2(x):
     return x[0]-lower
 
@@ -644,6 +646,7 @@ def const9(x):
 
 def jac9(x):
     return np.array([1,1,1,0])
+
 
 
 

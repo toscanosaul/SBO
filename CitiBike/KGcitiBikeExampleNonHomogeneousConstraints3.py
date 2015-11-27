@@ -330,6 +330,8 @@ def transformationDomainXAn(x):
 transformationDomainXVn=transformationDomainXAn
 
 
+lower=1000
+
 def conditionOpt(x):
     return np.max((np.floor(np.abs(x))))
 
@@ -339,7 +341,7 @@ def const1(x):
 def jac1(x):
     return np.array([-1,-1,-1])
 
-lower=1000
+
 def const2(x):
     return x[0]-lower
 
