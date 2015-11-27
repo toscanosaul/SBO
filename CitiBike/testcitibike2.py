@@ -171,7 +171,7 @@ def noisyFTrain(XW,n):
     print result
     return np.mean(result),float(np.var(result))/n
 
-XW=np.array([[1000,2000,1000,2000]])
+XW=np.array([[1000,2000,1000,2000,8000]])
 temp= noisyFTrain(XW,numberSamplesForF)
 print temp[0]
 print temp[1]
