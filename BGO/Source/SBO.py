@@ -481,10 +481,11 @@ class SBO:
 
                 
         if len(self.optRuns):
+	    print "sol"
+	    print [o.fOpt for o in self.optRuns]
             j = np.argmax([o.fOpt for o in self.optRuns])
 	    fl.writeSolution(self,self.optRuns[j])
-	print "sol"
-	print [o.fOpt for o in self.optRuns]
+
         self.optRuns=[]
         self.optPointsArray=[]
 
