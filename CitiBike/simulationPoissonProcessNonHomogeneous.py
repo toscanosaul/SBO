@@ -193,7 +193,7 @@ def findBikeStation(state,currentBikeStation):
             k+=1
     return 0
 
-def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,timesArray):
+def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,timesArray,randomSeed=None):
     """
     Counts the number of people who doesn't find a bike or an available dock.
     We divide the bike stations in m groups according to K-means algorithm.
@@ -216,6 +216,8 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,
                  the bike stations.
         bikeData: Matrix with the ID, numberDocks, Latitute,longitude.
     """
+    if randomSeed is not None:
+        np.random.seed(randomSeed)
    # parLambda=parLambda.astype(int)
     probs=poisson.pmf(int(N[0]),mu=np.array(parLambda))
     probs=probs/np.sum(probs)
@@ -227,26 +229,19 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,
     for i in range(nExp):
         exponentialTimes2[exponentialTimes[1,i],exponentialTimes[2,i]]=exponentialTimes[0,i]
     poissonParam=poissonArray[ind]
-  #  fil="day"+"%d"%ind+"PoissonParametersNonHom.txt"
-  #  fil=os.path.join("NonHomegeneousPP",fil)
-  #  fil2="day"+"%d"%ind+"ExponentialTimesNonHom.txt"
-   # exponentialTimes=np.loadtxt(os.path.join("NonHomegeneousPP",fil2))
-    
-   # lamb,A=generateParametersPoisson(fil)
+
     unHappy=0
     state=startInitialConfiguration(X,m,data,cluster,bikeData,nDays)
-  #  exponentialTimes=np.loadtxt(date+"ExponentialTimes.txt")
-#    nSets=len(lamb)
+
     nSets=1
     times=[]
     nTimes=0
     for i in range(nSets):
         temp=PoissonProcess(T,poissonParam,A[i],N[i])
-    #    print temp[0]
+
         nTimes+=temp[1]
         times.extend(temp[0])
-#    print times[0][1]
- #   print times[0][0][0]
+
     Times=np.zeros((nTimes,3))
     k=0
     for i in range(len(times)):
