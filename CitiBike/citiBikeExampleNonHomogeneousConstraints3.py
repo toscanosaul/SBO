@@ -130,46 +130,31 @@ for i in xrange(n1):
     temp=cluster[i]
     indsTemp=np.array([a[0] for a in temp])
     upperX[i]=np.sum(temBikes[indsTemp])
+    
+######
+probs=poisson.pmf(int(N[0]),mu=np.array(parLambda))
+probs=probs/np.sum(probs)
+
+ind=np.random.choice(range(nDays),size=1,p=probs)
+exponentialTimes=timesArray[ind][0]
+exponentialTimes2=np.zeros((nStations,nStations))
+nExp=len(exponentialTimes[0,:])
+for i in range(nExp):
+    exponentialTimes2[exponentialTimes[1,i],exponentialTimes[2,i]]=exponentialTimes[0,i]
+poissonParam=poissonArray[ind]
+
+####
 
 """
 We define the objective object.
 """
 
 
-def g2(x,w):
+def g2(x,w,i):
     return g(TimeHours,w,x,nSets,
                          data,cluster,bikeData,poissonParameters,nDays,
-			 Avertices,poissonArray,exponentialTimes)
+			 Avertices,poissonArray,exponentialTimes,i)
 
-def noisyFTrain(XW,n):
-    """Estimate F(x,w)=E(f(x,w,z)|w)
-      
-       Args:
-          XW: Vector (x,w)
-          n: Number of samples to estimate F
-    """
-    simulations=np.zeros(n)
-    x=XW[0,0:n1]
-    w=XW[0,n1:n1+n2]
-    
-    result=np.zeros(n)
-    pool = mp.Pool()
-    jobs = []
-    
-    for i in xrange(n):
-        job = pool.apply_async(g2, args=(x,w,))
-        jobs.append(job)
-      #  simulations[i]=g(TimeHours,w,x,nSets,
-      #                   data,cluster,bikeData,poissonParameters,nDays,
-#			 Avertices,poissonArray,exponentialTimes)
-        
-    pool.close()  # signal that no more data coming in
-    pool.join()  # wait for all the tasks to complete
-    
-    for i in range(n):
-        result[i]=jobs[i].get()
-        
-    return np.mean(result),float(np.var(result))/n
 
 def noisyF(XW,n):
     """Estimate F(x,w)=E(f(x,w,z)|w)
@@ -182,7 +167,7 @@ def noisyF(XW,n):
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2]
 
-    
+
     for i in xrange(n):
         simulations[i]=g(TimeHours,w,x,nSets,
                          data,cluster,bikeData,poissonParameters,nDays,
@@ -244,10 +229,11 @@ def estimationObjective(x,N=1000):
     estimator=N
     W=simulatorW(estimator)
     result=np.zeros(estimator)
+    rseed=np.random.randint(1,4294967290,size=N)
     pool = mp.Pool()
     jobs = []
     for j in range(estimator):
-        job = pool.apply_async(g2, args=(x,W[j,:],))
+        job = pool.apply_async(g2, args=(x,W[j,:],rseed[j],))
         jobs.append(job)
     pool.close()  # signal that no more data coming in
     pool.join()  # wait for all the tasks to complete
@@ -257,7 +243,7 @@ def estimationObjective(x,N=1000):
     
     return np.mean(result),float(np.var(result))/estimator
 
-Objective=inter.objective(g,n1,noisyFTrain,numberSamplesForF,sampleFromXVn,
+Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
                           simulatorW,estimationObjective,sampleFromXAn)
 
 
