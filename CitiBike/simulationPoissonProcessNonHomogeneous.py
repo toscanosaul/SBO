@@ -193,7 +193,7 @@ def findBikeStation(state,currentBikeStation):
             k+=1
     return 0
 
-def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,timesArray,randomSeed=None):
+def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,timesArray,ind=None,randomSeed=None):
     """
     Counts the number of people who doesn't find a bike or an available dock.
     We divide the bike stations in m groups according to K-means algorithm.
@@ -215,14 +215,16 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,
         cluster: Array read from a txt file. It contains the clusters of
                  the bike stations.
         bikeData: Matrix with the ID, numberDocks, Latitute,longitude.
+        ind: Day
     """
     if randomSeed is not None:
         np.random.seed(randomSeed)
    # parLambda=parLambda.astype(int)
-    probs=poisson.pmf(int(N[0]),mu=np.array(parLambda))
-    probs=probs/np.sum(probs)
-
-    ind=np.random.choice(range(nDays),size=1,p=probs)
+    if ind is None:
+        probs=poisson.pmf(int(N[0]),mu=np.array(parLambda))
+        probs=probs/np.sum(probs)
+        ind=np.random.choice(range(nDays),size=1,p=probs)
+        
     exponentialTimes=timesArray[ind][0]
     exponentialTimes2=np.zeros((nStations,nStations))
     nExp=len(exponentialTimes[0,:])

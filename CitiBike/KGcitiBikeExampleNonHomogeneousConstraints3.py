@@ -133,13 +133,21 @@ for i in xrange(n1):
 We define the objective object.
 """
 
-def simulatorW(n):
+def simulatorW(n,ind=False):
+    """Simulate n vectors w
+      
+       Args:
+          n: Number of vectors simulated
+    """
     wPrior=np.zeros((n,n2))
     indexes=np.random.randint(0,nDays,n)
     for i in range(n):
 	for j in range(n2):
 	    wPrior[i,j]=np.random.poisson(poissonParameters[indexes[i]],1)
-    return wPrior
+    if ind:
+	return wPrior,indexes
+    else:
+	return wPrior
 
 def sampleFromXAn(n):
     aux1=(numberBikes/float(n1))*np.ones((1,n1-1))
@@ -165,18 +173,18 @@ def noisyG(X,n):
     if len(X.shape)==2:
        X=X[0,:]
     estimator=n
-    W=simulatorW(estimator)
+    W,indexes=simulatorW(estimator,True)
     result=np.zeros(estimator)
     for i in range(estimator):
         result[i] = g(TimeHours,W[i,:],X,nSets,
                          data,cluster,bikeData,poissonParameters,nDays,
-			 Avertices,poissonArray,exponentialTimes)
+			 Avertices,poissonArray,exponentialTimes,indexes[i])
     return np.mean(result),float(np.var(result))/estimator
 
-def g2(x,w,i):
+def g2(x,w,day,i):
     return g(TimeHours,w,x,nSets,
                          data,cluster,bikeData,poissonParameters,nDays,
-			 Avertices,poissonArray,exponentialTimes,i)
+			 Avertices,poissonArray,exponentialTimes,day,i)
 
 def estimationObjective(x,N=1000):
     """Estimate g(x)=E(f(x,w,z))
@@ -186,13 +194,13 @@ def estimationObjective(x,N=1000):
           N: number of samples used to estimate g(x)
     """
     estimator=N
-    W=simulatorW(estimator)
+    W,indexes=simulatorW(estimator,True)
     result=np.zeros(estimator)
     rseed=np.random.randint(1,4294967290,size=N)
     pool = mp.Pool()
     jobs = []
     for j in range(estimator):
-        job = pool.apply_async(g2, args=(x,W[j,:],rseed[j],))
+        job = pool.apply_async(g2, args=(x,W[j,:],indexes[j],rseed[j],))
         jobs.append(job)
     pool.close()  # signal that no more data coming in
     pool.join()  # wait for all the tasks to complete

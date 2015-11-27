@@ -138,10 +138,7 @@ We define the objective object.
 """
 
 
-def g2(x,w,i):
-    return g(TimeHours,w,x,nSets,
-                         data,cluster,bikeData,poissonParameters,nDays,
-			 Avertices,poissonArray,exponentialTimes,i)
+
 
 
 def noisyF(XW,n):
@@ -204,6 +201,11 @@ def simulatorW(n,ind=False):
 	return wPrior,indexes
     else:
 	return wPrior
+    
+def g2(x,w,day,i):
+    return g(TimeHours,w,x,nSets,
+                         data,cluster,bikeData,poissonParameters,nDays,
+			 Avertices,poissonArray,exponentialTimes,day,i)
 
 
 
@@ -215,13 +217,13 @@ def estimationObjective(x,N=1000):
           N: number of samples used to estimate g(x)
     """
     estimator=N
-    W=simulatorW(estimator)
+    W,indexes=simulatorW(estimator,True)
     result=np.zeros(estimator)
     rseed=np.random.randint(1,4294967290,size=N)
     pool = mp.Pool()
     jobs = []
     for j in range(estimator):
-        job = pool.apply_async(g2, args=(x,W[j,:],rseed[j],))
+        job = pool.apply_async(g2, args=(x,W[j,:],indexes[j],rseed[j],))
         jobs.append(job)
     pool.close()  # signal that no more data coming in
     pool.join()  # wait for all the tasks to complete
