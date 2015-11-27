@@ -481,8 +481,6 @@ class SBO:
 
                 
         if len(self.optRuns):
-	    print "sol"
-	    print [o.xOpt for o in self.optRuns]
             j = np.argmax([o.fOpt for o in self.optRuns])
 	    fl.writeSolution(self,self.optRuns[j])
 
