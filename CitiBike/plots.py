@@ -50,6 +50,38 @@ plt.plot(x,confidence,'--',color='g',label="95% CI")
 confidence=means-1.96*(var**.5)/np.sqrt(cont)
 plt.plot(x,confidence,'--',color='g')
 
+cont=0
+
+
+x=np.linspace(0,samplesIteration*numberIterations,numberIterations+1)
+y=np.zeros([0,numberIterations+1])
+for i in range(1,repetitions+1):
+    try:
+        temp=np.loadtxt(os.path.join(directory,"KG","%d"%i+"run","%d"%i+"optimalValues.txt"))
+        if len(temp)>=(numberIterations+1)*2 :
+            temp1=np.zeros(numberIterations+1)	    
+            for j in range(numberIterations+1):
+                temp1[j]=temp[2*j]
+            y=np.vstack((y,temp1))
+            cont+=1
+    except:
+        continue
+
+
+means=np.zeros(numberIterations+1)
+var=np.zeros(numberIterations+1)
+
+for i in xrange(numberIterations+1):
+    means[i]=np.mean(y[:,i])
+    var[i]=np.var(y[:,i])
+print cont
+
+plt.plot(x,means,color='g',linewidth=2.0,label='SBO')
+confidence=means+1.96*(var**.5)/np.sqrt(cont)
+plt.plot(x,confidence,'--',color='g',label="95% CI")
+confidence=means-1.96*(var**.5)/np.sqrt(cont)
+plt.plot(x,confidence,'--',color='g')
+
 plt.xlabel('Number of Samples',fontsize=26)
 plt.ylabel('Optimum Value of G',fontsize=24)
 plt.legend(loc=3,
