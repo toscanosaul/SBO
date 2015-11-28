@@ -76,11 +76,11 @@ for i in xrange(numberIterations+1):
     var[i]=np.var(y[:,i])
 print cont
 
-plt.plot(x,means,color='g',linewidth=2.0,label='SBO')
+plt.plot(x,means,color='r',linewidth=2.0,label='KG')
 confidence=means+1.96*(var**.5)/np.sqrt(cont)
-plt.plot(x,confidence,'--',color='g',label="95% CI")
+plt.plot(x,confidence,'--',color='r',label="95% CI")
 confidence=means-1.96*(var**.5)/np.sqrt(cont)
-plt.plot(x,confidence,'--',color='g')
+plt.plot(x,confidence,'--',color='r')
 
 plt.xlabel('Number of Samples',fontsize=26)
 plt.ylabel('Optimum Value of G',fontsize=24)
