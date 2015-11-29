@@ -209,7 +209,7 @@ def g2(x,w,day,i):
 
 
 
-def estimationObjective(x,N=1000):
+def estimationObjective(x,N=10000):
     """Estimate g(x)=E(f(x,w,z))
       
        Args:
