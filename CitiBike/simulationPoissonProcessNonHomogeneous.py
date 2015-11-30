@@ -22,7 +22,7 @@ nBikes=6000
 nStations=329
 distancesBikeStations=np.loadtxt("distanceBikeStations.txt")
 
-def PoissonProcess(T,lamb,A,N):
+def PoissonProcess(T,lamb,A,N,randst):
     """
     Simulate the poisson process N(T,(i,j)) where (i,j) is in A, and
     N(T,(i,j)) is the poisson process related to the station (i,j);
@@ -45,12 +45,12 @@ def PoissonProcess(T,lamb,A,N):
     nElements=len(lamb[0][0,:])
     for j in xrange(nElements):
         prob[lamb[0][2,j]+(lamb[0][1,j])*nStations]=(float(lamb[0][0,j])/(lambSum))
-    X=np.random.multinomial(N,prob,size=1)[0]
+    X=randst.multinomial(N,prob,size=1)[0]
     nArrivals=np.sum(X)
     TIME=[]
     for i in xrange(n):
         if (X[i]>0):
-            unif=np.random.uniform(0,1,X[i])
+            unif=randst.uniform(0,1,X[i])
             temp=np.sort(float(T)*unif)
             TIME.append([A[i],temp])
 
@@ -218,12 +218,15 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,
         ind: Day
     """
     if randomSeed is not None:
-        np.random.seed(randomSeed)
+        randst = np.random.mtrand.RandomState(randomSeed)
+    else:
+        randst=np.random
+
    # parLambda=parLambda.astype(int)
     if ind is None:
         probs=poisson.pmf(int(N[0]),mu=np.array(parLambda))
         probs=probs/np.sum(probs)
-        ind=np.random.choice(range(nDays),size=1,p=probs)
+        ind=randst.choice(range(nDays),size=1,p=probs)
         
     exponentialTimes=timesArray[ind][0]
     exponentialTimes2=np.zeros((nStations,nStations))
@@ -239,7 +242,7 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,
     times=[]
     nTimes=0
     for i in range(nSets):
-        temp=PoissonProcess(T,poissonParam,A[i],N[i])
+        temp=PoissonProcess(T,poissonParam,A[i],N[i],randst)
 
         nTimes+=temp[1]
         times.extend(temp[0])
@@ -275,13 +278,15 @@ def unhappyPeople (T,N,X,m,data,cluster,bikeData,parLambda,nDays,A,poissonArray,
             unHappy+=1
             continue
         indi=exponentialTimes[1,]
-        timeUsed=np.random.exponential(exponentialTimes2[bikePickUp,bikeDrop])
+        timeUsed=randst.exponential(exponentialTimes2[bikePickUp,bikeDrop])
         dropTimes.append((currentTime+timeUsed,bikeDrop))
         dropTimes=sorted(dropTimes, key=lambda x:x[0])
         
         state[bikePickUp,1]=state[bikePickUp,1]-1
         state[bikePickUp,0]=state[bikePickUp,0]+1
     return -unHappy
+
+
 
 def generatePoissonParameters(nDays,nStations):
     parametersLambda=np.zeros(nDays)

@@ -169,7 +169,7 @@ def sampleFromXAn(n):
 
 sampleFromXVn=sampleFromXAn
 
-def noisyG(X,n):
+def noisyG(X,n,randSeed=None):
     if len(X.shape)==2:
        X=X[0,:]
     estimator=n
@@ -178,7 +178,7 @@ def noisyG(X,n):
     for i in range(estimator):
         result[i] = g(TimeHours,W[i,:],X,nSets,
                          data,cluster,bikeData,poissonParameters,nDays,
-			 Avertices,poissonArray,exponentialTimes,indexes[i])
+			 Avertices,poissonArray,exponentialTimes,indexes[i],randSeed)
     return np.mean(result),float(np.var(result))/estimator
 
 def g2(x,w,day,i):

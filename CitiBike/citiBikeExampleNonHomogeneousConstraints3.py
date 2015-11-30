@@ -141,7 +141,7 @@ We define the objective object.
 
 
 
-def noisyF(XW,n):
+def noisyF(XW,n,ind=None):
     """Estimate F(x,w)=E(f(x,w,z)|w)
       
        Args:
@@ -156,7 +156,7 @@ def noisyF(XW,n):
     for i in xrange(n):
         simulations[i]=g(TimeHours,w,x,nSets,
                          data,cluster,bikeData,poissonParameters,nDays,
-			 Avertices,poissonArray,exponentialTimes)
+			 Avertices,poissonArray,exponentialTimes,randomSeed=ind)
 
     
     return np.mean(simulations),float(np.var(simulations))/n
