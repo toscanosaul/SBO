@@ -63,6 +63,8 @@ def gradXWSigmaOfuncSEK(n,new,kern,Xtrain2,Wtrain2,n1,n2,nT):
           n2: Dimension of w
           nT: Number of training points
     """
+    nT=int(nT)
+    n=int(n)
     gradXSigma0=np.zeros([n+nT+1,n1])
     tempN=n+nT
     past=np.concatenate((Xtrain2,Wtrain2),1)

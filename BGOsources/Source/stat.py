@@ -94,9 +94,9 @@ class SBOGP(GaussianProcess):
         if SEK:
             self._k=[]
             for i in range(self.numberInf):
-                temp=SK.SEK(self.n1+self.n2,X=self.data[i].Xhist,
-                               y=self.data[i].yHist[:,0],
-                               noise=self.data[i].varHist,
+                temp=SK.SEK(self.n1+self.n2,X=self.data.Xhist[i],
+                               y=self.data.yHist[i][:,0],
+                               noise=self.data.varHist[i],
                                scaleAlpha=self.scaledAlpha)
                 self._k.append(temp)
             self.gradXBforAn=gradients.gradXBforAnSEK
@@ -127,22 +127,22 @@ class SBOGP(GaussianProcess):
         n1=self.n1
         n2=self.n2
         muStart=self._k[infSource].mu
-        y2=dataObj.yHist[0:n+self._numberTraining[infSource]]-self._k[infSource].mu
+        y2=dataObj.yHist[infSource][0:n+self._numberTraining[infSource]]-self._k[infSource].mu
         B=np.zeros(n+self._numberTraining)
         
         if logproductExpectations is None:
             for i in xrange(n+self._numberTraining[infSource]):
-                B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,self._k[infSource])
+                B[i]=self.B(x,dataObj.Xhist[infSource][i,:],self.n1,self.n2,self._k[infSource])
         else:
             for i in xrange(n+self._numberTraining[infSource]):
-                B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,self._k[infSource],infSource,
+                B[i]=self.B(x,dataObj.Xhist[infSource][i,:],self.n1,self.n2,self._k[infSource],infSource,
                             logproductExpectations[i])
         
         inv1=linalg.solve_triangular(L,y2,lower=True)
 
         if onlyGradient:
             gradXB=self.gradXBforAn(x,n,B,self._k[infSource],
-                                    dataObj.Xhist[0:n+self._numberTraining[infSource],0:n1],
+                                    dataObj.Xhist[infSource][0:n+self._numberTraining[infSource],0:n1],
                                     n1,self._numberTraining[infSource])
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
             gradAn=np.dot(inv1.transpose(),temp4)
@@ -152,7 +152,7 @@ class SBOGP(GaussianProcess):
         aN=muStart+np.dot(inv2.transpose(),inv1)
         if gradient==True:
             gradXB=self.gradXBforAn(x,n,B,self._k[infSource],
-                                    dataObj.Xhist[0:n+self._numberTraining[infSource],0:n1],
+                                    dataObj.Xhist[infSource][0:n+self._numberTraining[infSource],0:n1],
                                     n1,self._numberTraining[infSource])
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
             gradAn=np.dot(inv1.transpose(),temp4)
@@ -164,7 +164,7 @@ class SBOGP(GaussianProcess):
     def anGrad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
         a=[]
         for i in range(self.numberInf):
-            temp=self.aN_grad(x,L[i],n[i],dataObj[i],i,gradient=gradient,
+            temp=self.aN_grad(x,L[i],n[i],dataObj,i,gradient=gradient,
                          onlyGradient=onlyGradient,logproductExpectations=logproductExpectations[i])
             a.append(temp)
         ###now only works for self.numberInf=2

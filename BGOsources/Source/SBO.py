@@ -166,7 +166,7 @@ class SBO:
 	
 	self.numberInformationSources=Objobj.numberInformation
 	#Number of B(x_{p},i) computed for all x_{p} in the discretization
-	self.histSaved=np.seros(self.numberInformationSources)  
+	self.histSaved=np.zeros(self.numberInformationSources)  
 	#Matrix with the computations B(x_{p},i)
 	self.Bhist=[np.zeros((VOIobj.sizeDiscretization,0)) for
 		    i in xrange(self.numberInformationSources)]
@@ -241,7 +241,7 @@ class SBO:
         def g(x,grad,onlyGradient=False):
             return self.opt.functionGradientAscentVn(x,i=i,VOI=self._VOI,L=L,temp2=temp2,a=a,
 						 scratch=scratch,onlyGradient=onlyGradient,
-						 kern=self.stat._k,XW=self.dataObj.Xhist,
+						 kern=self.stat._k[infSource],XW=self.dataObj.Xhist[infSource],
 						 Bfunc=self.stat.B,grad=grad,infSource=infSource)
 
 	if self.opt.MethodVn=="SLSQP":
@@ -274,17 +274,17 @@ class SBO:
 	n1=self._n1
 	n2=self._dimW
 	tempN=self.numberTraining[infSource]+i
-	A=self.stat._k[infSource].A(self.dataObj[infSource].Xhist[0:tempN,:],
-				    noise=self.dataObj[infSource].varHist[0:tempN])
+	A=self.stat._k[infSource].A(self.dataObj.Xhist[infSource][0:tempN,:],
+				    noise=self.dataObj.varHist[infSource][0:tempN])
 	L=np.linalg.cholesky(A)
 	m=self._VOI._points.shape[0]
-	for j in xrange(self.histSaved[infSource],tempN):
-	    temp=self.stat.B(self._VOI._points,self.dataObj[infSource].Xhist[j,:],self._n1,
+	for j in xrange(int(self.histSaved[infSource]),int(tempN)):
+	    temp=self.stat.B(self._VOI._points,self.dataObj.Xhist[infSource][j,:],self._n1,
 			     self._dimW,self.stat._k[infSource],infSource) 
 	    self.Bhist[infSource]=np.concatenate((self.Bhist[infSource],temp.reshape((m,1))),1)
 	    self.histSaved[infSource]+=1
 	muStart=self.stat._k[infSource].mu
-	y=self.dataObj[infSource].yHist
+	y=self.dataObj.yHist[infSource]
 	temp2=linalg.solve_triangular(L,(self.Bhist[infSource]).T,lower=True)
 	temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	a=muStart+np.dot(temp2.T,temp1)
@@ -326,7 +326,7 @@ class SBO:
 	j = np.argmax([o.fOpt for o in optIS])
 	self.iterations[j]+=1
 	  #  self.optRuns.append(misc.VOIOptWrapper(self,st,**args2))
-	fl.writeNewPointSBO(self,optIS[j])
+	fl.writeNewPointSBO(self,optIS[j],j)
 
     def optVOIParal(self,i,nStart,numProcesses=None):
 	"""
@@ -441,7 +441,7 @@ class SBO:
 	L=[]
 	for j in range(self.numberInformationSources):
 	    tempN=self.iterations[j]+self.numberTraining[j]
-	    A=self.stat._k[j].A(self.dataObj[j].Xhist[0:tempN,:],noise=self.dataObj[j].varHist[0:tempN])
+	    A=self.stat._k[j].A(self.dataObj.Xhist[j][0:tempN,:],noise=self.dataObj.varHist[j][0:tempN])
 	    L.append(np.linalg.cholesky(A))
 	
 	
@@ -449,7 +449,7 @@ class SBO:
 	    logProduct=[]
 	    for j in range(self.numberInformationSources):
 		tempN=self.iterations[j]+self.numberTraining[j]
-		tempX=self.dataObj[j].Xhist[0:tempN,n1:self._dimW+n1]
+		tempX=self.dataObj.Xhist[j][0:tempN,n1:self._dimW+n1]
 		logProduct.append(self.stat.computeLogProductExpectationsForAn(tempX,
 							     tempN,self.stat._k[j],j))
 	else:
@@ -480,14 +480,14 @@ class SBO:
 	    L=[]
 	    for j in range(self.numberInformationSources):
 		tempN=self.iterations[j]+self.numberTraining[j]
-		A=self.stat._k[j].A(self.dataObj[j].Xhist[0:tempN,:],noise=self.dataObj[j].varHist[0:tempN])
+		A=self.stat._k[j].A(self.dataObj.Xhist[j][0:tempN,:],noise=self.dataObj.varHist[j][0:tempN])
 		L.append(np.linalg.cholesky(A))
 	    
 	    if logProd:
 		logProduct=[]
 		for j in range(self.numberInformationSources):
 		    tempN=self.iterations[j]+self.numberTraining[j]
-		    tempX=self.dataObj[j].Xhist[0:tempN,n1:self._dimW+n1]
+		    tempX=self.dataObj.Xhist[j][0:tempN,n1:self._dimW+n1]
 		    logProduct.append(self.stat.computeLogProductExpectationsForAn(tempX,
 								 tempN,self.stat._k[j],j))
 	    else:

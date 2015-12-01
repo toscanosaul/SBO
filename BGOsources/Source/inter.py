@@ -223,6 +223,9 @@ class data:
         if yHist is None:
             self.yHist=[]
             self.varHist=[]
+        else:
+            self.yHist=yHist
+            self.varHist=varHist
         
     def copyData(self):
         Xcopy=list(self.Xhist)
@@ -257,7 +260,7 @@ class data:
         self.varHist=NoiseTrain
         
     def getTrainingDataSBO(self,trainingPoints,noisyF,numberSamplesForF,parallel):
-        for k in len(self.Xhist):
+        for k in range(len(self.Xhist)):
             XWtrain=self.Xhist[k]
             yTrain=np.zeros([0,1])
             NoiseTrain=np.zeros(0)

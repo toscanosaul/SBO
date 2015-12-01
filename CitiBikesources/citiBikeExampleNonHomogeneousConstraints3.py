@@ -360,7 +360,7 @@ probsTemp=np.zeros(M-L)
 for i in range(M-L):
     probsTemp[i]=computeProbability(wTemp[i],poissonParameters,nDays)
     
-
+probInf1=0
 
 for j in range(upperNumberTrips):
     probInf1+=np.sum(poisson.pmf(j,mu=np.array(poissonParameters))/nDays)
@@ -374,13 +374,13 @@ probInf2=1.0-probInf1
 probsTemp1.append(probsTemp[upperNumberTrips-L:M-L]/probInf2)
 
 
-def expectation(z,alpha,parLambda,nDays,probs,infSource,L=650,M=8900):
+def expectation(z,alpha,parLambda,nDays,probs,infSource,L=650,M=8950):
     if infSource==0:
 	L=650
 	M=upperNumberTrips
     else:
 	L=upperNumberTrips
-	M=8900
+	M=8950
     w=np.array(range(L,M))
     aux=np.exp(-alpha*((z-w)**2))
     return np.dot(aux,probs)
@@ -464,7 +464,7 @@ def expectation2(z,alpha,parLambda,nDays,probs,infSource):
 	M=upperNumberTrips
     else:
 	L=upperNumberTrips
-	M=8900
+	M=8950
 	
     w=np.array(range(L,M))
     aux=-2.0*alpha*(z-w)*np.exp(-alpha*((z-w)**2))

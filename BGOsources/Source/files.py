@@ -22,12 +22,16 @@ def createNewFilesFunc(path,rs):
     f.close()
     
 def writeTraining(ALGObj):
+    infs=ALGObj.numberInformationSources
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"XHist.txt"), "a") as f:
-        np.savetxt(f,ALGObj.dataObj.Xhist)
+        for k in range(infs):
+            np.savetxt(f,ALGObj.dataObj.Xhist[k])
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"yhist.txt"), "a") as f:
-        np.savetxt(f,ALGObj.dataObj.yHist)
+        for k in range(infs):
+            np.savetxt(f,ALGObj.dataObj.yHist[k])
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"varHist.txt"), "a") as f:
-        np.savetxt(f,ALGObj.dataObj.varHist)
+        for k in range(infs):
+            np.savetxt(f,ALGObj.dataObj.varHist[k])
         
         
 def writeNewPointSBO(ALGObj,optim,j):
@@ -40,10 +44,10 @@ def writeNewPointSBO(ALGObj,optim,j):
     wTrans=ALGObj.opt.transformationDomainW(optim.xOpt[0:1,ALGObj.opt.dimXsteepestVn:ALGObj.opt.dimXsteepestVn
                                                        +ALGObj._dimW])
     temp=np.concatenate((xTrans,wTrans),1)
-    ALGObj.dataObj[j].Xhist=np.vstack([ALGObj.dataObj[j].Xhist,temp])
+    ALGObj.dataObj.Xhist[j]=np.vstack([ALGObj.dataObj.Xhist[j],temp])
     y,var=ALGObj.Obj.noisyF(temp,ALGObj.Obj.numberEstimateF)
-    ALGObj.dataObj[j].yHist=np.vstack([ALGObj[j].dataObj.yHist,y])
-    ALGObj.dataObj[j].varHist=np.append(ALGObj[j].dataObj.varHist,var)
+    ALGObj.dataObj.yHist[j]=np.vstack([ALGObj.dataObj.yHist[j],y])
+    ALGObj.dataObj.varHist[j]=np.append(ALGObj.dataObj.varHist[j],var)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"varHist.txt"), "a") as f:
         var=np.array(var).reshape(1)
         np.savetxt(f,var)
