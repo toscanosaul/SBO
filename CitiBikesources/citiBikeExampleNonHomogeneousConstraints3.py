@@ -572,6 +572,7 @@ def projectGradientDescent(x,direction,xo):
 	return x
     return xo+direction*min(alph)
 
+probsVn=[probInf1,1.0-probInf1]
 def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,infSource,onlyGradient=False,grad=None):
     """ Evaluates the VOI and it can compute its derivative. It evaluates the VOI,
         when grad and onlyGradient are False; it evaluates the VOI and computes its
@@ -606,7 +607,7 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,infSource,o
     x2=np.concatenate((tempX,x4),1)
     tempW=x[0:1,n1-1:n1-1+n2]
     xFinal=np.concatenate((x2,tempW),1)
-    temp=VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
+    temp=probsVn[infSource]*VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
                           kern=kern,XW=XW,B=Bfunc,infSource=infSource)
 
     
