@@ -433,6 +433,7 @@ def computeLogProductExpectationsForAn(W,N,kernel,infSource):
     alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
     logproductExpectations=np.zeros(N)
   #  parameterLamb=parameterSetsPoisson
+    N=int(N)
     for i in xrange(N):
         logproductExpectations[i]=0.0
         for j in xrange(n2):
