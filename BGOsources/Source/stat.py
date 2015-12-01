@@ -131,10 +131,10 @@ class SBOGP(GaussianProcess):
         B=np.zeros(n+self._numberTraining)
         
         if logproductExpectations is None:
-            for i in xrange(n+self._numberTraining[infSource]):
+            for i in xrange(int(n+self._numberTraining[infSource])):
                 B[i]=self.B(x,dataObj.Xhist[infSource][i,:],self.n1,self.n2,self._k[infSource])
         else:
-            for i in xrange(n+self._numberTraining[infSource]):
+            for i in xrange(int(n+self._numberTraining[infSource])):
                 B[i]=self.B(x,dataObj.Xhist[infSource][i,:],self.n1,self.n2,self._k[infSource],infSource,
                             logproductExpectations[i])
         
@@ -163,7 +163,7 @@ class SBOGP(GaussianProcess):
     #L,dataObj,logproductExpectations lists
     def anGrad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
         a=[]
-        for i in range(self.numberInf):
+        for i in range(int(self.numberInf)):
             temp=self.aN_grad(x,L[i],n[i],dataObj,i,gradient=gradient,
                          onlyGradient=onlyGradient,logproductExpectations=logproductExpectations[i])
             a.append(temp)
