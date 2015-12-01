@@ -128,7 +128,6 @@ class SBOGP(GaussianProcess):
         n2=self.n2
         muStart=self._k[infSource].mu
         y2=dataObj.yHist[infSource][0:n+self._numberTraining[infSource]]-self._k[infSource].mu
-        print n+self._numberTraining
         B=np.zeros(n+self._numberTraining[infSource])
         
         if logproductExpectations is None:
