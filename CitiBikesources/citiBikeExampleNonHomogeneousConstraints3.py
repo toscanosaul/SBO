@@ -264,7 +264,6 @@ def estimationObjective(x,N=1000):
           x
           N: number of samples used to estimate g(x)
     """
-    print "ya"
     start = time.time()
     estimator=N
     W,indexes=simulatorW(estimator,True)

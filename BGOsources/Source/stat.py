@@ -164,6 +164,9 @@ class SBOGP(GaussianProcess):
     def anGrad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
         a=[]
         for i in range(int(self.numberInf)):
+            print "itera"
+            print n
+            print n[i]
             temp=self.aN_grad(x,L[i],n[i],dataObj,i,gradient=gradient,
                          onlyGradient=onlyGradient,logproductExpectations=logproductExpectations[i])
             a.append(temp)
