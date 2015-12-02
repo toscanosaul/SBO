@@ -300,7 +300,7 @@ class SBO:
 	for j in xrange(m):
 	    scratch[j,:]=linalg.solve_triangular(L,self.Bhist[infSource][j,:].transpose(),lower=True)
 	args2={}
-        args2['i']=i
+        args2['i']=self.iterations[infSource]
 	args2['L']=L
 	args2['temp2']=temp2
 	args2['a']=a

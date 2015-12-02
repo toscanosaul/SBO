@@ -672,10 +672,7 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
 
     tempX=x[0:1,0:n1-1]
     x=np.concatenate((tempX,x4),1)
-    print "x"
-    print x
-  #  x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
-   # x=np.concatenate((x,x4),1)
+
    
     if onlyGradient:
         temp=stat.anGrad(x,L,i,dataObj,grad,onlyGradient,logproductExpectations)
