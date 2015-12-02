@@ -264,7 +264,6 @@ def estimationObjective(x,N=1000):
           x
           N: number of samples used to estimate g(x)
     """
-    start = time.time()
     estimator=N
     W,indexes=simulatorW(estimator,True)
     result=np.zeros(estimator)
@@ -279,8 +278,6 @@ def estimationObjective(x,N=1000):
     
     for i in range(estimator):
         result[i]=jobs[i].get()
-    end = time.time()
-    print end-start
     return np.mean(result),float(np.var(result))/estimator
 
 
