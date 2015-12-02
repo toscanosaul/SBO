@@ -669,8 +669,11 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
    
     x=np.array(x).reshape([1,n1-1])
     x4=np.array(numberBikes-np.sum(x[0,0:n1-1])).reshape((1,1))
+
     tempX=x[0:1,0:n1-1]
     x=np.concatenate((tempX,x4),1)
+    print "x"
+    print x
   #  x4=np.array(numberBikes-np.sum(x)).reshape((1,1))
    # x=np.concatenate((x,x4),1)
    
@@ -680,16 +683,22 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
         s=-1.0*np.ones((1,n1-1))
         L2=np.concatenate((t,s))
         grad2=np.dot(temp,L2)
+	print "grad"
+	print grad2
         return grad2
 
     temp=stat.anGrad(x,L,i,dataObj,gradient=grad,logproductExpectations=logproductExpectations)
     if grad==False:
+	print "an"
+	print temp
         return temp
     else:
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L2=np.concatenate((t,s))
         grad2=np.dot(temp[1],L2)
+	print "both"
+	print temp[0],grad2
         return temp[0],grad2
 
 lower=100
