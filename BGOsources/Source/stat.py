@@ -127,6 +127,13 @@ class SBOGP(GaussianProcess):
         n1=self.n1
         n2=self.n2
         muStart=self._k[infSource].mu
+        print "iteration"
+        print "infource"
+        print n+self._numberTraining[infSource]
+        print infSource
+        print dataObj.yHist[infSource]
+        print dataObj.Xhist[infSource]
+        print "otra"
         y2=dataObj.yHist[infSource][0:n+self._numberTraining[infSource]]-self._k[infSource].mu
         B=np.zeros(n+self._numberTraining[infSource])
         

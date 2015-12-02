@@ -683,22 +683,18 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
         s=-1.0*np.ones((1,n1-1))
         L2=np.concatenate((t,s))
         grad2=np.dot(temp,L2)
-	print "grad"
-	print grad2
-        return grad2
 
     temp=stat.anGrad(x,L,i,dataObj,gradient=grad,logproductExpectations=logproductExpectations)
     if grad==False:
-	print "an"
+	print "an is"
 	print temp
+	
         return temp
     else:
         t=np.diag(np.ones(n1-1))
         s=-1.0*np.ones((1,n1-1))
         L2=np.concatenate((t,s))
         grad2=np.dot(temp[1],L2)
-	print "both"
-	print temp[0],grad2
         return temp[0],grad2
 
 lower=100
