@@ -408,8 +408,6 @@ class SBO:
         """
 	
 #        tempN=i+self.numberTraining
-	print "iterations"
-	print self.iterations
 
         def g(x,grad,onlyGradient=False):
             return self.opt.functionGradientAscentAn(x,grad,self.stat,self.iterations,L,self.dataObj,
