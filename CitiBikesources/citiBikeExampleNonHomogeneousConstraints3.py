@@ -684,9 +684,6 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
 
     temp=stat.anGrad(x,L,i,dataObj,gradient=grad,logproductExpectations=logproductExpectations)
     if grad==False:
-	print "an is"
-	print temp
-	
         return temp
     else:
         t=np.diag(np.ones(n1-1))
