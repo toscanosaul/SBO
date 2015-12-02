@@ -46,7 +46,7 @@ def writeNewPointSBO(ALGObj,optim,j):
     temp=np.concatenate((xTrans,wTrans),1)
     ALGObj.dataObj.Xhist[j]=np.vstack([ALGObj.dataObj.Xhist[j],temp])
     y,var=ALGObj.Obj.noisyF(temp,ALGObj.Obj.numberEstimateF)
-    ALGObj.iterations[j]+=1
+  # ALGObj.iterations[j]+=1
     ALGObj.dataObj.yHist[j]=np.vstack([ALGObj.dataObj.yHist[j],y])
     ALGObj.dataObj.varHist[j]=np.append(ALGObj.dataObj.varHist[j],var)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"varHist.txt"), "a") as f:
