@@ -186,7 +186,7 @@ def g2(x,w,day,i):
                          data,cluster,bikeData,poissonParameters,nDays,
 			 Avertices,poissonArray,exponentialTimes,day,i)
 
-def estimationObjective(x,N=10000):
+def estimationObjective(x,N=1000):
     """Estimate g(x)=E(f(x,w,z))
       
        Args:
