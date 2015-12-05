@@ -157,7 +157,7 @@ def estimationObjective2(x,N=100):
 x=(numberBikes/float(n1))*np.ones((1,n1))
 
 nTemp=int(sys.argv[1])
-N=nTemp*100
+N=nTemp*10
 
 
 print estimationObjective2(x[0,:],N)/estimationObjective(x[0,:],nTemp,N)
