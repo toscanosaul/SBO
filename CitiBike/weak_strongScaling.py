@@ -161,6 +161,12 @@ x=(numberBikes/float(n1))*np.ones((1,n1))
 nTemp=int(sys.argv[1])
 N=nTemp*10
 
-print timeit.timeit('estimationObjective2(x[0,:],N)')
+t1=time.time()
+estimationObjective2(x[0,:],N)
+t2=time.time()
 
-print estimationObjective2(x[0,:],N)/estimationObjective(x[0,:],nTemp,N)
+t3=time.time()
+estimationObjective(x[0,:],nTemp,N)
+t4=time.time()
+
+print (t2-t1)/(t4-t3)
