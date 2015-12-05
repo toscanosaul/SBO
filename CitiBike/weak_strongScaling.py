@@ -141,10 +141,10 @@ def estimationObjective2(x,N=100):
     result=np.zeros(estimator)
     rseed=np.random.randint(1,4294967290,size=N)
     
-    print estimator
+    
     
     for i in range(estimator):
-        result[i]=g2(x,W[j,:],indexes[j],rseed[j])
+        result[i]=g2(x,W[i,:],indexes[i],rseed[i])
     
     return np.mean(result),float(np.var(result))/estimator
 
