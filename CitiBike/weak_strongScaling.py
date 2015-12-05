@@ -14,10 +14,9 @@ from BGO.Source import *
 
 
 
-######
-
 n1=4
 n2=1
+
 
 nDays=153
 ######
@@ -54,7 +53,14 @@ for j in range(numberStations):
     for k in range(numberStations):
 	Avertices[0].append((j,k))
 
+#A,lamb=generateSets(nSets,fil)
 
+#parameterSetsPoisson=np.zeros(n2)
+#for j in xrange(n2):
+#    parameterSetsPoisson[j]=np.sum(lamb[j])
+
+
+#exponentialTimes=np.loadtxt("2014-05"+"ExponentialTimes.txt")
 with open ('json.json') as data_file:
     data=json.load(data_file)
 
