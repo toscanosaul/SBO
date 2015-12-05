@@ -11,6 +11,8 @@ import multiprocessing as mp
 import os
 from scipy.stats import poisson
 from BGO.Source import *
+import timeit
+import time
 
 
 
@@ -159,5 +161,6 @@ x=(numberBikes/float(n1))*np.ones((1,n1))
 nTemp=int(sys.argv[1])
 N=nTemp*10
 
+print timeit.timeit('estimationObjective2(x[0,:],N)')
 
 print estimationObjective2(x[0,:],N)/estimationObjective(x[0,:],nTemp,N)
