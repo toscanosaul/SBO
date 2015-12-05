@@ -160,4 +160,4 @@ nTemp=int(sys.argv[1])
 N=nTemp*100
 
 
-print estimationObjective2(x,N)/estimationObjective(x,nTemp,N)
+print estimationObjective(x,nTemp,N)
