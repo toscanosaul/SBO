@@ -136,6 +136,7 @@ def estimationObjective2(x,N=100):
           x
           N: number of samples used to estimate g(x)
     """
+    print estimator
     estimator=N
     W,indexes=simulatorW(estimator,True)
     result=np.zeros(estimator)
@@ -151,4 +152,5 @@ x=(numberBikes/float(n1))*np.ones((1,n1))
 nTemp=int(sys.argv[1])
 N=nTemp*100
 
+print N
 print estimationObjective2(x,N)/estimationObjective(x,nTemp,N)
