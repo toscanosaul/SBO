@@ -136,7 +136,7 @@ def estimationObjective2(x,N=100):
           x
           N: number of samples used to estimate g(x)
     """
-    print estimator
+    print N
     estimator=N
     W,indexes=simulatorW(estimator,True)
     result=np.zeros(estimator)
