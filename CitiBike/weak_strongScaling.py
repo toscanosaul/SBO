@@ -99,7 +99,7 @@ def simulatorW(n,ind=False):
     else:
 	return wPrior
     
-def estimationObjective(x,N=1000):
+def estimationObjective(x,nProcesses,N=1000):
     """Estimate g(x)=E(f(x,w,z))
       
        Args:
@@ -110,7 +110,7 @@ def estimationObjective(x,N=1000):
     W,indexes=simulatorW(estimator,True)
     result=np.zeros(estimator)
     rseed=np.random.randint(1,4294967290,size=N)
-    pool = mp.Pool()
+    pool = mp.Pool(nProcesses)
     jobs = []
     for j in range(estimator):
         job = pool.apply_async(g2, args=(x,W[j,:],indexes[j],rseed[j],))
@@ -123,6 +123,27 @@ def estimationObjective(x,N=1000):
     
     return np.mean(result),float(np.var(result))/estimator
 
+
+def estimationObjective2(x,N=100):
+    """Estimate g(x)=E(f(x,w,z))
+      
+       Args:
+          x
+          N: number of samples used to estimate g(x)
+    """
+    estimator=N
+    W,indexes=simulatorW(estimator,True)
+    result=np.zeros(estimator)
+    rseed=np.random.randint(1,4294967290,size=N)
+    
+    for i in range(estimator):
+        result[i]=g2(x,W[j,:],indexes[j],rseed[j])
+    
+    return np.mean(result),float(np.var(result))/estimator
+
 x=(numberBikes/float(n1))*np.ones((1,n1))
 
-estimationObjective(x)
+nTemp=int(sys.argv[1])
+N=nTemp*100
+
+print estimationObjective2(x,N)/estimationObjective(x,nTemp,N)
