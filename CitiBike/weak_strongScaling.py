@@ -99,6 +99,11 @@ def simulatorW(n,ind=False):
     else:
 	return wPrior
     
+def g2(x,w,day,i):
+    return g(TimeHours,w,x,nSets,
+                         data,cluster,bikeData,poissonParameters,nDays,
+			 Avertices,poissonArray,exponentialTimes,day,i)
+    
 def estimationObjective(x,nProcesses,N=1000):
     """Estimate g(x)=E(f(x,w,z))
       
