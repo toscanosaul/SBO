@@ -257,7 +257,7 @@ stat=stat.EIGP(dimKernel=dimensionKernel,numberTraining=trainingPoints,
 We define the VOI object.
 """
 
-pointsVOI=np.loadtxt("lowerBoundNewRandompointsPoisson1000.txt")
+#pointsVOI=np.loadtxt("lowerBoundNewRandompointsPoisson1000.txt")
 
 voiObj=VOI.EI(numberTraining=trainingPoints,dimX=n1)
 
