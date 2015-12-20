@@ -180,7 +180,7 @@ class EIGP(GaussianProcess):
         self.n1=dimPoints
         
         if SEK:
-            self._k=SK.SEK(self.n1+self.n2,X=self.data.Xhist,
+            self._k=SK.SEK(self.n1,X=self.data.Xhist,
                            y=self.data.yHist[:,0],
                            noise=self.data.varHist,
                            scaleAlpha=self.scaledAlpha)
