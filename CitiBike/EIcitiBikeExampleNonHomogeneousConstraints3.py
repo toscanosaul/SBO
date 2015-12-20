@@ -249,6 +249,7 @@ dimensionKernel=n1
 
 scaleAlpha=2000.0
 
+dimPoints,SEK,gradXKern=None
 stat=stat.EIGP(dimKernel=dimensionKernel,numberTraining=trainingPoints,
                 scaledAlpha=scaleAlpha, dimPoints=n1,trainingData=dataObj)
 
