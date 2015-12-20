@@ -100,7 +100,7 @@ class EI:
         vec=np.zeros(tempN)
         X=self.dataObj.Xhist
         for j in xrange(tempN):
-            vec[j]=self.stat.muN(X[j,:],i,self.dataObj,L,temp1,grad=False)
+            vec[j]=self.stat.muN(X[j,:],i,L,self.dataObj.Xhist,temp1,self.stat._k,grad=False)
         maxObs=np.max(vec)
 	args['maxObs']=maxObs
 
