@@ -249,7 +249,7 @@ dimensionKernel=n1
 
 scaleAlpha=2000.0
 
-stat=stat.EI(dimKernel=dimensionKernel,numberTraining=trainingPoints,
+stat=stat.EIGP(dimKernel=dimensionKernel,numberTraining=trainingPoints,
                 scaledAlpha=scaleAlpha, dimPoints=n1,trainingData=dataObj)
 
 """
