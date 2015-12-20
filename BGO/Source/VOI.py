@@ -347,36 +347,151 @@ class VOISBO(VOI):
                             kern=kern,XW=XW)
 
 class EI(VOI):
-    def __init__(self,gradXKern,*args,**kargs):
+    def __init__(self,dimX,gradXKern=None,SEK=True,*args,**kargs):
         VOI.__init__(self,*args,**kargs)
+        self.n1=dimX
         self.VOI_name="EI"
-        self._GP=stat.EIGP(kernel=self._k,dimPoints=self._dimKernel,
-                       Xhist=self._PointsHist, dimKernel=self._dimKernel,
-                       yHist=self._yHist,noiseHist=self._noiseHist,numberTraining=self._numberTraining,
-                       gradXKern=gradXKern)
+        
+        if gradXKern is not None:
+            self.gradXKern=gradXKern
+        
+        if SEK:
+            self.gradXKern=gradients.gradXKernelSEK
+            
+        
+    def varN(self,x,n,L,temp2,kern,temp5=None,grad=False):
+        muStart=kern.mu
+        temp=kern.K(np.array(x).reshape((1,self.n1)))
+        tempN=self._numberTraining+n
+    #    sigmaVec=np.zeros((tempN,1))
+      #  for i in xrange(tempN):
+       #     sigmaVec[i,0]=self._k.K(np.array(x).reshape((1,self.n1)),self._Xhist[i:i+1,:])[:,0]
+       # A=self._k.A(self._Xhist[0:tempN,:],noise=self._noiseHist[0:tempN])
+       # L=np.linalg.cholesky(A)
+       # temp3=linalg.solve_triangular(L,sigmaVec,lower=True)
+       ###now temp3=temp2 (!!!!!!)
+        res=np.dot(temp2.T,temp2)
+        res=temp-res
+        if grad==False:
+            return res
+        
+        else:
+            gradi=np.zeros(self.n1)
+            x=np.array(x).reshape((1,self.n1))
+
+         #   gradX=self.gradXKern(x,n,self)
+            for j in xrange(self.n1):
+                #temp5=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
+                gradi[j]=np.dot(temp5[j,:],temp2)
+            gradVar=-2.0*gradi
+            return res,gradVar
+        
+    def muN(self,x,n,L,temp1,temp2,kern,temp5=None,grad=False,onlyGrad=False):
+        muStart=kern.mu
+        x=np.array(x).reshape((1,self.n1))
+        m=1
+        tempN=self._numberTraining+n
+     #   B=np.zeros([m,tempN])
+        
+     #   for i in xrange(tempN):
+     #       B[:,i]=self._k.K(x,X[i:i+1,:])
+            
+       # y=self._yHist[0:tempN,:]
+        #temp2=linalg.solve_triangular(L,B.T,lower=True)
+        
+        if grad:
+        #    gradX=self.gradXKern(x,n,self)
+            gradi=np.zeros(self.n1)
+          #  temp3=linalg.solve_triangular(L,y-muStart,lower=True)
+            
+            for j in xrange(self.n1):
+               # temp5=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
+                gradi[j]=muStart+np.dot(temp5[j,:],temp1)
+            
+        
+        if onlyGrad:
+            return gradi
+        
+            
+     #   x=np.array(x)
+     #   m=1
+        
+     #   X=self._Xhist[0:tempN,:]
+     #   A=self._k.A(self._Xhist[0:tempN,:],noise=self._noiseHist[0:tempN])
+     #   L=np.linalg.cholesky(A)
+
+       # muStart=self._k.mu
+       # temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
+        a=muStart+np.dot(temp2.T,temp1)
+        if grad==False:
+            return a
+     #   x=np.array(x).reshape((1,self.n1))
+
+        return a,gradi
       
       
       
-    def VOIfunc(self,n,pointNew,grad):
+    def VOIfunc(self,n,pointNew,grad,maxObs,kern,Xhist,L,temp1,onlyGradient=False):
         xNew=pointNew
-        nTraining=self._GP._numberTraining
-        tempN=nTraining+n
-      #  n=n-1
-        vec=np.zeros(tempN)
-        X=self._PointsHist
+        nTraining=self._numberTraining
+        tempN=self._numberTraining+n
+        xNew=xNew.reshape((1,self.n1))
+        B=np.zeros([1,tempN])
+        
         for i in xrange(tempN):
-            vec[i]=self._GP.muN(X[i,:],n)
-        maxObs=np.max(vec)
-        std=np.sqrt(self._GP.varN(xNew,n))
-        muNew,gradMu=self._GP.muN(xNew,n,grad=True)
-        Z=(muNew-maxObs)/std
+            B[:,i]=kern.K(xNew,Xhist[i:i+1,:])
+            
+            
+        temp2=linalg.solve_triangular(L,B.T,lower=True)
+        
+        ##gradient
+        if grad:
+            gradX=self.gradXKern(xNew,n,kern,self._numberTraining,Xhist,self.n1)
+      #   #   temp3=linalg.solve_triangular(L,y-muStart,lower=True)
+            temp5inv=np.zeros((self.n1,tempN))
+            for j in xrange(self.n1):
+                temp5inv[j,:]=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
+       #       #  gradi[j]=muStart+np.dot(temp5.T,temp1)
+        #########
+        
+        if grad:
+           
+            muNew,gradMu=self.muN(xNew,n,L,temp1,temp2,kern,temp5inv,grad=True)
+            
+            var,gradVar=self.varN(xNew,n,L,temp2,kern,temp5inv,grad=True)
+            
+            
+            std=np.sqrt(var)
+            gradstd=.5*gradVar/std
+            gradZ=((std*gradMu)-(muNew-maxObs)*gradstd)/var
+            Z=(muNew-maxObs)/std
+            temp10=gradMu*norm.cdf(Z)+(muNew-maxObs)*norm.pdf(Z)*gradZ
+            +norm.pdf(Z)*gradstd+std*(norm.pdf(Z)*Z*(-1.0))*gradZ
+        else:
+            muNew=self.muN(xNew,n,L,temp1,temp2,kern,None,grad=False)
+            var=self.varN(xNew,n,L,temp2,kern,None,grad=False)
+            std=np.sqrt(var)
+            Z=(muNew-maxObs)/std
+         #   std=np.sqrt(self.varN(xNew,n,L,temp1,temp2,grad=False))
+         #   muNew=self.muN(xNew,n,L,temp1,temp2,grad=False)
+            
+            
+        if onlyGradient:
+            return temp10
+            
+      
+       # vec=np.zeros(tempN)
+       # X=self._PointsHist
+       # for i in xrange(tempN):
+           # vec[i]=self._GP.muN(X[i,:],n)
+    #    vec=vecMuN
+#        maxObs=np.max(vec)
+        
+        
         temp1=(muNew-maxObs)*norm.cdf(Z)+std*norm.pdf(Z)
         if grad==False:
             return temp1
-        var,gradVar=self._GP.varN(xNew,n,grad=True)
-        gradstd=.5*gradVar/std
-        gradZ=((std*gradMu)-(muNew-maxObs)*gradstd)/var
-        temp10=gradMu*norm.cdf(Z)+(muNew-maxObs)*norm.pdf(Z)*gradZ+norm.pdf(Z)*gradstd+std*(norm.pdf(Z)*Z*(-1.0))*gradZ
+        
         return temp1,temp10
  
 class KG(VOI):
