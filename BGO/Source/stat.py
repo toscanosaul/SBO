@@ -170,10 +170,15 @@ class SBOGP(GaussianProcess):
     
 
 class EIGP(GaussianProcess):
-    def __init__(self,dimPoints,gradXKern,SEK,*args,**kargs):
+    def __init__(self,dimPoints,SEK=True,gradXKern=None,*args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
         self.SBOGP_name="GP_EI"
+        
+        if gradXKern is not None:
+            self.gradXKern=gradXKern
+            
         self.n1=dimPoints
+        
         if SEK:
             self._k=SK.SEK(self.n1+self.n2,X=self.data.Xhist,
                            y=self.data.yHist[:,0],
