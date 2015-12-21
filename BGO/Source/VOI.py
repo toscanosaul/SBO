@@ -406,7 +406,7 @@ class EI(VOI):
             
             for j in xrange(self.n1):
                # temp5=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
-                gradi[j]=muStart+np.dot(temp5[j,:],temp1)
+                gradi[j]=np.dot(temp5[j,:],temp1)
             
         
         if onlyGrad:
