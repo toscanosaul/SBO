@@ -1,0 +1,1 @@
+python gpExample.py 1 30 5 40 T 10 1 0.2 F
