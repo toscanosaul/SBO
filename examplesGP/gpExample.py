@@ -25,7 +25,6 @@ dataObj: Data object (See InterfaceSBO).
 import sys
 sys.path.append("..")
 import numpy as np
-from simulationPoissonProcessNonHomogeneous import *
 from math import *
 from matplotlib import pyplot as plt
 import scipy.stats as stats
@@ -35,7 +34,7 @@ import multiprocessing as mp
 import os
 from scipy.stats import poisson
 import json
-from BGOsources.Source import *
+from BGO.Source import *
 import time
 
 ##################
@@ -102,19 +101,46 @@ def h2(xw,L=None):
 
     return np.dot(L,Z)
 
+######cambiar ngrid
+
+######Define the function
 ngrid=50
 domainX=np.linspace(0,1,ngrid)
 domainW=np.linspace(0,1,ngrid)
-z=np.zeros((ngrid*ngrid,2))
 
-for i in range(ngrid):
-    for j in range(ngrid):
-        z[i*ngrid+j,0]=domainX[i]
-        z[i*ngrid+j,1]=domainW[j]
-        
-output=h2(z)
 
-noisy=np.random.normal(0,np.sqrt(alphad),ngrid*ngrid*ngrid)
+defineFunction=sys.argv[9]
+
+if defineFunction=='F':
+    defineFunction=False
+else:
+    defineFunction=True
+
+if defineFunction:
+    z=np.zeros((ngrid*ngrid,2))
+    
+    for i in range(ngrid):
+        for j in range(ngrid):
+            z[i*ngrid+j,0]=domainX[i]
+            z[i*ngrid+j,1]=domainW[j]
+    
+    output=h2(z)
+
+    f=open("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt",'w')
+    np.savetxt(f,output)
+    f.close()
+    
+    
+    f=open("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt",'w')
+    noisy=np.random.normal(0,np.sqrt(alphad),ngrid*ngrid*ngrid)
+    np.savetxt(f,noisy)
+    f.close()
+else:
+    output=np.loadtxt("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
+    noisy=np.loadtxt("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
+
+
+###########
 
 def getindex(x):
     dx=1.0/(ngrid-1)
@@ -164,7 +190,7 @@ def sampleFromXAn(n):
        Args:
           n: Number of points chosen
     """
-    return np.random.uniform(lowerX,upperX,n)
+    return np.random.uniform(lowerX,upperX,(n,1))
 
 sampleFromXVn=sampleFromXAn
 
@@ -177,14 +203,18 @@ def simulatorW(n):
        Args:
           n: Number of vectors simulated
     """
-    return np.random.randint(0,ngrid,n)
+    temp=np.random.randint(0,ngrid,n)
+    w=np.zeros((n,1))
+    for i in range(n):
+        w[i,0]=domainW[temp[i]]
+    return w
 
 
     
 
 
 
-def estimationObjective(x,N=100):
+def estimationObjective(x,N=1000):
     """Estimate g(x)=E(f(x,w,z))
       
        Args:
@@ -197,10 +227,10 @@ def estimationObjective(x,N=100):
     results=np.zeros(N)
 
     for i in xrange(N):
-        results[i]=evalf2(x,w[i],z[i])
+        results[i]=evalf(x,w[i],z[i])
 
 
-    return np.mean(result),(alphad+alphah)/N
+    return np.mean(results),(alphad+alphah)/N
 
 
 #checar todo, pero parace que hasta aqui casi ya
@@ -230,8 +260,8 @@ We define the data object.
 Generate the training data
 """
 
-tempX=sampleFromXVn(trainingPoints)
-Wtrain=simulatorW(trainingPoints)
+Xtrain=sampleFromXVn(trainingPoints).reshape((trainingPoints,1))
+Wtrain=simulatorW(trainingPoints).reshape((trainingPoints,1))
 XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
