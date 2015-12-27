@@ -44,13 +44,12 @@ nTemp2=int(sys.argv[2]) #number of training points
 nTemp3=int(sys.argv[3]) #number of samples to estimate F
 nTemp4=int(sys.argv[4]) #number of iterations
 nTemp5=sys.argv[5] #True if code is run in parallel; False otherwise.
-
+nTemp6=int(sys.argv[6]) #number of restarts for the optimization method
 
 if nTemp5=='F':
     nTemp5=False
     nTemp6=1
 elif nTemp5=='T':
-    nTemp6=int(sys.argv[6]) #number of restarts for the optimization method
     nTemp5=True
     
 betah=float(sys.argv[7])
@@ -126,18 +125,30 @@ if defineFunction:
     
     output=h2(z)
 
-    f=open("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt",'w')
+    f=open("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w')
     np.savetxt(f,output)
     f.close()
     
+    valuesOutput=np.zeros(ngrid)
     
-    f=open("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt",'w')
-    noisy=np.random.normal(0,np.sqrt(alphad),ngrid*ngrid*ngrid)
-    np.savetxt(f,noisy)
+    for j in xrange(ngrid):
+        results=np.zeros(ngrid)
+        for i in xrange(ngrid):
+            results[i]=output[j*ngrid+i]
+        valuesOutput[j]=np.mean(results)
+    
+    f=open("valuesof"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w')
+    np.savetxt(f,valuesOutput)
     f.close()
+
+    
+ #   f=open("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt",'w')
+ #   noisy=np.random.normal(0,np.sqrt(alphad),(ngrid*ngrid,ngrid))
+  #  np.savetxt(f,noisy)
+  #  f.close()
 else:
-    output=np.loadtxt("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
-    noisy=np.loadtxt("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
+    output=np.loadtxt("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt")
+  #  noisy=np.loadtxt("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
 
 
 ###########
@@ -148,11 +159,12 @@ def getindex(x):
     return i
 
 #k is already index
-def evalf(x,w,k):
+def evalf(x,w):
     i=getindex(x)
     j=getindex(w)
     h1=output[i*ngrid+j]
-    return h1+noisy[i*ngrid*ngrid+j*ngrid+k]
+    #h1+noisy[i*ngrid+j,k]
+    return h1+np.random.normal(0,np.sqrt(alphad),1)
 
 def evalf2(x,j,k):
     i=getindex(x)
@@ -175,10 +187,11 @@ def noisyF(XW,n):
     
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2]
-    z=simulateZ(n)
+    #z=simulateZ(n)
     res=np.zeros(n)
     for i in xrange(n):
-        res[i]=evalf(x,w,z[i])
+        res[i]=evalf(x,w)
+        ##alphad/n
     return np.mean(res),alphad/n
 
 lowerX=0
@@ -222,15 +235,15 @@ def estimationObjective(x,N=1000):
           N: number of samples used to estimate g(x)
     """
     w=simulatorW(N)
-    z=simulateZ(N)
+ #   z=simulateZ(N)
+    j=getindex(x)
+    results=np.zeros(ngrid)
 
-    results=np.zeros(N)
-
-    for i in xrange(N):
-        results[i]=evalf(x,w[i],z[i])
+    for i in xrange(ngrid):
+        results[i]=output[j*ngrid+i]
 
 
-    return np.mean(results),(alphad+alphah)/N
+    return np.mean(results),0
 
 
 #checar todo, pero parace que hasta aqui casi ya
@@ -275,7 +288,7 @@ We define the statistical object.
 """
 
 dimensionKernel=n1+n2
-scaleAlpha=1.0
+scaleAlpha=0.5
 #kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
 

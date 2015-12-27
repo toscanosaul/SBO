@@ -1,0 +1,2 @@
+
+python gpExample.py $1 30 $2 $3 T 10 $4 $5 $6
