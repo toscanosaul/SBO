@@ -124,8 +124,8 @@ if defineFunction:
             z[i*ngrid+j,1]=domainW[j]
     
     output=h2(z)
-
-    f=open("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w')
+    
+    f=open(os.path.join("functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w'))
     np.savetxt(f,output)
     f.close()
     
@@ -137,7 +137,7 @@ if defineFunction:
             results[i]=output[j*ngrid+i]
         valuesOutput[j]=np.mean(results)
     
-    f=open("valuesof"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w')
+    f=open(os.path.join("functions","valuesof"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w'))
     np.savetxt(f,valuesOutput)
     f.close()
 
@@ -147,7 +147,7 @@ if defineFunction:
   #  np.savetxt(f,noisy)
   #  f.close()
 else:
-    output=np.loadtxt("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt")
+    output=np.loadtxt(os.path.join("functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"))
   #  noisy=np.loadtxt("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
 
 
