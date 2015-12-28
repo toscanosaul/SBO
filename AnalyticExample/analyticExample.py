@@ -52,12 +52,11 @@ if nTemp5=='F':
 elif nTemp5=='T':
     nTemp5=True
     
-betah=float(sys.argv[7])
-Aparam=float(sys.argv[8])
-
-alphah=Aparam/float(nTemp3)
-alphad=(1.0/float(nTemp3))-alphah
-
+varianceW2givenW1=1.0
+lowerX=-3.0
+upperX=3.0
+varianceW1=np.array(1.0).reshape(1)
+muW1=np.array(0.0).reshape(1)
 
 
 print "random seed is "
@@ -77,104 +76,27 @@ numberSamplesForF=nTemp3
 We define the objective object.
 """
 
-def sigmah(xw,xw2):
-    return alphah*np.exp(-betah*np.sqrt(np.sum((xw-xw2)**2)))
-    
-#xw is matrix where each row is a point where h is evaluated
-def covarianceh(xw):
-    cov=np.zeros((xw.shape[0],xw.shape[0]))
-    for i in xrange(xw.shape[0]):
-        for j in xrange(i,xw.shape[0]):
-            cov[i,j]=sigmah(xw[i,:],xw[j,:])
-            cov[j,i]=cov[i,j]
-    return cov
 
-#xw is matrix where each row is a point where h is evaluated
-def h2(xw,L=None):
-    if L is None:
-        cov=covarianceh(xw)
-        L=np.linalg.cholesky(cov)
 
-    
-    Z=np.random.normal(0,1,xw.shape[0])
-
-    return np.dot(L,Z)
-
-######cambiar ngrid
 
 ######Define the function
 ngrid=50
-domainX=np.linspace(0,1,ngrid)
-domainW=np.linspace(0,1,ngrid)
-
-
-defineFunction=sys.argv[9]
-
-if defineFunction=='F':
-    defineFunction=False
-else:
-    defineFunction=True
-
-if defineFunction:
-    z=np.zeros((ngrid*ngrid,2))
-    
-    for i in range(ngrid):
-        for j in range(ngrid):
-            z[i*ngrid+j,0]=domainX[i]
-            z[i*ngrid+j,1]=domainW[j]
-    
-    output=h2(z)
-
-    f=open("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w')
-    np.savetxt(f,output)
-    f.close()
-    
-    valuesOutput=np.zeros(ngrid)
-    
-    for j in xrange(ngrid):
-        results=np.zeros(ngrid)
-        for i in xrange(ngrid):
-            results[i]=output[j*ngrid+i]
-        valuesOutput[j]=np.mean(results)
-    
-    f=open("valuesof"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w')
-    np.savetxt(f,valuesOutput)
-    f.close()
-
-    
- #   f=open("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt",'w')
- #   noisy=np.random.normal(0,np.sqrt(alphad),(ngrid*ngrid,ngrid))
-  #  np.savetxt(f,noisy)
-  #  f.close()
-else:
-    output=np.loadtxt("function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt")
-  #  noisy=np.loadtxt("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
+domainX=np.linspace(lowerX,upperX,ngrid)
 
 
 ###########
 
-def getindex(x):
-    dx=1.0/(ngrid-1)
-    i=round(x/dx)
-    return i
 
-#k is already index
-def evalf(x,w):
-    i=getindex(x)
-    j=getindex(w)
-    h1=output[i*ngrid+j]
-    #h1+noisy[i*ngrid+j,k]
-    return h1+np.random.normal(0,np.sqrt(alphad),1)
 
-def evalf2(x,j,k):
-    i=getindex(x)
-    h1=output[i*ngrid+j]
-    return h1+noisy[i*ngrid*ngrid+j*ngrid+k]
     
 
 def simulateZ(n):
     l=np.random.randint(0,ngrid,n)
     return l
+
+def g(x,w1,w2):
+    val=(w2)/(w1)
+    return -(val)*(x**2)-w1
     
 
 def noisyF(XW,n):
@@ -188,14 +110,12 @@ def noisyF(XW,n):
     x=XW[0,0:n1]
     w=XW[0,n1:n1+n2]
     #z=simulateZ(n)
-    res=np.zeros(n)
-    for i in xrange(n):
-        res[i]=evalf(x,w)
-        ##alphad/n
-    return np.mean(res),alphad/n
+    t=np.array(np.random.normal(w,varianceW2givenW1,n))
+    t=g(x,w,t)
 
-lowerX=0
-upperX=1
+    return np.mean(t),float(np.var(t))/n
+
+
 
 def sampleFromXAn(n):
     """Chooses n points in the domain of x at random
@@ -207,8 +127,7 @@ def sampleFromXAn(n):
 
 sampleFromXVn=sampleFromXAn
 
-lowerW=0
-upperW=1
+
 
 def simulatorW(n):
     """Simulate n vectors w
@@ -216,11 +135,8 @@ def simulatorW(n):
        Args:
           n: Number of vectors simulated
     """
-    temp=np.random.randint(0,ngrid,n)
-    w=np.zeros((n,1))
-    for i in range(n):
-        w[i,0]=domainW[temp[i]]
-    return w
+
+    return np.random.normal(0,1,n).reshape((n,n2))
 
 
     
@@ -234,16 +150,10 @@ def estimationObjective(x,N=1000):
           x
           N: number of samples used to estimate g(x)
     """
-    w=simulatorW(N)
- #   z=simulateZ(N)
-    j=getindex(x)
-    results=np.zeros(ngrid)
-
-    for i in xrange(ngrid):
-        results[i]=output[j*ngrid+i]
 
 
-    return np.mean(results),0
+
+    return -(x**2),0
 
 
 #checar todo, pero parace que hasta aqui casi ya
@@ -263,7 +173,7 @@ trainingPoints=nTemp2
 #folder=os.path.join(nameDirectory,"SBO")
 
 misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,
-                         prefix="function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3)
+                         prefix="AnalyticExample")
 
 """
 We define the data object.
@@ -288,15 +198,16 @@ We define the statistical object.
 """
 
 dimensionKernel=n1+n2
-scaleAlpha=0.5
+scaleAlpha=1.0
 #kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
 
 
 def expectation(z,alpha):
-    w=domainW
-    aux=np.exp(-alpha*((z-w)**2))
-    return (1.0/ngrid)*np.sum(aux)
+    num=-alpha*(z**2)+(((z*alpha)**2)*(1.0/(alpha+0.5)))
+    num=np.exp(num)
+    quotient=np.sqrt(2*alpha+1)
+    return num/quotient
 
 def B(x,XW,n1,n2,kernel,logproductExpectations=None):
     """Computes B(x)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
@@ -366,9 +277,12 @@ pointsVOI=domainX.reshape((ngrid,1)) #Discretization of the domain of X
 
 
 def expectation2(z,alpha):
-    w=domainW
-    aux=-2.0*alpha*(z-w)*np.exp(-alpha*((z-w)**2))
-    return np.sum(aux)*(1.0/ngrid)
+    num=-alpha*(z**2)+(((z*alpha)**2)*(1.0/(alpha+0.5)))
+    num=np.exp(num)
+    quotient=np.sqrt(2*alpha+1)
+    a1=num/quotient
+    a2=z-((z*alpha)/(alpha+0.5))
+    return a1*a2
 
 def gradWB(new,kern,BN,keep,points):
     """Computes the vector of gradients with respect to w_{n+1} of
@@ -512,7 +426,7 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
     else:
         return temp[0],temp[1]
 
-lower=0
+lower=-3
 
 
 def const2(x):
@@ -521,13 +435,8 @@ def const2(x):
 def jac2(x):
     return np.array([1,0])
 
-def const3(x):
-    return x[1]-lower
 
-def jac3(x):
-    return np.array([0,1])
-
-upper=1
+upper=3
 
 def const6(x):
     return upper-x[0]
@@ -535,25 +444,15 @@ def const6(x):
 def jac6(x):
     return np.array([-1,0])
 
-def const7(x):
-    return upper-x[1]
 
-def jac7(x):
-    return np.array([0,-1])
 
 
 cons=({'type':'ineq',
         'fun': const2,
        'jac': jac2},
-    {'type':'ineq',
-        'fun': const3,
-       'jac': jac3},
         {'type':'ineq',
         'fun': const6,
-       'jac': jac6},
-        {'type':'ineq',
-        'fun': const7,
-       'jac': jac7})
+       'jac': jac6})
 
 
 def transformationDomainXAn(x):
