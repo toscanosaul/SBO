@@ -264,7 +264,7 @@ trainingPoints=nTemp2
 
 
 misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="KG",
-                         prefix="function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3)
+                         prefix=os.path.join("results","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3))
 
 """
 We define the data object.
