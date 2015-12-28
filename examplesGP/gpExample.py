@@ -125,7 +125,7 @@ if defineFunction:
     
     output=h2(z)
     
-    f=open(os.path.join("functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w'))
+    f=open(os.path.join("functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"),'w')
     np.savetxt(f,output)
     f.close()
     
@@ -137,7 +137,7 @@ if defineFunction:
             results[i]=output[j*ngrid+i]
         valuesOutput[j]=np.mean(results)
     
-    f=open(os.path.join("functions","valuesof"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt",'w'))
+    f=open(os.path.join("functions","valuesof"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"),'w')
     np.savetxt(f,valuesOutput)
     f.close()
 
