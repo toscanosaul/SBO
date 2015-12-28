@@ -63,6 +63,15 @@ alphad=(1.0/float(nTemp3))-alphah
 print "random seed is "
 print nTemp
 
+print "samples is"
+print nTemp3
+
+print "betah is"
+print betah
+
+print "Aparam is"
+print Aparam
+
 randomSeed=nTemp
 np.random.seed(randomSeed)
 
