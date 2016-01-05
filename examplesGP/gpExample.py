@@ -288,7 +288,7 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 
-dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
+dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,False)
 #dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,True)
 
 

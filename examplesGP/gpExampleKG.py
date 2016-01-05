@@ -290,7 +290,7 @@ dataObj=inter.data(Xtrain,yHist=None,varHist=None)
 
 
 
-dataObj.getTrainingDataKG(trainingPoints,noisyG,numberSamplesForG,parallel)
+dataObj.getTrainingDataKG(trainingPoints,noisyG,numberSamplesForG,False)
 #dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,True)
 
 
