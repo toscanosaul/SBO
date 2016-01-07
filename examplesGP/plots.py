@@ -67,6 +67,10 @@ for r in xrange(numberofvariance):
                 
             y=np.zeros([0,numberIterations+1])
             for i in range(1,repetitions+1):
+                temp=np.loadtxt(os.path.join(directory,
+                                             "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
+                                             '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints"+".txt",
+                                             "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
                 try:
                     temp=np.loadtxt(os.path.join(directory,
                                                  "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
