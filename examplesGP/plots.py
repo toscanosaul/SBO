@@ -72,7 +72,7 @@ for r in xrange(numberofvariance):
                                                  "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
                                                  '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints"+".txt",
                                                  "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
-                    
+                    print len(temp)
                     if len(temp)>=(numberIterations+1)*2 :
                         temp1=np.zeros(numberIterations+1)	    
                         for j in range(numberIterations+1):
