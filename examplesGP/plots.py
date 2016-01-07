@@ -113,18 +113,15 @@ for i in xrange(BETA.shape[0]):
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-ax.plot_surface(BETA, N, Z, rstride=1, cstride=1,linewidth=0,cmap=cm.coolwarm,antialiased=False)
+ax.plot_surface(BETA, N, Z, rstride=1, cstride=1,linewidth=0, color='b',antialiased=False)
+ax.plot_surface(BETA, N, Z2, rstride=1, cstride=1,linewidth=0, color='r',antialiased=False)
 ax.zaxis.set_major_locator(LinearLocator(10))
 
-
+ax.set_xlabel('beta_h')
+ax.set_ylabel('N')
 
 plt.savefig("contourPlot.pdf")
 plt.close("all")
-#cset = ax.contour(X, Y, Z, zdir='z', offset=-100, cmap=cm.coolwarm)
-#cset = ax.contour(X, Y, Z, zdir='x', offset=-40, cmap=cm.coolwarm)
-#cset = ax.contour(X, Y, Z, zdir='y', offset=40, cmap=cm.coolwarm)
-
-
 
 
 
