@@ -47,7 +47,6 @@ for r in xrange(numberofvariance):
             y=np.zeros([0,numberIterations+1])
             for i in range(1,repetitions+1):
                 try:
-                    "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"
                     temp=np.loadtxt(os.path.join(directory,
                                                  "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
                                                  '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints"+".txt",
@@ -69,12 +68,11 @@ for r in xrange(numberofvariance):
             y=np.zeros([0,numberIterations+1])
             for i in range(1,repetitions+1):
                 try:
-                    "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"
                     temp=np.loadtxt(os.path.join(directory,
                                                  "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
                                                  '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints"+".txt",
                                                  "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
-                    print len(temp)
+                    
                     if len(temp)>=(numberIterations+1)*2 :
                         temp1=np.zeros(numberIterations+1)	    
                         for j in range(numberIterations+1):
