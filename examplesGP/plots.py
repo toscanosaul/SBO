@@ -7,6 +7,7 @@ import os
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 font = {'family' : 'normal',
     'weight' : 'bold',
@@ -98,20 +99,22 @@ varianceB=np.tile(varianceb,numberIterations+1)
 BETA, N = np.meshgrid(varianceB, samplesIteration)
 
 Z=np.zeros(BETA.shape)
-
+Z2=np.zeros(BETA.shape)
 
 indexofA=1
 
 for i in xrange(BETA.shape[0]):
     for j in xrange(BETA.shape[1]):
         Z[i,j]=meansKG[j%numberofvariance,i,indexofA,j/(numberofvariance)]
+        Z2[i,j]=meansSBO[j%numberofvariance,i,indexofA,j/(numberofvariance)]
 
 
 
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot_surface(BETA, N, Z, rstride=4, cstride=4, color='b')
+ax = fig.gca(projection='3d')
+ax.plot_surface(BETA, N, Z, rstride=1, cstride=1,linewidth=0,cmap=cm.coolwarm,antialiased=False)
+ax.zaxis.set_major_locator(LinearLocator(10))
 
 
 
