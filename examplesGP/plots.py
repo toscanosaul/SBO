@@ -74,16 +74,17 @@ for r in xrange(numberofvariance):
                                                  "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
                                                  '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints"+".txt",
                                                  "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
+                    print len(temp)
                     if len(temp)>=(numberIterations+1)*2 :
                         temp1=np.zeros(numberIterations+1)	    
                         for j in range(numberIterations+1):
                             temp1[j]=temp[2*j]
+             
                         y=np.vstack((y,temp1))
                         contKG[r,s,j,0]+=1
                 except:
                     continue
 
-            print y
             for i in xrange(numberIterations+1):
                 meansKG[r,s,j,i]=np.mean(y[:,i])
                 varKG[r,s,j,i]=np.var(y[:,i])
