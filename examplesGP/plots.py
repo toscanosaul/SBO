@@ -16,11 +16,14 @@ repetitions=300
 
 
 
-samplesIteration=[1,2,4,8,16]
+#samplesIteration=[1,2,4,8,16]
+samplesIteration=[1,2]
 numberIterations=100
 numberPrior=30
-A=[2,4,8,16]
-varianceb=[1.0/(2.0**k) for k in xrange(5)]
+#A=[2,4,8,16]
+A=[2,4]
+#varianceb=[1.0/(2.0**k) for k in xrange(5)]
+varianceb=[1.0/(2.0**k) for k in xrange(2)]
 
 numberdifIteration=len(samplesIteration)
 numberAs=len(A)
