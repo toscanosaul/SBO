@@ -60,10 +60,12 @@ for r in xrange(numberofvariance):
                 except:
                     continue
 
-            
+            print y.shape
+            print meansSBO.shape
+        
             for i in xrange(numberIterations+1):
-                meansKG[r,s,j,i]=np.mean(y[:,i])
-                varKG[r,s,j,i]=np.var(y[:,i])
+                meansSBO[r,s,j,i]=np.mean(y[:,i])
+                varSBO[r,s,j,i]=np.var(y[:,i])
                 
             y=np.zeros([0,numberIterations+1])
             for i in range(1,repetitions+1):
@@ -72,7 +74,7 @@ for r in xrange(numberofvariance):
                                                  "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
                                                  '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints",
                                                  "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
-                    print len(temp)
+                    
                     if len(temp)>=(numberIterations+1)*2 :
                         temp1=np.zeros(numberIterations+1)	    
                         for j in range(numberIterations+1):
