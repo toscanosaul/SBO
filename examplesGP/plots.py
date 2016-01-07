@@ -83,7 +83,7 @@ for r in xrange(numberofvariance):
                 except:
                     continue
 
-            
+            print y
             for i in xrange(numberIterations+1):
                 meansKG[r,s,j,i]=np.mean(y[:,i])
                 varKG[r,s,j,i]=np.var(y[:,i])
