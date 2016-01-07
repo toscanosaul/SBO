@@ -53,16 +53,14 @@ for r in xrange(numberofvariance):
                                                  "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
                     if len(temp)>=(numberIterations+1)*2 :
                         temp1=np.zeros(numberIterations+1)	    
-                        for j in range(numberIterations+1):
-                            temp1[j]=temp[2*j]
+                        for l in range(numberIterations+1):
+                            temp1[l]=temp[2*l]
                         y=np.vstack((y,temp1))
                         contSBO[r,s,j,0]+=1
                 except:
                     continue
 
-            print y.shape
-            print meansSBO.shape
-        
+
             for i in xrange(numberIterations+1):
                 meansSBO[r,s,j,i]=np.mean(y[:,i])
                 varSBO[r,s,j,i]=np.var(y[:,i])
@@ -77,8 +75,8 @@ for r in xrange(numberofvariance):
                     
                     if len(temp)>=(numberIterations+1)*2 :
                         temp1=np.zeros(numberIterations+1)	    
-                        for j in range(numberIterations+1):
-                            temp1[j]=temp[2*j]
+                        for l in range(numberIterations+1):
+                            temp1[l]=temp[2*l]
              
                         y=np.vstack((y,temp1))
                         contKG[r,s,j,0]+=1
