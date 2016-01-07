@@ -110,7 +110,7 @@ for i in xrange(BETA.shape[0]):
 
 
 fig = plt.figure()
-
+ax = fig.add_subplot(111, projection='3d')
 ax.plot_surface(BETA, N, Z, rstride=4, cstride=4, color='b')
 
 
