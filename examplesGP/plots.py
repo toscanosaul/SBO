@@ -110,6 +110,9 @@ fig = plt.figure()
 ax = fig.gca(projection='3d')
 ax.plot_surface(BETA, N, Z, rstride=8, cstride=8, alpha=0.3)
 
+cset = ax.contour(BETA, N, Z, zdir='z',  cmap=cm.coolwarm)
+
+
 plt.savefig("contourPlot.pdf")
 plt.close("all")
 #cset = ax.contour(X, Y, Z, zdir='z', offset=-100, cmap=cm.coolwarm)
