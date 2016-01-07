@@ -101,21 +101,25 @@ BETA, N = np.meshgrid(varianceB, samplesIteration)
 Z=np.zeros(BETA.shape)
 Z2=np.zeros(BETA.shape)
 
+X=np.zeros(BETA.shape)
 indexofA=1
 
+
 for i in xrange(BETA.shape[0]):
+    x=np.linspace(0,samplesIteration[i]*numberIterations,numberIterations+1)
     for j in xrange(BETA.shape[1]):
+        X[i,j]=x[j/(numberofvariance)]
         Z[i,j]=meansKG[j%numberofvariance,i,indexofA,j/(numberofvariance)]
         Z2[i,j]=meansSBO[j%numberofvariance,i,indexofA,j/(numberofvariance)]
 
-
+Z=Z[i,j]/np.max(Z[i,j])
 
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-ax.plot_surface(BETA, N, Z, rstride=1, cstride=1,linewidth=0, color='b',antialiased=False)
-ax.plot_surface(BETA, N, Z2, rstride=1, cstride=1,linewidth=0, color='r',antialiased=False)
-ax.zaxis.set_major_locator(LinearLocator(10))
+ax.plot_surface(BETA, N, X, rstride=1, cstride=1, facecolors=cm.jet(Z),linewidth=0, antialiased=False, shade=False)
+#ax.plot_surface(BETA, N, Z2, rstride=1, cstride=1, color='r',antialiased=False)
+#ax.zaxis.set_major_locator(LinearLocator(10))
 
 ax.set_xlabel('beta_h')
 ax.set_ylabel('N')
