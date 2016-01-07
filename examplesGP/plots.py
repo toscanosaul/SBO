@@ -102,13 +102,16 @@ indexofA=1
 
 for i in xrange(BETA.shape[0]):
     for j in xrange(BETA.shape[1]):
-        Z[i,j]=menasKG[j%numberofvariance,i,indexofA,j/(numberofvariance)]
+        Z[i,j]=meansKG[j%numberofvariance,i,indexofA,j/(numberofvariance)]
 
 
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 ax.plot_surface(BETA, N, Z, rstride=8, cstride=8, alpha=0.3)
+
+plt.savefig("contourPlot.pdf")
+plt.close("all")
 #cset = ax.contour(X, Y, Z, zdir='z', offset=-100, cmap=cm.coolwarm)
 #cset = ax.contour(X, Y, Z, zdir='x', offset=-40, cmap=cm.coolwarm)
 #cset = ax.contour(X, Y, Z, zdir='y', offset=40, cmap=cm.coolwarm)
