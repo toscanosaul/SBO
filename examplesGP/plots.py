@@ -104,6 +104,9 @@ for i in xrange(BETA.shape[0]):
     for j in xrange(BETA.shape[1]):
         Z[i,j]=meansKG[j%numberofvariance,i,indexofA,j/(numberofvariance)]
 
+print Z
+print BETA
+print N
 
 
 fig = plt.figure()
