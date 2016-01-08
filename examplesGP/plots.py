@@ -13,18 +13,18 @@ font = {'family' : 'normal',
     'weight' : 'bold',
     'size'   : 15}
 
-repetitions=300
+repetitions=500
 
 
 
-#samplesIteration=[1,2,4,8,16]
-samplesIteration=[1,2]
-numberIterations=100
+samplesIteration=[1,2,4,8,16]
+#samplesIteration=[1,2]
+numberIterations=50
 numberPrior=30
 #A=[2,4,8,16]
 A=[2,4]
-#varianceb=[1.0/(2.0**k) for k in xrange(5)]
-varianceb=[1.0/(2.0**k) for k in xrange(2)]
+varianceb=[1.0/(2.0**k) for k in xrange(5)]
+#varianceb=[1.0/(2.0**k) for k in xrange(2)]
 
 numberdifIteration=len(samplesIteration)
 numberAs=len(A)
@@ -109,20 +109,26 @@ for i in xrange(BETA.shape[0]):
     x=np.linspace(0,samplesIteration[i]*numberIterations,numberIterations+1)
     for j in xrange(BETA.shape[1]):
         X[i,j]=x[j/(numberofvariance)]
-        Z[i,j]=meansKG[j%numberofvariance,i,indexofA,j/(numberofvariance)]
+        Z[i,j]=(meansKG[j%numberofvariance,i,indexofA,j/(numberofvariance)])/(np.max(meansKG[j%numberofvariance,i,indexofA,:])-np.min(meansKG[j%numberofvariance,i,indexofA,:]))
+	Z[i,j]+=-(1.0/(np.max(meansKG[j%numberofvariance,i,indexofA,:])-np.min(meansKG[j%numberofvariance,i,indexofA,:])))*np.min(meansKG[j%numberofvariance,i,indexofA,:])
         Z2[i,j]=meansSBO[j%numberofvariance,i,indexofA,j/(numberofvariance)]
 
-Z=Z[i,j]/np.max(Z[i,j])
+np.savetxt("Z.txt",Z)
+np.savetxt("Z2.txt",Z2)
+
+Z=Z
 
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 ax.plot_surface(BETA, N, X, rstride=1, cstride=1, facecolors=cm.jet(Z),linewidth=0, antialiased=False, shade=False)
-#ax.plot_surface(BETA, N, Z2, rstride=1, cstride=1, color='r',antialiased=False)
-#ax.zaxis.set_major_locator(LinearLocator(10))
 
 ax.set_xlabel('beta_h')
 ax.set_ylabel('N')
+
+m = cm.ScalarMappable(cmap=cm.jet)
+m.set_array(Z)
+plt.colorbar(m)
 
 plt.savefig("contourPlot.pdf")
 plt.close("all")
