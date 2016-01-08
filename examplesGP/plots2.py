@@ -19,7 +19,7 @@ repetitions=500
 
 samplesIteration=[1,2,4,8,16]
 #samplesIteration=[1,2]
-numberIterations=50
+numberIterations=100
 numberPrior=30
 #A=[2,4,8,16]
 A=[2,4]
@@ -29,6 +29,7 @@ varianceb=[1.0/(2.0**k) for k in xrange(5)]
 numberdifIteration=len(samplesIteration)
 numberAs=len(A)
 numberofvariance=len(varianceb)
+numberSamples=100
 
 directory="results"
 
@@ -41,7 +42,6 @@ for r in xrange(numberofvariance):
     betah=varianceb[r]
     for s in xrange(numberdifIteration):
         n=samplesIteration[s]
-        x=np.linspace(0,n*numberIterations,numberIterations+1)
         for j in xrange(numberAs):
             Aparam=1.0/(A[j]*n)
             
@@ -90,12 +90,18 @@ for r in xrange(numberofvariance):
 write=True
 
 if write is True:
-    np.savetxt("differences.txt",differences)
-    np.savetxt("varDiff.txt",varDifferences)
-    np.savetxt("cont.txt",cont)
+    np.savetxt("differences.txt",differences.reshape((numberofvariance*numberdifIteration*numberAs,numberIterations+1)))
+    np.savetxt("varDiff.txt",varDifferences.reshape((numberofvariance*numberdifIteration*numberAs,numberIterations+1)))
+    np.savetxt("cont.txt",cont.reshape((numberofvariance*numberdifIteration*numberAs,1)))
+#    with file('differences.txt', 'w') as outfile:
+#        for slice_2d in differences:
+#            np.savetxt(outfile, slice_2d)
+#    np.savetxt("differences.txt",differences)
+#    np.savetxt("varDiff.txt",varDifferences)
+#    np.savetxt("cont.txt",cont)
 
 
-varianceB=np.tile(varianceb,numberIterations+1)
+varianceB=np.tile(varianceb,numberSamples+1)
 
 BETA, N = np.meshgrid(varianceB, samplesIteration)
 
@@ -105,20 +111,22 @@ X=np.zeros(BETA.shape)
 indexofA=1
 
 
+x=np.linspace(0,numberSamples,numberSamples+1)
+
 for i in xrange(BETA.shape[0]):
-    rang=ceil(100.0/samplesIteration[i])
-    x=np.linspace(0,samplesIteration[i]*rang,rang+1)
+    rang=ceil(float(numberSamples)/samplesIteration[i])
+    
     for j in xrange(BETA.shape[1]):
-        temp1=(np.max(differences[j%numberofvariance,i,indexofA,0:rang+1])-np.min(differences[j%numberofvariance,i,indexofA,0:rang+1]))
         X[i,j]=x[j/(numberofvariance)]
-        Z[i,j]=(differences[j%numberofvariance,i,indexofA,j/(numberofvariance)])/temp1
-	Z[i,j]+=-(1.0/temp1)*np.min(differences[j%numberofvariance,i,indexofA,0:rang+1])
+        if j%samplesIteration[i]==0:
+            temp1=(np.max(differences[j%numberofvariance,i,indexofA,0:rang+1])-
+                   np.min(differences[j%numberofvariance,i,indexofA,0:rang+1]))
+            Z[i,j]=(differences[j%numberofvariance,i,indexofA,j/(numberofvariance)])/temp1
+            Z[i,j]+=-(1.0/temp1)*np.min(differences[j%numberofvariance,i,indexofA,0:rang+1])
+        else:
+            Z[i,j]=Z[i,j-1]
 
 
-
-Z=np.loadtxt("Z.txt")
-
-Z=Z
 
 
 fig = plt.figure()
@@ -127,11 +135,13 @@ ax.plot_surface(BETA, N, X, rstride=1, cstride=1, facecolors=cm.jet(Z),linewidth
 
 ax.set_xlabel('beta_h')
 ax.set_ylabel('N')
+ax.set_zlabel('Samples')
 
 m = cm.ScalarMappable(cmap=cm.jet)
 m.set_array(Z)
 plt.colorbar(m)
 
+plt.title("Difference between SBO and KG")
 plt.savefig("contourPlot2.pdf")
 plt.close("all")
 
