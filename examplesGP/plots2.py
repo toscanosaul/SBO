@@ -3,6 +3,7 @@
 import numpy as np
 from math import *
 import os
+import scipy.io
 
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
@@ -21,8 +22,8 @@ samplesIteration=[1,2,4,8,16]
 #samplesIteration=[1,2]
 numberIterations=100
 numberPrior=30
-#A=[2,4,8,16]
-A=[2,4]
+A=[2,4,8,16]
+#A=[2,4]
 varianceb=[1.0/(2.0**k) for k in xrange(5)]
 #varianceb=[1.0/(2.0**k) for k in xrange(2)]
 
@@ -37,69 +38,78 @@ differences=np.zeros((numberofvariance,numberdifIteration,numberAs,numberIterati
 varDifferences=np.zeros((numberofvariance,numberdifIteration,numberAs,numberIterations+1))
 cont=np.zeros((numberofvariance,numberdifIteration,numberAs,1))
 
+load=True
 
-for r in xrange(numberofvariance):
-    betah=varianceb[r]
-    for s in xrange(numberdifIteration):
-        n=samplesIteration[s]
-        for j in xrange(numberAs):
-            Aparam=1.0/(A[j]*n)
-            
-            y=np.zeros([repetitions,numberIterations+2])
-            for i in range(1,repetitions+1):
-                try:
-                    temp=np.loadtxt(os.path.join(directory,
-                                                 "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
-                                                 '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints",
-                                                 "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
-                    if len(temp)>=(numberIterations+1)*2 :
-                        for l in range(numberIterations+1):
-                            y[i-1,l]=temp[2*l]
-                        y[i-1,numberIterations+1]=1
-                except:
-                    continue
+if load is True:
+    for r in xrange(numberofvariance):
+        betah=varianceb[r]
+        for s in xrange(numberdifIteration):
+            n=samplesIteration[s]
+            for j in xrange(numberAs):
+                Aparam=1.0/(A[j]*n)
+                
+                y=np.zeros([repetitions,numberIterations+2])
+                for i in range(1,repetitions+1):
+                    try:
+                        temp=np.loadtxt(os.path.join(directory,
+                                                     "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
+                                                     '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints",
+                                                     "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
+                        if len(temp)>=(numberIterations+1)*2 :
+                            for l in range(numberIterations+1):
+                                y[i-1,l]=temp[2*l]
+                            y[i-1,numberIterations+1]=1
+                    except:
+                        continue
+    
+    
+                y2=np.zeros([repetitions,numberIterations+2])
+                for i in range(1,repetitions+1):
+                    try:
+                        temp=np.loadtxt(os.path.join(directory,
+                                                     "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
+                                                     '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints",
+                                                     "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
+                        
+                        if len(temp)>=(numberIterations+1)*2 :
+                            for l in range(numberIterations+1):
+                                y2[i-1,l]=temp[2*l]
+                            y2[i-1,numberIterations+1]=1
+                 
+                    except:
+                        continue
+                diff=np.zeros([0,numberIterations+1])
+                for i in range(1,repetitions+1):
+                    if (y2[i-1,numberIterations+1]==1 and y[i-1,numberIterations+1]==1):
+                        temp=y2[i-1:i,0:numberIterations+1]-y[i-1:i,0:numberIterations+1]
+                        diff=np.concatenate((diff,temp),0)
+                        cont[r,s,j,0]+=1
+                
+                for i in xrange(numberIterations+1):
+                    differences[r,s,j,i]=np.mean(diff[:,i])
+                    varDifferences[r,s,j,i]=np.var(diff[:,i])
 
 
-            y2=np.zeros([repetitions,numberIterations+2])
-            for i in range(1,repetitions+1):
-                try:
-                    temp=np.loadtxt(os.path.join(directory,
-                                                 "function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+"Results"+
-                                                 '%d'%n+"AveragingSamples"+'%d'%+numberPrior+"TrainingPoints",
-                                                 "SBO","%d"%i+"run","%d"%i+"optimalValues.txt"))
-                    
-                    if len(temp)>=(numberIterations+1)*2 :
-                        for l in range(numberIterations+1):
-                            y2[i-1,l]=temp[2*l]
-                        y2[i-1,numberIterations+1]=1
-             
-                except:
-                    continue
-            diff=np.zeros([0,numberIterations+1])
-            for i in range(1,repetitions+1):
-                if (y2[i-1,numberIterations+1]==1 and y[i-1,numberIterations+1]==1):
-                    temp=y2[i-1:i,0:numberIterations+1]-y[i-1:i,0:numberIterations+1]
-                    diff=np.concatenate((diff,temp),0)
-                    cont[r,s,j,0]+=1
-            
-            for i in xrange(numberIterations+1):
-                differences[r,s,j,i]=np.mean(diff[:,i])
-                varDifferences[r,s,j,i]=np.var(diff[:,i])
+write=load
 
 
-write=True
 
 if write is True:
-    np.savetxt("differences.txt",differences.reshape((numberofvariance*numberdifIteration*numberAs,numberIterations+1)))
-    np.savetxt("varDiff.txt",varDifferences.reshape((numberofvariance*numberdifIteration*numberAs,numberIterations+1)))
-    np.savetxt("cont.txt",cont.reshape((numberofvariance*numberdifIteration*numberAs,1)))
-#    with file('differences.txt', 'w') as outfile:
-#        for slice_2d in differences:
-#            np.savetxt(outfile, slice_2d)
-#    np.savetxt("differences.txt",differences)
-#    np.savetxt("varDiff.txt",varDifferences)
-#    np.savetxt("cont.txt",cont)
-
+    matfile = 'differences.mat'
+    scipy.io.savemat(matfile, mdict={'out': differences}, oned_as='row')
+    
+    matfile = 'varDiff.mat'
+    scipy.io.savemat(matfile, mdict={'out': varDifferences}, oned_as='row')
+    
+    matfile = 'contDiff.mat'
+    scipy.io.savemat(matfile, mdict={'out': cont}, oned_as='row')
+    
+    
+if load is False:
+    differences = scipy.io.loadmat('differences.mat')
+    varDifferences=scipy.io.loadmat('varDiff.mat')
+    contt=scipy.io.loadmat('contDiff.mat')
+    
 
 varianceB=np.tile(varianceb,numberSamples+1)
 
