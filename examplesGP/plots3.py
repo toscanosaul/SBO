@@ -206,7 +206,7 @@ for i in range(numberdifIteration):
     ax.plot_surface(BETA, N, X, rstride=1, cstride=1, facecolors=cm.jet(norm(Z)),norm=cm.colors.Normalize(minn,maxx),vmin=minn,vmax=maxx,linewidth=0, antialiased=False, shade=False)
     
     ax.set_xlabel('beta_h')
-    ax.set_ylabel('N')
+    ax.set_ylabel('A')
     ax.set_zlabel('Samples')
     
     #m = cm.ScalarMappable(cmap=cm.jet)
