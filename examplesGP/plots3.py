@@ -119,8 +119,8 @@ Z=np.zeros(BETA.shape)
 
 X=np.zeros(BETA.shape)
 
-for i in range(numberAs):
-    indexofA=i
+for i2 in range(numberAs):
+    indexofA=i2
 
     
     x=np.linspace(0,numberSamples,numberSamples+1)
@@ -160,19 +160,7 @@ for i in range(numberAs):
     
 ####A vs betah
 
-samplesIteration=[1,2,4,8,16]
-#samplesIteration=[1,2]
-numberIterations=100
-numberPrior=30
-A=[2,4,8,16]
-#A=[2,4]
-varianceb=[1.0/(2.0**k) for k in xrange(5)]
-#varianceb=[1.0/(2.0**k) for k in xrange(2)]
 
-numberdifIteration=len(samplesIteration)
-numberAs=len(A)
-numberofvariance=len(varianceb)
-numberSamples=100
 
 varianceB=np.tile(varianceb,numberIterations+1)
 
@@ -182,8 +170,8 @@ Z=np.zeros(BETA.shape)
 
 X=np.zeros(BETA.shape)
 
-for i in range(numberdifIteration):
-    indexofN=i
+for i2 in range(numberdifIteration):
+    indexofN=i2
 
     for i in xrange(BETA.shape[0]):
 	x=np.linspace(0,samplesIteration[indexofN]*numberIterations,numberIterations+1)
@@ -218,7 +206,51 @@ for i in range(numberdifIteration):
     plt.close("all")
 
 
+########A vs n
 
+
+Avec=np.tile(A,numberIterations+1)
+
+BETA, N = np.meshgrid(Avec, samplesIteration)
+
+Z=np.zeros(BETA.shape)
+
+X=np.zeros(BETA.shape)
+
+for i2 in range(numberofvariance):
+    indexofvar=i2
+
+    for i in xrange(BETA.shape[0]):
+	x=np.linspace(0,samplesIteration[i]*numberIterations,numberIterations+1)
+      
+	for j in range(0,BETA.shape[1]):
+	    X[i,j]=x[j/numberAs]
+	    Z[i,j]=differences[indexofvar,i,j%numberAs,j/numberAs]
+    
+    
+    
+    colord=Z
+    minn,maxx=colord.min(),colord.max()
+    norm=cm.colors.Normalize(minn, maxx)
+    m=plt.cm.ScalarMappable(norm=norm, cmap='jet')
+    m.set_array(Z)
+    
+    
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot_surface(BETA, N, X, rstride=1, cstride=1, facecolors=cm.jet(norm(Z)),norm=cm.colors.Normalize(minn,maxx),vmin=minn,vmax=maxx,linewidth=0, antialiased=False, shade=False)
+    
+    ax.set_xlabel('A')
+    ax.set_ylabel('N')
+    ax.set_zlabel('Samples')
+    
+    #m = cm.ScalarMappable(cmap=cm.jet)
+    #m.set_array(Z)
+    plt.colorbar(m)
+    
+    plt.title("Difference between SBO and KG.")
+    plt.savefig("contourPlot3AvsN"+'%d'%indexofvar+".pdf")
+    plt.close("all")
 
 
 #x=np.linspace(0,samplesIteration*numberIterations,numberIterations+1)
