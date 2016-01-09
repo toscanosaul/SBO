@@ -156,6 +156,66 @@ for i in range(numberAs):
     plt.title("Difference between SBO and KG")
     plt.savefig("contourPlot3A"+'%d'%indexofA+".pdf")
     plt.close("all")
+    
+    
+####A vs betah
+
+samplesIteration=[1,2,4,8,16]
+#samplesIteration=[1,2]
+numberIterations=100
+numberPrior=30
+A=[2,4,8,16]
+#A=[2,4]
+varianceb=[1.0/(2.0**k) for k in xrange(5)]
+#varianceb=[1.0/(2.0**k) for k in xrange(2)]
+
+numberdifIteration=len(samplesIteration)
+numberAs=len(A)
+numberofvariance=len(varianceb)
+numberSamples=100
+
+varianceB=np.tile(varianceb,numberIterations+1)
+
+BETA, Avec = np.meshgrid(varianceB, A)
+
+Z=np.zeros(BETA.shape)
+
+X=np.zeros(BETA.shape)
+
+for i in range(numberdifIteration):
+    indexofN=i
+
+    for i in xrange(BETA.shape[0]):
+	x=np.linspace(0,samplesIteration[indexofN]*numberIterations,numberIterations+1)
+      
+	for j in range(0,BETA.shape[1]):
+	    X[i,j]=x[j/numberofvariance]
+	    Z[i,j]=differences[j%numberofvariance,indexofN,i,j/numberofvariance]
+    
+    
+    
+    colord=Z
+    minn,maxx=colord.min(),colord.max()
+    norm=cm.colors.Normalize(minn, maxx)
+    m=plt.cm.ScalarMappable(norm=norm, cmap='jet')
+    m.set_array(Z)
+    
+    
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot_surface(BETA, N, X, rstride=1, cstride=1, facecolors=cm.jet(norm(Z)),norm=cm.colors.Normalize(minn,maxx),vmin=minn,vmax=maxx,linewidth=0, antialiased=False, shade=False)
+    
+    ax.set_xlabel('beta_h')
+    ax.set_ylabel('N')
+    ax.set_zlabel('Samples')
+    
+    #m = cm.ScalarMappable(cmap=cm.jet)
+    #m.set_array(Z)
+    plt.colorbar(m)
+    
+    plt.title("Difference between SBO and KG")
+    plt.savefig("contourPlotbetahVSA3N"+'%d'%indexofN+".pdf")
+    plt.close("all")
 
 
 
