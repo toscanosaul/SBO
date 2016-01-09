@@ -203,7 +203,7 @@ for i in range(numberdifIteration):
     
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    ax.plot_surface(BETA, N, X, rstride=1, cstride=1, facecolors=cm.jet(norm(Z)),norm=cm.colors.Normalize(minn,maxx),vmin=minn,vmax=maxx,linewidth=0, antialiased=False, shade=False)
+    ax.plot_surface(BETA, Avec, X, rstride=1, cstride=1, facecolors=cm.jet(norm(Z)),norm=cm.colors.Normalize(minn,maxx),vmin=minn,vmax=maxx,linewidth=0, antialiased=False, shade=False)
     
     ax.set_xlabel('beta_h')
     ax.set_ylabel('A')
