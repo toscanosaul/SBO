@@ -120,42 +120,42 @@ Z=np.zeros(BETA.shape)
 X=np.zeros(BETA.shape)
 
 for i in range(numberAs):
-	indexofA=i
+    indexofA=i
 
-
-x=np.linspace(0,numberSamples,numberSamples+1)
-#print differences[:,0,1,:]
-for i in xrange(BETA.shape[0]):
-    x=np.linspace(0,samplesIteration[i]*numberIterations,numberIterations+1)
-  
-    for j in range(0,BETA.shape[1]):
-        X[i,j]=x[j/numberofvariance]
-	Z[i,j]=differences[j%numberofvariance,i,indexofA,j/numberofvariance]
-
-print Z
-
-colord=Z
-minn,maxx=colord.min(),colord.max()
-norm=cm.colors.Normalize(minn, maxx)
-m=plt.cm.ScalarMappable(norm=norm, cmap='jet')
-m.set_array(Z)
-
-
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-ax.plot_surface(BETA, N, X, rstride=1, cstride=1, facecolors=cm.jet(norm(Z)),norm=cm.colors.Normalize(minn,maxx),vmin=minn,vmax=maxx,linewidth=0, antialiased=False, shade=False)
-
-ax.set_xlabel('beta_h')
-ax.set_ylabel('N')
-ax.set_zlabel('Samples')
-
-#m = cm.ScalarMappable(cmap=cm.jet)
-#m.set_array(Z)
-plt.colorbar(m)
-
-plt.title("Difference between SBO and KG")
-plt.savefig("contourPlot3A"+'%d'%indexofA+".pdf")
-plt.close("all")
+    
+    x=np.linspace(0,numberSamples,numberSamples+1)
+    #print differences[:,0,1,:]
+    for i in xrange(BETA.shape[0]):
+	x=np.linspace(0,samplesIteration[i]*numberIterations,numberIterations+1)
+      
+	for j in range(0,BETA.shape[1]):
+	    X[i,j]=x[j/numberofvariance]
+	    Z[i,j]=differences[j%numberofvariance,i,indexofA,j/numberofvariance]
+    
+    
+    
+    colord=Z
+    minn,maxx=colord.min(),colord.max()
+    norm=cm.colors.Normalize(minn, maxx)
+    m=plt.cm.ScalarMappable(norm=norm, cmap='jet')
+    m.set_array(Z)
+    
+    
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot_surface(BETA, N, X, rstride=1, cstride=1, facecolors=cm.jet(norm(Z)),norm=cm.colors.Normalize(minn,maxx),vmin=minn,vmax=maxx,linewidth=0, antialiased=False, shade=False)
+    
+    ax.set_xlabel('beta_h')
+    ax.set_ylabel('N')
+    ax.set_zlabel('Samples')
+    
+    #m = cm.ScalarMappable(cmap=cm.jet)
+    #m.set_array(Z)
+    plt.colorbar(m)
+    
+    plt.title("Difference between SBO and KG")
+    plt.savefig("contourPlot3A"+'%d'%indexofA+".pdf")
+    plt.close("all")
 
 
 
