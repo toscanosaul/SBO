@@ -66,7 +66,7 @@ n1=4
 n2=1
 numberSamplesForF=nTemp3
 
-nDays=153
+nDays=365
 """
 We define the variables needed for the queuing simulation. 
 """
@@ -77,7 +77,7 @@ g=unhappyPeople  #Simulator
 nSets=4
 
 fil="poissonDays.txt"
-fil=os.path.join("NonHomegeneousPP",fil)
+fil=os.path.join("NonHomogeneousPP2",fil)
 poissonParameters=np.loadtxt(fil)
 
 ###readData
@@ -87,11 +87,11 @@ exponentialTimes=[[] for i in xrange(nDays)]
 
 for i in xrange(nDays):
     fil="daySparse"+"%d"%i+"ExponentialTimesNonHom.txt"
-    fil2=os.path.join("NonHomogeneousPP2",fil)
+    fil2=os.path.join("SparseNonHomogeneousPP2",fil)
     poissonArray[i].append(np.loadtxt(fil2))
     
     fil="daySparse"+"%d"%i+"PoissonParametersNonHom.txt"
-    fil2=os.path.join("NonHomogeneousPP2",fil)
+    fil2=os.path.join("SparseNonHomogeneousPP2",fil)
     exponentialTimes[i].append(np.loadtxt(fil2))
 
 numberStations=329
@@ -239,7 +239,6 @@ Objective=inter.objective(g,n1,noisyF,numberSamplesForF,sampleFromXVn,
 
 
 
-
 """
 We define the miscellaneous object.
 """
@@ -251,7 +250,8 @@ trainingPoints=nTemp2
 #nameDirectory="Results"+'%d'%numberSamplesForF+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 #folder=os.path.join(nameDirectory,"SBO")
 
-misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,prefix="FinalNonHomogeneous112715")
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,
+                         prefix="FinalNonHomogeneous112715")
 
 """
 We define the data object.

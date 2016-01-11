@@ -62,7 +62,7 @@ n1=4
 n2=1
 numberSamplesForG=nTemp3
 
-nDays=153
+nDays=365
 ######
 
 """
@@ -74,7 +74,7 @@ g=unhappyPeople
 nSets=4
 
 fil="poissonDays.txt"
-fil=os.path.join("NonHomegeneousPP",fil)
+fil=os.path.join("NonHomogeneousPP2",fil)
 poissonParameters=np.loadtxt(fil)
 
 ###readData
@@ -84,11 +84,11 @@ exponentialTimes=[[] for i in xrange(nDays)]
 
 for i in xrange(nDays):
     fil="daySparse"+"%d"%i+"ExponentialTimesNonHom.txt"
-    fil2=os.path.join("NonHomogeneousPP2",fil)
+    fil2=os.path.join("SparseNonHomogeneousPP2",fil)
     poissonArray[i].append(np.loadtxt(fil2))
     
     fil="daySparse"+"%d"%i+"PoissonParametersNonHom.txt"
-    fil2=os.path.join("NonHomogeneousPP2",fil)
+    fil2=os.path.join("SparseNonHomogeneousPP2",fil)
     exponentialTimes[i].append(np.loadtxt(fil2))
 
 numberStations=329
