@@ -251,7 +251,7 @@ trainingPoints=nTemp2
 #folder=os.path.join(nameDirectory,"SBO")
 
 misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,
-                         prefix="FinalNonHomogeneous112715")
+                         prefix="FinalNonHomogeneous011116")
 
 """
 We define the data object.
