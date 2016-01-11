@@ -293,13 +293,13 @@ def generatePoissonParameters(nDays,nStations):
     for i in xrange(nDays):
         lamb=[]
         fil="day"+"%d"%i+"PoissonParametersNonHom.txt"
-        fil=os.path.join("NonHomegeneousPP",fil)
+        fil=os.path.join("NonHomogeneousPP2",fil)
         poiss=np.loadtxt(fil)
         for j in range(nStations):
             for k in range(nStations):
                 lamb.append(poiss[j,k])
         parametersLambda[i]=np.sum(np.array(lamb))
-    f=open(os.path.join("NonHomegeneousPP","poissonDays.txt"),'w')
+    f=open(os.path.join("NonHomogeneousPP2","poissonDays.txt"),'w')
     np.savetxt(f,parametersLambda)
     f.close()
 
@@ -339,9 +339,9 @@ def writeProbabilities(poissonParameters,nDays):
 def writeSparseMatrix(nDays):
     for i in range(nDays):
         fil="day"+"%d"%i+"PoissonParametersNonHom.txt"
-        A=np.loadtxt(os.path.join("NonHomegeneousPP",fil))
+        A=np.loadtxt(os.path.join("NonHomogeneousPP2",fil))
         fil2="daySparse"+"%d"%i+"PoissonParametersNonHom.txt"
-        f=open(os.path.join("NonHomogeneousPP2",fil2),'w')
+        f=open(os.path.join("SparseNonHomogeneousPP2",fil2),'w')
         A=csr(A)
         temp=A.nonzero()
         temp2=np.array([A.data,temp[0],temp[1]])
@@ -349,9 +349,9 @@ def writeSparseMatrix(nDays):
         f.close()
 
         fil="day"+"%d"%i+"ExponentialTimesNonHom.txt"
-        A=np.loadtxt(os.path.join("NonHomegeneousPP",fil))
+        A=np.loadtxt(os.path.join("NonHomogeneousPP2",fil))
         fil2="daySparse"+"%d"%i+"ExponentialTimesNonHom.txt"
-        f=open(os.path.join("NonHomogeneousPP2",fil2),'w')
+        f=open(os.path.join("SparseNonHomogeneousPP2",fil2),'w')
         A=csr(A)
         temp=A.nonzero()
         temp2=np.array([A.data,temp[0],temp[1]])
@@ -365,7 +365,7 @@ if __name__ == '__main__':
     nSets=1
     nStations=329
     m=4
-    nDays=153
+    nDays=365
     fil="2014modPoissonParametersNonHom.txt"
     date="2014-05"
   #  fil="2014-05PoissonParameters.txt"
@@ -378,9 +378,9 @@ if __name__ == '__main__':
         for k in range(nStations):
             A[0].append((j,k))
     
-  #  generatePoissonParameters(nDays,nStations)
+    generatePoissonParameters(nDays,nStations)
     fil="poissonDays.txt"
-    fil=os.path.join("NonHomegeneousPP",fil)
+    fil=os.path.join("NonHomogeneousPP2",fil)
     poissonParameters=np.loadtxt(fil)
     
     with open ('json.json') as data_file:
@@ -393,14 +393,14 @@ if __name__ == '__main__':
     bikeData=np.loadtxt("bikesStationsOrdinalIDnumberDocks.txt",skiprows=1)
     poissonParameters*=T
 
-    for i in range(nSets):
-        index=np.random.randint(0,nDays)
-        fil="day"+"%d"%index+"PoissonParametersNonHom.txt"
-        fil=os.path.join("NonHomegeneousPP",fil)
-        fil2="day"+"%d"%index+"ExponentialTimesNonHom.txt"
-        exponentialTimes=np.loadtxt(os.path.join("NonHomegeneousPP",fil2))
-        lamb,A=generateParametersPoisson(fil)
-        N[i]=SimulateNt(A[i],lamb,T)
+    #for i in range(nSets):
+     #   index=np.random.randint(0,nDays)
+     #   fil="day"+"%d"%index+"PoissonParametersNonHom.txt"
+     #   fil=os.path.join("NonHomegeneousPP",fil)
+     #   fil2="day"+"%d"%index+"ExponentialTimesNonHom.txt"
+     #   exponentialTimes=np.loadtxt(os.path.join("NonHomegeneousPP",fil2))
+     #   lamb,A=generateParametersPoisson(fil)
+      #  N[i]=SimulateNt(A[i],lamb,T)
     #print N[0]
     writeSparseMatrix(nDays)
     #print computeProbability(N[0],T,poissonParameters,nDays)
