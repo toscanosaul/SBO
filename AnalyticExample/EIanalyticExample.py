@@ -208,6 +208,7 @@ dimensionKernel=n1
 scaleAlpha=1.0
 #kernel=SK.SEK(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
+
 stat=stat.EIGP(dimKernel=dimensionKernel,numberTraining=trainingPoints,
                 scaledAlpha=scaleAlpha, dimPoints=n1,trainingData=dataObj)
 
@@ -219,8 +220,10 @@ We define the VOI object.
 
 pointsVOI=domainX.reshape((ngrid,1)) #Discretization of the domain of X
 
+
+
 voiObj=VOI.EI(numberTraining=trainingPoints,
-           pointsApproximation=pointsVOI,dimX=n1)
+           dimX=n1)
 
 
 
