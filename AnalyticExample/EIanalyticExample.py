@@ -236,7 +236,7 @@ We define the Opt object.
 dimXsteepestAn=n1 #Dimension of x when the VOI and a_{n} are optimized.
 
 
-def functionGradientAscentVn(x,grad,VOI,i,L,data,kern,temp1,temp2,a,onlyGrad):
+def functionGradientAscentVn(x,grad,maxObs,VOI,i,L,kern,Xhist,temp1,onlyGrad):
 
     """ Evaluates the VOI and it can compute its derivative. It evaluates the VOI,
         when grad and onlyGradient are False; it evaluates the VOI and computes its
@@ -268,8 +268,7 @@ def functionGradientAscentVn(x,grad,VOI,i,L,data,kern,temp1,temp2,a,onlyGrad):
 
     x=np.array(x).reshape([1,n1])
 
-
-    temp=VOI.VOIfunc(i,x,L,data,kern,temp1,temp2,grad,a,onlyGrad)
+    temp=VOI.VOIfunc(i,x,grad,maxObs,kern,Xhist,L,temp1,onlyGrad)
 
     
 
@@ -286,7 +285,7 @@ def functionGradientAscentVn(x,grad,VOI,i,L,data,kern,temp1,temp2,a,onlyGrad):
         return temp
     
 
-def functionGradientAscentMuN(x,grad,data,stat,i,L,temp1,onlyGrad):
+def functionGradientAscentMuN(x,grad,X,stat,i,L,temp1,kern,onlyGrad):
     """ Evaluates a_{i} and its derivative, which is the expectation of the GP on g(x).
         It evaluates a_{i}, when grad and onlyGradient are False; it evaluates the a_{i}
         and computes its derivative when grad is True and onlyGradient is False, and
@@ -313,11 +312,11 @@ def functionGradientAscentMuN(x,grad,data,stat,i,L,temp1,onlyGrad):
    # x=np.concatenate((x,x4),1)
    
     if onlyGradient:
-        temp=stat.muN(x,i,data,L,temp1,grad,onlyGrad)
+        temp=stat.muN(x,i,L,X,temp1,kern,grad,onlyGrad)
 
         return temp
 
-    temp=stat.muN(x,i,data,L,temp1,grad,onlyGrad)
+    temp=stat.muN(x,i,L,X,temp1,kern,grad,onlyGrad)
     if grad==False:
         return temp
     else:
