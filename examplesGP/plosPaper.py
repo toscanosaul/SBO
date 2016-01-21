@@ -8,7 +8,21 @@ import os
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from matplotlib.colors import Normalize
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
+
+
+class MidpointNormalize(Normalize):
+    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
+        self.midpoint = midpoint
+        Normalize.__init__(self, vmin, vmax, clip)
+
+    def __call__(self, value, clip=None):
+        # I'm ignoring masked values and all kinds of edge cases to make a
+        # simple example...
+        x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
+        return np.ma.masked_array(np.interp(value, x, y))
+
 
 font = {'family' : 'normal',
     'weight' : 'bold',
@@ -111,8 +125,8 @@ if write is True:
     
 if load is False:
     differences = scipy.io.loadmat('weighteddifferences.mat')['out']
-    varDifferences=scipy.io.loadmat('varDiffweighted.mat')['out']
-    contt=scipy.io.loadmat('contDiffweighted.mat')['out']
+ #   varDifferences=scipy.io.loadmat('varDiffweighted.mat')['out']
+ #   contt=scipy.io.loadmat('contDiffweighted.mat')['out']
     
     differences2=scipy.io.loadmat('largebetaweighteddifferences.mat')['out']
     
@@ -138,15 +152,16 @@ for i in xrange(BETA.shape[0]):
 	Z[i,j]=differences2[j-5,0,0,i]
 	Z2[i,j]=differences2[j-5,1,0,i]
 
-v2=np.arange(-10.0,10.0,0.1)
-norm=cm.colors.Normalize(vmax=abs(Z).max(), vmin=-abs(Z).max())
+v2=np.arange(-1.0, 10.0, 0.5)
+#norm=cm.colors.Normalize(vmax=abs(Z).max(), vmin=-abs(Z).max())
+norm = MidpointNormalize(midpoint=0)
 cmap=cm.PRGn 
 v = np.linspace(minD, maxD, 100, endpoint=True)
 fig = plt.figure()
 cset1 = plt.contourf(BETA, ITERATIONS, Z,v2, 
                  cmap=cm.get_cmap(cmap,len(v2)-1),norm=norm,
                  )
-plt.colorbar() 
+plt.colorbar(cset1) 
        #m = cm.ScalarMappable(cmap=cm.jet)
     #m.set_array(Z)
 plt.title("Percent Increase between SBO and KG. N is 1 and A is 0.5")
