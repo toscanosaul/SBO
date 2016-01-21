@@ -93,7 +93,15 @@ for r in xrange(numberofvariance):
         
             
             
-            
+write=True
+
+if write is True:
+    np.savetxt("meansKG.txt",meansKG)
+    np.savetxt("contKG.txt",contKG)
+    np.savetxt("varKG.txt",varKG)
+    np.savetxt("meansSBO.txt",meansSBO)
+    np.savetxt("contSBO.txt",contSBO)
+
 varianceB=np.tile(varianceb,numberIterations+1)
 
 BETA, N = np.meshgrid(varianceB, samplesIteration)
@@ -107,14 +115,18 @@ indexofA=1
 
 for i in xrange(BETA.shape[0]):
     x=np.linspace(0,samplesIteration[i]*numberIterations,numberIterations+1)
+    rang=ceil(100.0/samplesIteration[i])+1
     for j in xrange(BETA.shape[1]):
+        temp1=(np.max(meansKG[j%numberofvariance,i,indexofA,0:rang])-np.min(meansKG[j%numberofvariance,i,indexofA,0:rang]))
         X[i,j]=x[j/(numberofvariance)]
-        Z[i,j]=(meansKG[j%numberofvariance,i,indexofA,j/(numberofvariance)])/(np.max(meansKG[j%numberofvariance,i,indexofA,:])-np.min(meansKG[j%numberofvariance,i,indexofA,:]))
-	Z[i,j]+=-(1.0/(np.max(meansKG[j%numberofvariance,i,indexofA,:])-np.min(meansKG[j%numberofvariance,i,indexofA,:])))*np.min(meansKG[j%numberofvariance,i,indexofA,:])
-        Z2[i,j]=meansSBO[j%numberofvariance,i,indexofA,j/(numberofvariance)]
+        Z[i,j]=(meansKG[j%numberofvariance,i,indexofA,j/(numberofvariance)])/temp1
+	Z[i,j]+=-(1.0/temp1)*np.min(meansKG[j%numberofvariance,i,indexofA,:])
+        temp2=(np.max(meansKG[j%numberofvariance,i,indexofA,:])-np.min(meansKG[j%numberofvariance,i,indexofA,:]))
+        
+        Z2[i,j]=meansSBO[j%numberofvariance,i,indexofA,j/(numberofvariance)]/temp2
+        Z2[i,j]+=-()
 
-np.savetxt("Z.txt",Z)
-np.savetxt("Z2.txt",Z2)
+
 
 Z=Z
 

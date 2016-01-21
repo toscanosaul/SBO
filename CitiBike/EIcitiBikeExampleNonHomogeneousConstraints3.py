@@ -223,7 +223,8 @@ trainingPoints=nTemp2
 #nameDirectory="Results"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 #folder=os.path.join(nameDirectory,"KG")
 
-misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="EI",prefix="FinalNonHomogeneous011116")
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="EI",
+			 prefix="FinalNonHomogeneous011116")
 
 """
 We define the data object.

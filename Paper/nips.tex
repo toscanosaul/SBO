@@ -523,7 +523,7 @@ Figure~\ref{fig:tahi7} compares the performance of SBO and KG, plotting the numb
     \includegraphics[width=0.30\linewidth]{comparisonAnalaytic.png}}
     \quad
     \subcaptionbox{Performance of SBO, on the Citi Bike Problem from Section~\ref{sec:citibike} \label{fig:citibike}}[0.30\linewidth]{
-      \includegraphics[width=0.30\linewidth]{comparisonPoisson.png}}
+      \includegraphics[width=0.30\linewidth]{comparisonSameConfiguration.pdf}}
           \quad
      \subcaptionbox{Location of bike stations (circles) in New York City, where size and color represent the ratio of available bikes to available docks.}[0.30\linewidth]{
       \includegraphics[width=0.30\linewidth]{testStationMapPng0-full.png}}
@@ -535,19 +535,55 @@ Figure~\ref{fig:tahi7} compares the performance of SBO and KG, plotting the numb
 \subsection{New York City Citi Bike System}
 \label{sec:citibike}
 
-Our last example considers a queuing simulation based on New York City's Citi Bike system, in which system users may remove an available bike from a station at one location within the city, and ride it to a station with an available dock in some other location within the city.  The optimization problem that we consider is the allocation of a constrained number of bikes (6000) to available docks within the city at the start of rush hour, so as to minimize, in simulation, the expected number of potential trips in which the rider could not find an available bike at their preferred origination station, or could not find an available dock at their preferred destination station.  We call such trips ``negatively affected trips.''
+In our second example considers a queuing simulation based on New York City's Citi Bike system, in which system users may remove an available bike from a station at one location within the city, and ride it to a station with an available dock in some other location within the city.  The optimization problem that we consider is the allocation of a constrained number of bikes (6000) to available docks within the city at the start of rush hour, so as to minimize, in simulation, the expected number of potential trips in which the rider could not find an available bike at their preferred origination station, or could not find an available dock at their preferred destination station.  We call such trips ``negatively affected trips.''
 
 % In the last example, we simulated bike usage on the morning rush hours for New York City's bike sharing system. A bike sharing system is a group of bikes placed in different bike stations. People can rent these bikes and return them to any bike station after usage. 
 
-We used 329 actual bike stations, locations, and numbers of docks from the Citi Bike system, and estimate demand for trips using publicly available data from Citi Bike's website \cite{citibike}.
+We simulated in Python the demand of bike trips of a New York City's Bike System on any day from January 1st to December 30th between 7:00am and 11:00am. We used 329 actual bike stations, locations, and numbers of docks from the Citi Bike system, and estimated demand and average time for trips for every day in a year using publicly available data of the year 2014 from Citi Bike's website \cite{citibike}.
+
 % This dataset  contains start bike station, end bike station, station latitude and longitude, and trip time for each bike trip. We considered $329$ bike stations and $600$ bikes. 
 
-We simulate the demand for trips between each pair of bike stations using an independent Poisson process, and trip times between pairs of stations follows an exponential distribution. 
+We simulate the demand for trips between each pair of bike stations on a day using an independent Poisson process, and trip times between pairs of stations follows an exponential distribution. 
 If a potential trip's origination station has no available bikes, then that trip does not occur, and we increment our count of negatively affected trips.  If a trip does occur, and its preferred destination station does not have an available dock, then we also increment our count of negatively affected trips, and the bike is returned to the closest bike station with available docks.
 
 We divided the bike stations in $4$ groups using k-nearest neighbors, and let $x$ be the number of bikes in each group at 7:00 AM. We suppose that bikes are allocated uniformly among stations within a single group.  Then we consider a directed graph between the bike stations, where each pair of bike stations has two directed edges, and we divided these edges in $4$ groups. If the edge $(i,j)$ is in a group, then $(j,i)$ is also in that group. The random vector $\w$ is the number of bike trips in each of those groups during the period of our simulation. The random vector $\z$ contains all other random quantities within our simulation.
 
 Figure~\ref{fig:citibike} shows performance of the SBO algorithm versus iteration on this problem.  We see that the algorithm was able to quickly find an allocation of bikes to groups that attains a small expected number of negatively affected trips.
+
+\subsection{Simulated Problems}
+\label{sec:GPexample}
+
+In our last examples, we demonstrate that SBO should be used when $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]/n$ is sufficiently larger than $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]/n$ where $n$ is the number of samples taken per iteration, and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is large enough. We define the difference between variances as $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]/n - \mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]/n$.
+
+We consider the following simulated problems. We define functions $f(x,\w,\z)=h(x,\w)+g(\z)$ on $\left[0,1\right]^{2}\times\mathbb{R}$ where $g(z)$ is drawn from a normal distribution with mean $0$ and variance $\alpha_{d}$, and $h$ is drawn from a Gaussian Process with mean $0$ and and covariance function $\Sigma\left(\left(x,\w\right),\left(x',\w'\right)\right)=\alpha_{h}\exp\left(-\beta\left\Vert \left(x,\w\right)-\left(x',\w'\right)\right\Vert _{2}^{2}\right)$, where $\beta\in\left\{ 2^{-b}:b\in\left\{ -4,-3,-2,-1,0,1,2,3,4\right\} \right\} $, $\alpha_{h}=\frac{A}{n}$ where $A\in\left\{ \frac{1}{jn}:j\in\left\{ 2,4,8,16\right\} \right\} $ and $n\in\left\{ 1,2,4,8,16\right\} $ is the number of samples taken per iteration, and $\alpha_{d}=\frac{1}{n}-\alpha_{h}$. We also suppose that 
+$\w$ is drawn uniformly from $\left\{ 0,1/49,2/49,\ldots,1\right\} $. Consequently, we have that $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]=\alpha_{d}+\alpha_{h}=\frac{1}{n}$, $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]=\alpha_{d}$, and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]=\Sigma\left(\left(x,\w\right),\left(x,\w'\right)\right)$.
+
+
+\begin{figure}[tb]
+    \centering
+\subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the difference between variances is $0.5$\label{fig:sim1}}[0.40\linewidth]{
+    \includegraphics[width=0.40\linewidth]{contourPlotbetahN1A2.pdf}}
+    \quad
+    \subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the difference between variances is $1/1024$ \label{fig:sim2}}[0.40\linewidth]{
+      \includegraphics[width=0.40\linewidth]{contourPlotbetahN8A2.pdf}}
+
+\caption{Performance results for SBO on simulated problems when the difference between variances is large enough  (plot a), Performance results for SBO on simulated problems when the difference between variances is small  (plot b).
+    \label{fig:simulated}}
+\end{figure}
+
+
+ 
+
+Figure~\ref{fig:sim1} shows percentage increase between SBO and KG, when the difference between variances is $0.5$. We see that SBO is always better than KG whenever $\beta >= 0.6$, which means that $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is large enough. However, KG is better than SBO when $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is small. This confirms the affirmation made at the beginning of the section.
+
+Figure~\ref{fig:sim2} shows percentage increase between SBO and KG, when the difference between variances is $1/1024$. We see that SBO KG are very similar. However, SBO improves when $\beta$ increases, which means that $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ increases. Since the difference between variances is very small, we see that there is no a big difference between the two algorithms, and KG is better than SBO when the total number of samples increases.
+
+By doing a factorial analysis, we see that $\beta$ benefits SBO, $A$ benefits KG, there is a positive interaction between $\beta$ and $A$, $n$ and $A$, and a negative interaction between $\beta$, $n$ and $A$, whenever $\beta$ is small enough. 
+
+
+
+
+
 
 % We estimated the parameters of the simulation using the data available at Citi Bike's website\footnote{https://www.citibikenyc.com/}. This dataset  contains start bike station, end bike station, station latitude and longitude, and trip time for each bike trip. We considered $329$ bike stations and $600$ bikes. 
 

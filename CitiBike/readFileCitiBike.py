@@ -37,6 +37,7 @@ def timeWithinInterval (start,end,time1,end1):
 def writeline(line,start,end,f1):
     temp=line[1].split(" ") #time of starting the trip
     temp2=line[2].split(" ") #time of ending the trip
+    
     if timeWithinInterval(start,end,temp[1],temp2[1]):
         f1.write(",\n")
         f1.write(temp[0]+",")
@@ -96,33 +97,51 @@ def downloadFiles():
     prefix="https://s3.amazonaws.com/tripdata/"
     post="-citibike-tripdata.zip"
     
-    years=["2013","2014","2015"]
-    for j in range(0,3):
-        for i in range(7,12):
-            if i<10:
-                downloadFile(prefix+years[j]+"0"+str(i)+post)
-            else:
-                downloadFile(prefix+years[j]+str(i)+post)
-                
+    years=["2014","2015"]
+    
+  #  for i in range(1,12):
+   #     if i<10:
+    #        downloadFile(prefix+years[1]+"0"+str(i)+post)
+    #    else:
+     #       downloadFile(prefix+years[1]+str(i)+post)
+            
+    for i in range(1,7):
+        if i<10:
+            downloadFile(prefix+years[0]+"0"+str(i)+post)
+        else:
+            downloadFile(prefix+years[0]+str(i)+post)
+        
+
 
 def getNames():
     post="-citibike-tripdata.zip"
-    years=["2013","2014","2015"]
+    years=["2014","2015"]
+    
     listFil=[]
-    for j in range(0,2):
-        for i in range(7,12):
-            if i<10:
-                temp=years[j]+"0"+str(i)+post
-            else:
-                temp=years[j]+str(i)+post
-            listFil.append(temp)
-    j=2
-    for i in range(7,11):
+    
+    j=0
+            
+    for i in range(1,13):
         if i<10:
             temp=years[j]+"0"+str(i)+post
         else:
             temp=years[j]+str(i)+post
         listFil.append(temp)
+  #  temp=years[j]+str(12)+post
+   # listFil.append(temp)
+    
+        
+  #  j=1
+  #  for i in range(7,12):
+  #      if i<10:
+  #          temp=years[j]+"0"+str(i)+post
+  #         
+  #      else:
+  #          temp=years[j]+str(i)+post
+  #      listFil.append(temp)
+
+
+
     return listFil
 
 def subset(year,file1,start,end):
@@ -148,10 +167,11 @@ def subset(year,file1,start,end):
     f2.close()
 
 if __name__ == '__main__':
-   # names=getNames()
+  #  downloadFiles()
+    names=getNames()
     start="07:00:00"
     end="11:00:00"
-   # readAllFiles(start,end,names)
-    subset(2014,"modifiedCitiBikeTripData.txt",start,end)
+    readAllFiles(start,end,names)
+   # subset(2014,"modifiedCitiBikeTripData.txt",start,end)
     
    # read("07:00:00","11:00:00","2014-05 - Citi Bike trip data.csv")
