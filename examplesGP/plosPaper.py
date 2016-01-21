@@ -132,20 +132,23 @@ Z2=np.zeros(BETA.shape)
 
 for i in xrange(BETA.shape[0]):
     for j in range(0,5):
-	Z[i,j]=differences[j,0,0,i]
-	Z2[i,j]=differences[j,3,0,i]
+	Z[i,j]=differences[j,0,0,i]*100.0
+	Z2[i,j]=differences[j,3,0,i]*100.0
     for j in xrange(5,BETA.shape[1]):
-	Z[i,j]=differences2[j-5,0,0,i]
-	Z2[i,j]=differences2[j-5,1,0,i]
+	Z[i,j]=differences2[j-5,0,0,i]*100.0
+	Z2[i,j]=differences2[j-5,1,0,i]*100.0
 
-v2=np.arange(-10.0,10.0,0.1)
+v2=np.arange(-100.0,1000.0,10)
 norm=cm.colors.Normalize(vmax=abs(Z).max(), vmin=-abs(Z).max())
-cmap=cm.PRGn 
+cmap=cm.hot 
 v = np.linspace(minD, maxD, 100, endpoint=True)
 fig = plt.figure()
+#C = plt.contour(BETA,ITERATIONS,Z,v2,colors='black')
 cset1 = plt.contourf(BETA, ITERATIONS, Z,v2, 
-                 cmap=cm.get_cmap(cmap,len(v2)-1),norm=norm,
+		  cmap=cm.PRGn,
+                # cmap=cm.get_cmap(cmap,len(v2)-1),norm=norm,
                  )
+#plt.clabel(C, inline=1, fontsize=10)
 plt.colorbar() 
        #m = cm.ScalarMappable(cmap=cm.jet)
     #m.set_array(Z)
@@ -156,8 +159,9 @@ plt.savefig(os.path.join("plots","contourPlotbetahN1A2ver2"+".pdf"))
 plt.close("all")
 fig = plt.figure()
 cset1 = plt.contourf(BETA, ITERATIONS, Z2,v2,
-		   cmap=cm.get_cmap(cmap,len(v2)-1),norm=norm,                
+		   cmap=cm.hot,
                  )
+
 plt.colorbar()
        #m = cm.ScalarMappable(cmap=cm.jet)
     #m.set_array(Z)
