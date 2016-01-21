@@ -25,7 +25,7 @@ numberPrior=30
 A=[2,4,8,16]
 #A=[2]
 varianceb=[1.0/(2.0**k) for k in xrange(5)]#+[2.0**r for r in range(1,5)]
-varianceb=[(k-4.0) for k in xrange(5)]+[k for k in range(1,9)]
+varianceb=[np.log(2.0)*(k-4.0) for k in xrange(5)]+[np.log(2.0)*k for k in range(1,11)]
 #varianceb=[1.0/(2.0**k) for k in xrange(2)]
 
 numberdifIteration=len(samplesIteration)
@@ -117,30 +117,34 @@ if load is False:
     differences2=scipy.io.loadmat('largebetaweighteddifferences.mat')['out']
     
 
-minD=np.min(differences.min(),differences2.min())*100
-maxD=np.max(0.12,differences2.max())*100
+minD=min(differences[:,np.array([0,3]),0,:].min(),differences2.min())
+print differences2
+t1=differences2.max()
+maxD=max(differences[:,np.array([0,3]),0,:].max(),t1)
 print minD,maxD
 ###betah
 
 x=np.linspace(0,samplesIteration[0]*numberIterations,numberIterations+1)
-BETA,ITERATIONS=np.meshgrid(2.0*varianceb,x)
+BETA,ITERATIONS=np.meshgrid(varianceb,x)
 
 Z=np.zeros(BETA.shape)
 Z2=np.zeros(BETA.shape)
 
 for i in xrange(BETA.shape[0]):
     for j in range(0,5):
-	Z[i,j]=100.0*differences[j,0,0,i]
-	Z2[i,j]=100.0*differences[j,3,0,i]
+	Z[i,j]=differences[j,0,0,i]
+	Z2[i,j]=differences[j,3,0,i]
     for j in xrange(5,BETA.shape[1]):
-	Z[i,j]=100.0*differences2[j-5,0,0,i]
-	Z2[i,j]=100.0*differences2[j-5,1,0,i]
+	Z[i,j]=differences2[j-5,0,0,i]
+	Z2[i,j]=differences2[j-5,1,0,i]
 
-#norm=cm.colors.Normalize(vmax=abs(Z).max(), vmin=-abs(Z).max())
-#cmap=cm.PRGn 
+v2=np.arange(-10.0,10.0,0.1)
+norm=cm.colors.Normalize(vmax=abs(Z).max(), vmin=-abs(Z).max())
+cmap=cm.PRGn 
+v = np.linspace(minD, maxD, 100, endpoint=True)
 fig = plt.figure()
-cset1 = plt.contourf(BETA, ITERATIONS, Z, 
-                 cmap=cm.jet,vmin=minD,vmax=maxD,
+cset1 = plt.contourf(BETA, ITERATIONS, Z,v2, 
+                 cmap=cm.get_cmap(cmap,len(v2)-1),norm=norm,
                  )
 plt.colorbar() 
        #m = cm.ScalarMappable(cmap=cm.jet)
@@ -150,10 +154,9 @@ plt.ylabel("Number of samples")
 plt.xlabel("beta")
 plt.savefig(os.path.join("plots","contourPlotbetahN1A2ver2"+".pdf"))
 plt.close("all")
-
 fig = plt.figure()
-cset1 = plt.contourf(BETA, ITERATIONS, Z2,
-                 cmap=cm.jet,vmin=minD,vmax=maxD,
+cset1 = plt.contourf(BETA, ITERATIONS, Z2,v2,
+		   cmap=cm.get_cmap(cmap,len(v2)-1),norm=norm,                
                  )
 plt.colorbar()
        #m = cm.ScalarMappable(cmap=cm.jet)
