@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2014/MacPorts 2014_5)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: example_paper.aux
+The style file: icml2016.bst
+Database file #1: example_paper.bib
+Warning--I didn't find a database entry for "langley00"
+Warning--to sort, need author or key in citibike
+Warning--empty year in citibike
+You've used 19 entries,
+            2773 wiz_defined-function locations,
+            713 strings with 8043 characters,
+and the built_in function-call counts, 8079 in all, are:
+= -- 699
+> -- 429
+< -- 10
++ -- 148
+- -- 129
+* -- 647
+:= -- 1235
+add.period$ -- 57
+call.type$ -- 19
+change.case$ -- 95
+chr.to.int$ -- 19
+cite$ -- 41
+duplicate$ -- 400
+empty$ -- 713
+format.name$ -- 151
+if$ -- 1690
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 23
+newline$ -- 103
+num.names$ -- 72
+pop$ -- 216
+preamble$ -- 1
+purify$ -- 81
+quote$ -- 0
+skip$ -- 286
+stack$ -- 0
+substring$ -- 272
+swap$ -- 33
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 184
+warning$ -- 2
+while$ -- 73
+width$ -- 0
+write$ -- 247
+(There were 3 warnings)

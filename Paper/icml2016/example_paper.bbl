@@ -1,0 +1,124 @@
+\begin{thebibliography}{19}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[cit()]{citibike}
+Citi bike website.
+\newblock https://www.citibikenyc.com/, accessed May 2015.
+
+\bibitem[Brochu et~al.(2010)Brochu, Cora, and De~Freitas]{brochu2010tutorial}
+Brochu, Eric, Cora, Vlad~M, and De~Freitas, Nando.
+\newblock A tutorial on bayesian optimization of expensive cost functions, with
+  application to active user modeling and hierarchical reinforcement learning.
+\newblock \emph{arXiv preprint arXiv:1012.2599}, 2010.
+
+\bibitem[Forrester et~al.(2008)Forrester, Sobester, and
+  Keane]{forrester2008engineering}
+Forrester, Alexander, Sobester, Andras, and Keane, Andy.
+\newblock \emph{Engineering design via surrogate modelling: a practical guide}.
+\newblock John Wiley \& Sons, 2008.
+
+\bibitem[Frazier et~al.(2009)Frazier, Powell, and
+  Dayanik]{frazier2009knowledge}
+Frazier, Peter, Powell, Warren, and Dayanik, Savas.
+\newblock The knowledge-gradient policy for correlated normal beliefs.
+\newblock \emph{INFORMS journal on Computing}, 21\penalty0 (4):\penalty0
+  599--613, 2009.
+
+\bibitem[Frazier \& Wang(2015)Frazier and Wang]{Frazier:bayesianOpt}
+Frazier, Peter~I. and Wang, Jialei.
+\newblock Bayesian optimization for materials design.
+\newblock \emph{arXiv 1506.01349}, 2015.
+
+\bibitem[Glasserman(2003)]{glasserman2003monte}
+Glasserman, Paul.
+\newblock \emph{Monte Carlo methods in financial engineering}, volume~53.
+\newblock Springer Science \& Business Media, 2003.
+
+\bibitem[Howard(1966)]{Ho66}
+Howard, RA.
+\newblock {Information Value Theory}.
+\newblock \emph{Systems Science and Cybernetics, IEEE Transactions on},
+  2\penalty0 (1):\penalty0 22--26, 1966.
+
+\bibitem[Huang et~al.(2006)Huang, Allen, Notz, and Zeng]{huang2006global}
+Huang, Deng, Allen, Theodore~T, Notz, William~I, and Zeng, Ning.
+\newblock Global optimization of stochastic black-box systems via sequential
+  kriging meta-models.
+\newblock \emph{Journal of global optimization}, 34\penalty0 (3):\penalty0
+  441--466, 2006.
+
+\bibitem[Jones et~al.(1998)Jones, Schonlau, and Welch]{jones1998efficient}
+Jones, Donald~R, Schonlau, Matthias, and Welch, William~J.
+\newblock Efficient global optimization of expensive black-box functions.
+\newblock \emph{Journal of Global optimization}, 13\penalty0 (4):\penalty0
+  455--492, 1998.
+
+\bibitem[Kushner(1964)]{kushner}
+Kushner, H.~J.
+\newblock A new method of locating the maximum of an arbitrary multi-peak curve
+  in the presence of noise.
+\newblock \emph{Journal of Basic Engineering}, 86:\penalty0 97--106, 1964.
+
+\bibitem[Mockus(1989)]{Mockus:1989}
+Mockus, J.
+\newblock \emph{Bayesian approach to global optimization: theory and
+  applications}.
+\newblock Kluwer Academic, Dordrecht, 1989.
+
+\bibitem[Mockus et~al.(1978)Mockus, Tiesis, and Zilinskas]{Mockus:1978}
+Mockus, Jonas, Tiesis, Vytautas, and Zilinskas, Antanas.
+\newblock The application of bayesian methods for seeking the extremum.
+\newblock \emph{Towards Global Optimization}, 2\penalty0 (117-129):\penalty0 2,
+  1978.
+
+\bibitem[Murphy(2012)]{murphy2012machine}
+Murphy, Kevin~P.
+\newblock \emph{Machine learning: a probabilistic perspective}.
+\newblock MIT press, 2012.
+
+\bibitem[O'Hagan(1991)]{o1991bayes}
+O'Hagan, Anthony.
+\newblock Bayes--hermite quadrature.
+\newblock \emph{Journal of statistical planning and inference}, 29\penalty0
+  (3):\penalty0 245--260, 1991.
+
+\bibitem[Rasmussen \& Williams(2006)Rasmussen and Williams]{RaWi06}
+Rasmussen, C.E. and Williams, C.K.I.
+\newblock \emph{Gaussian Processes for Machine Learning}.
+\newblock MIT Press, Cambridge, MA, 2006.
+\newblock URL \url{http://www.gaussianprocess.org/gpml}.
+
+\bibitem[Scott et~al.(2011)Scott, Frazier, and Powell]{scott2011correlated}
+Scott, Warren, Frazier, Peter, and Powell, Warren.
+\newblock The correlated knowledge gradient for simulation optimization of
+  continuous parameters using gaussian process regression.
+\newblock \emph{SIAM Journal on Optimization}, 21\penalty0 (3):\penalty0
+  996--1026, 2011.
+
+\bibitem[Snoek et~al.(2012)Snoek, Larochelle, and Adams]{snoek2012practical}
+Snoek, Jasper, Larochelle, Hugo, and Adams, Ryan~P.
+\newblock Practical bayesian optimization of machine learning algorithms.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pp.\
+  2951--2959, 2012.
+
+\bibitem[Villemonteix et~al.(2009)Villemonteix, Vazquez, and
+  Walter]{villemonteix2009informational}
+Villemonteix, Julien, Vazquez, Emmanuel, and Walter, Eric.
+\newblock An informational approach to the global optimization of
+  expensive-to-evaluate functions.
+\newblock \emph{Journal of Global Optimization}, 44\penalty0 (4):\penalty0
+  509--534, 2009.
+
+\bibitem[Xie et~al.(2012)Xie, Frazier, Sankaran, Marsden, and
+  Elmohamed]{Xie:2012}
+Xie, J., Frazier, P.I., Sankaran, S., Marsden, A., and Elmohamed, S.
+\newblock Optimization of computationally expensive simulations with gaussian
+  processes and parameter uncertainty: Application to cardiovascular surgery.
+\newblock In \emph{50th Annual Allerton Conference on Communication, Control,
+  and Computing}, 2012.
+
+\end{thebibliography}
