@@ -177,7 +177,7 @@ class SBOGP(GaussianProcess):
         fig=plt.figure()
 
         plt.plot(points,-(points**2),label="G(x)")
-        plt.plot(points,z,'--',label="a_%d(x)$"%i)
+        plt.plot(points,z,'--',label="a_%d(x)"%i)
         
         plt.xlabel('x',fontsize=26)
         confidence=z+1.96*(var**.5)
