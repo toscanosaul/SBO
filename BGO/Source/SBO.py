@@ -204,9 +204,12 @@ class SBO:
 		At=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
 		Lt=np.linalg.cholesky(At)
 		gridX=self._VOI._points
+		tempX=self.dataObj.Xhist[0:tempN,1:self._dimW+1]
+		logProd=self.stat.computeLogProductExpectationsForAn(tempX,
+                                                         tempN,self.stat._k)
 
 		self.stat.plotAn(i,Lt,gridX,self.path,self.dataObj,self.dataObj.Xhist[:,0:1],
-				 self.dataObj.Xhist[:,1:2],self.stat._k,self.stat.B)
+				 self.dataObj.Xhist[:,1:2],self.stat._k,self.stat.B,logProd)
 
 		Bhist=np.zeros((self._VOI.sizeDiscretization,tempN))
 		for j in xrange(0,tempN):
@@ -221,6 +224,7 @@ class SBO:
 		m2=self._VOI._points.shape[0]
 		scratch=np.zeros((m2,tempN))
 		
+
 		for j in xrange(m2):
 		    scratch[j,:]=linalg.solve_triangular(Lt,Bhist[j,:].transpose(),lower=True)
 		self._VOI.plotVOI(i,Lt,self.path,self.dataObj,temp2t,a,scratch,
