@@ -84,7 +84,7 @@ We define the objective object.
 
 ######Define the function
 ngrid=50
-domainX=np.linspace(loweX,upperX,ngrid)
+domainX=np.linspace(lowerX,upperX,ngrid)
 
 
 def g(x,w1,w2):
