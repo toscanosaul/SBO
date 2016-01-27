@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/MacPorts 2014_5) (preloaded format=pdflatex 2015.2.21)  24 JAN 2016 23:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/MacPorts 2014_5) (preloaded format=pdflatex 2015.2.21)  27 JAN 2016 14:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -612,28 +612,26 @@ File: 8F.pdf Graphic file (type pdf)
 Package pdftex.def Info: 8F.pdf used on input line 522.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
-<8Contours_of_estimation_of_F.pdf, id=163, 578.16pt x 433.62pt>
-File: 8Contours_of_estimation_of_F.pdf Graphic file (type pdf)
-
-<use 8Contours_of_estimation_of_F.pdf>
-Package pdftex.def Info: 8Contours_of_estimation_of_F.pdf used on input line 52
-5.
+<20muN.pdf, id=163, 578.16pt x 433.62pt>
+File: 20muN.pdf Graphic file (type pdf)
+ <use 20muN.pdf>
+Package pdftex.def Info: 20muN.pdf used on input line 525.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
 Underfull \hbox (badness 1817) in paragraph at lines 525--525
 []\OT1/ptm/m/n/9 (a) |SBO: The con-tours of
  []
 
-<9VOI.pdf, id=164, 578.16pt x 433.62pt>
-File: 9VOI.pdf Graphic file (type pdf)
- <use 9VOI.pdf>
-Package pdftex.def Info: 9VOI.pdf used on input line 531.
+<20VOI.pdf, id=164, 578.16pt x 433.62pt>
+File: 20VOI.pdf Graphic file (type pdf)
+ <use 20VOI.pdf>
+Package pdftex.def Info: 20VOI.pdf used on input line 531.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
-<8a_n.pdf, id=165, 578.16pt x 433.62pt>
-File: 8a_n.pdf Graphic file (type pdf)
- <use 8a_n.pdf>
-Package pdftex.def Info: 8a_n.pdf used on input line 536.
+<20a_n.pdf, id=165, 578.16pt x 433.62pt>
+File: 20a_n.pdf Graphic file (type pdf)
+ <use 20a_n.pdf>
+Package pdftex.def Info: 20a_n.pdf used on input line 536.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
 Underfull \hbox (badness 3250) in paragraph at lines 536--536
@@ -641,24 +639,20 @@ Underfull \hbox (badness 3250) in paragraph at lines 536--536
 L/ztmcm/m/it/9 x\OT1/ztmcm/m/n/9 )$
  []
 
-
-<9prior10VoiStandardGaussianSeed100samples100.pdf, id=166, 578.16pt x 433.62pt>
-File: 9prior10VoiStandardGaussianSeed100samples100.pdf Graphic file (type pdf)
-<use 9prior10VoiStandardGaussianSeed100samples100.pdf>
-Package pdftex.def Info: 9prior10VoiStandardGaussianSeed100samples100.pdf used 
-on input line 541.
+<20VOI_n.pdf, id=166, 578.16pt x 433.62pt>
+File: 20VOI_n.pdf Graphic file (type pdf)
+ <use 20VOI_n.pdf>
+Package pdftex.def Info: 20VOI_n.pdf used on input line 541.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
 Underfull \hbox (badness 1796) in paragraph at lines 541--541
 []\OT1/ptm/m/n/9 (d) |KG: The value of in-
  []
 
-<8prior10StandardGaussianSeed100samples100.pdf, id=167, 578.16pt x 433.62pt>
-File: 8prior10StandardGaussianSeed100samples100.pdf Graphic file (type pdf)
-
-<use 8prior10StandardGaussianSeed100samples100.pdf>
-Package pdftex.def Info: 8prior10StandardGaussianSeed100samples100.pdf used on 
-input line 546.
+<20mu_n.pdf, id=167, 578.16pt x 433.62pt>
+File: 20mu_n.pdf Graphic file (type pdf)
+ <use 20mu_n.pdf>
+Package pdftex.def Info: 20mu_n.pdf used on input line 546.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
 <comparisonSameanal.pdf, id=168, 578.16pt x 433.62pt>
@@ -747,26 +741,26 @@ Underfull \hbox (badness 3240) in paragraph at lines 582--583
 n/10 0\OML/ztmcm/m/it/10 :\OT1/ztmcm/m/n/10 5$\OT1/ptm/m/n/10 .
  []
 
-[6 <./8F.pdf> <./8Contours_of_estimation_of_F.pdf
+[6 <./8F.pdf> <./20muN.pdf
 
-pdfTeX warning: pdflatex (file ./8Contours_of_estimation_of_F.pdf): PDF inclusi
-on: multiple pdfs with page group included in a single page
-> <./9VOI.pdf
+pdfTeX warning: pdflatex (file ./20muN.pdf): PDF inclusion: multiple pdfs with 
+page group included in a single page
+> <./20VOI.pdf
 
-pdfTeX warning: pdflatex (file ./9VOI.pdf): PDF inclusion: multiple pdfs with p
-age group included in a single page
-> <./8a_n.pdf
+pdfTeX warning: pdflatex (file ./20VOI.pdf): PDF inclusion: multiple pdfs with 
+page group included in a single page
+> <./20a_n.pdf
 
-pdfTeX warning: pdflatex (file ./8a_n.pdf): PDF inclusion: multiple pdfs with p
-age group included in a single page
-> <./9prior10VoiStandardGaussianSeed100samples100.pdf
+pdfTeX warning: pdflatex (file ./20a_n.pdf): PDF inclusion: multiple pdfs with 
+page group included in a single page
+> <./20VOI_n.pdf
 
-pdfTeX warning: pdflatex (file ./9prior10VoiStandardGaussianSeed100samples100.p
-df): PDF inclusion: multiple pdfs with page group included in a single page
-> <./8prior10StandardGaussianSeed100samples100.pdf
+pdfTeX warning: pdflatex (file ./20VOI_n.pdf): PDF inclusion: multiple pdfs wit
+h page group included in a single page
+> <./20mu_n.pdf
 
-pdfTeX warning: pdflatex (file ./8prior10StandardGaussianSeed100samples100.pdf)
-: PDF inclusion: multiple pdfs with page group included in a single page
+pdfTeX warning: pdflatex (file ./20mu_n.pdf): PDF inclusion: multiple pdfs with
+ page group included in a single page
 > <./comparisonSameanal.pdf
 
 pdfTeX warning: pdflatex (file ./comparisonSameanal.pdf): PDF inclusion: multip
@@ -789,7 +783,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 588--589
 [] []$ \OT1/ptm/m/n/10 is fun-da-men-tal, for
  []
 
-<comparisonSameConfiguration.pdf, id=450, 578.16pt x 433.62pt>
+<comparisonSameConfiguration.pdf, id=432, 578.16pt x 433.62pt>
 File: comparisonSameConfiguration.pdf Graphic file (type pdf)
 
 <use comparisonSameConfiguration.pdf>
@@ -816,7 +810,7 @@ Underfull \hbox (badness 1308) in paragraph at lines 598--598
 \OT1/ptm/m/n/9 meth-ods, on the Citi Bike
  []
 
-<testStationMapPng0-full.png, id=453, 803.0pt x 602.25pt>
+<testStationMapPng0-full.png, id=435, 803.0pt x 602.25pt>
 File: testStationMapPng0-full.png Graphic file (type png)
 
 <use testStationMapPng0-full.png>
@@ -884,7 +878,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 668.
  ) 
 Here is how much of TeX's memory you used:
  8327 strings out of 494213
- 122658 string characters out of 6157463
+ 122193 string characters out of 6157463
  239165 words of memory out of 5000000
  11403 multiletter control sequences out of 15000+600000
  50321 words of font info for 114 fonts, out of 8000000 for 9000
@@ -902,10 +896,10 @@ mbol/usyr.pfb></opt/local/share/texmf-texlive/fonts/type1/urw/symbol/usyr.pfb><
 /opt/local/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></opt/local/sha
 re/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></opt/local/share/texmf-texli
 ve/fonts/type1/urw/times/utmri8a.pfb>
-Output written on example_paper.pdf (8 pages, 831414 bytes).
+Output written on example_paper.pdf (8 pages, 825385 bytes).
 PDF statistics:
- 572 PDF objects out of 1000 (max. 8388607)
- 311 compressed objects within 4 object streams
+ 554 PDF objects out of 1000 (max. 8388607)
+ 295 compressed objects within 3 object streams
  57 named destinations out of 1000 (max. 500000)
  56 words of extra memory for PDF output out of 10000 (max. 10000000)
 
