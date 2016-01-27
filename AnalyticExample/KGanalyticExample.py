@@ -417,5 +417,5 @@ kgObj=KG.KG(**l)
 We run the SBO algorithm.
 """
 
-kgObj.KGAlg(nTemp4,nRepeat=10,Train=True)
+kgObj.KGAlg(nTemp4,nRepeat=10,plots=True,Train=True)
 
