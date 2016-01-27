@@ -481,7 +481,7 @@ Finally,  it is straightforward to see that the formula for $\sigmatilde^2_{n}\l
 \section{Numerical Experiments}
 \label{experiments}
 
-We now present simulation experiments illustrating how the SBO algorithm can be applied in practice, and comparing its performance against some baseline Bayesian optimization algorithms.  We compare on a test problem with a simple analytic form (Section~\ref{sec:test}), on a realistic problem arising in the design of the New York City's Citi Bike system (Section~\ref{sec:citibike}), and also on simulated problems that show when SBO will be much better than one baseline Bayesian optimization algorithm (Section~\ref{sec:GPexample}).
+We now present simulation experiments illustrating how the SBO algorithm can be applied in practice, and comparing its performance against some baseline Bayesian optimization algorithms.  We compare on a test problem with a simple analytic form (Section~\ref{sec:test}), on simulated problems that show when SBO will be much better than one baseline Bayesian optimization algorithm (Section~\ref{sec:GPexample}), and also on a realistic problem arising in the design of the New York City's Citi Bike system (Section~\ref{sec:citibike}).
 
 We consider two baseline Bayesian optimization algorithms. We use the Knowledge-Gradient policy of \cite{frazier2009knowledge} and Expected Improvement criterion \cite{jones1998efficient}, which both place the Gaussian process prior directly on $G(x)$, and use a standard sampling procedure, in which $\w$ and $\z$ are drawn from their joint distribution, and $f(x,\w,\z)$ is observed. Knowledge-Gradient policy is equivalent to SBO if all components of $\w$ are moved into $\z$.  Thus, comparing against KG quantifies the benefit of SBO's core contribution, while holding constant standard aspects of the Bayesian optimization approach. 
 
@@ -516,7 +516,6 @@ Figure~\ref{fig:tahi7} compares the performance of SBO, KG and EI, plotting the 
 % \mbox{max}_{x\in\left[-3,3\right]}\mathbb{E}\left[f\left(x,\w,\z\right)\right]=\mbox{max}_{x\in\left[-3,3\right]}\mathbb{E}\left[-\frac{\z}{\w}x^{2}-\w\right]
 \]
 % the variance of the empirical estimator of $G(x)$ is of the order of $10^{6}$, and so the classical approach does not work well. However, using the SBO algorithm, we find the right solution.
-
 \begin{figure}[!htb]
   \centering
   \captionbox{The contours of $F\left(x,\w\right)=-x^{2}-\w$.}[0.45\linewidth]{
@@ -550,24 +549,57 @@ Figure~\ref{fig:tahi7} compares the performance of SBO, KG and EI, plotting the 
     ({\bf Second row}) Left shows the contours of SBO's value of information, which depends on both $x$ and $\w$, which SBO uses to choose the pair $(x,\w)$ to sample next.  Right shows SBO's estimates of $G(x)$, which is based on the estimate of $F(x,\w)$ in the first row.
     ({\bf Third row}) Left shows KG's value of information, which depends only on $x$, which KG uses to choose the point $x$ to sample next.  Right shows KG's estimates of $G(x)$.  This estimate is of lower quality than SBO's estimate above, because it does not use the observed values of $\w$.
 \label{fig:tahi10}}
+\end{figure}
+
+\begin{figure}[!htb]
+	\includegraphics[width=0.9\linewidth]{comparisonSameanal.pdf}
+   % \centering
+   % \subcaptionbox{Performance comparison between SBO and two Bayesian optimization benchmark, the KG and EI methods, on the analytic test problem from Section~\ref{sec:test} \label{fig:tahi7}}[0.4\linewidth]{
+ %   \includegraphics[width=0.4\linewidth]{comparisonSameanal.pdf}}
+    \caption{Performance comparison between SBO and two Bayesian optimization benchmark, the KG and EI methods, on the analytic test problem from Section~\ref{sec:test} \label{fig:tahi7}}
 \end{figure} 
+
+\subsection{Simulated Problems}
+\label{sec:GPexample}
+
+In our next examples, we demonstrate that SBO should be used when the difference of variances $D(x,\w):=\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]-\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]$ is sufficiently large for many different points $(x,\w)$, or/and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is large enough.
+
+We consider the following simulated problems. We define functions $f(x,\w,\z)=h(x,\w)+g(\z)$ on $\left[0,1\right]^{2}\times\mathbb{R}$ where $g(z)$ is drawn from a normal distribution with mean $0$ and variance $\alpha_{d}$, and $h$ is drawn from a Gaussian Process with mean $0$ and and covariance function $\Sigma\left(\left(x,\w\right),\left(x',\w'\right)\right)=\alpha_{h}\exp\left(-\beta\left\Vert \left(x,\w\right)-\left(x',\w'\right)\right\Vert _{2}^{2}\right)$, where $\beta\in\left\{ 2^{-b}:b\in\left\{ -4,-3,-2,-1,0,1,2,3,4,\ldots,15\right\} \right\} $, $\alpha_{h}=\frac{A}{n}$ where $A\in\left\{ \frac{1}{jn}:j\in\left\{ 2,4,8,16\right\} \right\} $ and $n\in\left\{ 1,2,4,8,16\right\} $ is the number of samples taken per iteration, and $\alpha_{d}=\frac{1}{n}-\alpha_{h}$. We also suppose that 
+$\w$ is drawn uniformly from $\left\{ 0,1/49,2/49,\ldots,1\right\} $. Consequently, we have that $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]\approx\alpha_{d}+\alpha_{h}=\frac{1}{n}$, $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]\approx\alpha_{d}$, and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]\approx\Sigma\left(\left(x,\w\right),\left(x,\w'\right)\right)$.
+
+
+\begin{figure}[!htb]
+    \centering
+\subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the difference between variances is $0.5$\label{fig:sim1}}[0.45\linewidth]{
+    \includegraphics[width=0.45\linewidth]{contourPlotbetahN1A2ver2.pdf}}
+    \quad
+    \subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the difference between variances is $1/1024$ \label{fig:sim2}}[0.45\linewidth]{
+      \includegraphics[width=0.45\linewidth]{contourPlotbetahN8A2ver2.pdf}}
+\caption{Performance results for SBO on simulated problems when the difference between variances is large enough  (plot a), Performance results for SBO on simulated problems when the difference between variances is small  (plot b).
+    \label{fig:simulated}}
+\end{figure}
+
+Figure~\ref{fig:sim1} shows percentage increase between SBO and KG, when the difference between variances is $0.5$. We see that SBO is always better than KG whenever $\beta >= 1$. Moreover, it is a lot better than KG when $log(\beta)\in(3,5)$. However, KG is slightly better than SBO when $log(\beta)\in(-2,0)$. This essentially means that $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ benefits SBO, because if $x$ is fixed, then SBO can learn $H(\w)=F\left(x,\w\right)$ for many different $\w$'s when it only evaluates this conditional expectation a few times. This confirms the affirmation made at the beginning of the section.
+
+Figure~\ref{fig:sim2} shows percentage increase between SBO and KG, when the difference between variances is $1/1024$. We see that SBO and KG are very similar. However, SBO is again much better when when $log(\beta)\in(3.8,4.2)$. We should note that SBO is better than KG when variance was $0.5$ in Figure~\ref{fig:sim1}, which confirms the affirmation made at the beginning of the section. Furthermore, if the difference between variances is very small and the covariance $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is large enough, SBO would be much better than KG. 
+
+By doing a factorial analysis, we see that $\beta$ benefits SBO, $A$ benefits KG, there is a positive interaction between $\beta$ and $A$, $n$ and $A$, and a negative interaction between $\beta$, $n$ and $A$, whenever $\beta$ is small enough. 
+
+In conclusion, a large covariance $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is fundamental, for SBO outperforms KG. A large difference between variances is helpful to improve SBO results, but it is not sufficient.
 
 \subsection{New York City Citi Bike System}
 \label{sec:citibike}
 
-In our second example considers a queuing simulation based on New York City's Citi Bike system, in which system users may remove an available bike from a station at one location within the city, and ride it to a station with an available dock in some other location within the city.  The optimization problem that we consider is the allocation of a constrained number of bikes (6000) to available docks within the city at the start of rush hour, so as to minimize, in simulation, the expected number of potential trips in which the rider could not find an available bike at their preferred origination station, or could not find an available dock at their preferred destination station.  We call such trips ``negatively affected trips.''
+In our last example, we consider a queuing simulation based on New York City's Citi Bike system, in which system users may remove an available bike from a station at one location within the city, and ride it to a station with an available dock in some other location within the city.  The optimization problem that we consider is the allocation of a constrained number of bikes (6000) to available docks within the city at the start of rush hour, so as to minimize, in simulation, the expected number of potential trips in which the rider could not find an available bike at their preferred origination station, or could not find an available dock at their preferred destination station.  We call such trips ``negatively affected trips.''
 
 \begin{figure}[!htb]
     \centering
-    \subcaptionbox{Performance comparison between SBO and two Bayesian optimization benchmark, the KG and EI methods, on the analytic test problem from Section~\ref{sec:test} \label{fig:tahi7}}[0.45\linewidth]{
-    \includegraphics[width=0.45\linewidth]{comparisonSameanal.pdf}}
-    \quad
     \subcaptionbox{Performance comparison between SBO and two Bayesian optimization benchmark, the KG and EI methods, on the Citi Bike Problem from Section~\ref{sec:citibike} \label{fig:citibike}}[0.45\linewidth]{
       \includegraphics[width=0.45\linewidth]{comparisonSameConfiguration.pdf}}
           \quad
-     \subcaptionbox{Location of bike stations (circles) in New York City, where size and color represent the ratio of available bikes to available docks.}[0.40\linewidth]{
-      \includegraphics[width=0.50\linewidth]{testStationMapPng0-full.png}}
-\caption{Performance results for SBO on the analytic test problem (plot a), the Citi Bike problem (plot b), and a screenshot from our simulation of the Citi Bike problem (plot c).
+     \subcaptionbox{Location of bike stations (circles) in New York City, where size and color represent the ratio of available bikes to available docks.}[0.45\linewidth]{
+      \includegraphics[width=0.45\linewidth]{testStationMapPng0-full.png}}
+\caption{Performance results for the Citi Bike problem (plot 1), and a screenshot from our simulation of the Citi Bike problem (plot b).
     \label{fig:stuff}}
 \end{figure}
 
@@ -601,39 +633,7 @@ $G(x)$ & $\triangleq$ & $\mathbb{E}[f(x,\w,\z)]$. \\
 \end{center}
 \end{table}
 
-Figure~\ref{fig:citibike} compares the performance of SBO, KG and EI, plotting the number of samples beyond the first stage on the $x$ axis, and the average true quality of the solutions provided, $G(\mathrm{argmax}_x \mathbb{E}_n[G(x)])$, averaging over 300 independent runs of the three algorithms. We see that SBO was able to quickly find an allocation of bikes to groups that attains a small expected number of negatively affected trips.
-
-\subsection{Simulated Problems}
-\label{sec:GPexample}
-
-In our last examples, we demonstrate that SBO should be used when the difference of variances $D(x,\w):=\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]-\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]$ is sufficiently large for many different points $(x,\w)$, or/and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is large enough.
-
-We consider the following simulated problems. We define functions $f(x,\w,\z)=h(x,\w)+g(\z)$ on $\left[0,1\right]^{2}\times\mathbb{R}$ where $g(z)$ is drawn from a normal distribution with mean $0$ and variance $\alpha_{d}$, and $h$ is drawn from a Gaussian Process with mean $0$ and and covariance function $\Sigma\left(\left(x,\w\right),\left(x',\w'\right)\right)=\alpha_{h}\exp\left(-\beta\left\Vert \left(x,\w\right)-\left(x',\w'\right)\right\Vert _{2}^{2}\right)$, where $\beta\in\left\{ 2^{-b}:b\in\left\{ -4,-3,-2,-1,0,1,2,3,4,\ldots,15\right\} \right\} $, $\alpha_{h}=\frac{A}{n}$ where $A\in\left\{ \frac{1}{jn}:j\in\left\{ 2,4,8,16\right\} \right\} $ and $n\in\left\{ 1,2,4,8,16\right\} $ is the number of samples taken per iteration, and $\alpha_{d}=\frac{1}{n}-\alpha_{h}$. We also suppose that 
-$\w$ is drawn uniformly from $\left\{ 0,1/49,2/49,\ldots,1\right\} $. Consequently, we have that $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]\approx\alpha_{d}+\alpha_{h}=\frac{1}{n}$, $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]\approx\alpha_{d}$, and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]\approx\Sigma\left(\left(x,\w\right),\left(x,\w'\right)\right)$.
-
-
-\begin{figure}[!htb]
-    \centering
-\subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the difference between variances is $0.5$\label{fig:sim1}}[0.45\linewidth]{
-    \includegraphics[width=0.45\linewidth]{contourPlotbetahN1A2ver2.pdf}}
-    \quad
-    \subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the difference between variances is $1/1024$ \label{fig:sim2}}[0.45\linewidth]{
-      \includegraphics[width=0.45\linewidth]{contourPlotbetahN8A2ver2.pdf}}
-
-\caption{Performance results for SBO on simulated problems when the difference between variances is large enough  (plot a), Performance results for SBO on simulated problems when the difference between variances is small  (plot b).
-    \label{fig:simulated}}
-\end{figure}
-
-
- 
-
-Figure~\ref{fig:sim1} shows percentage increase between SBO and KG, when the difference between variances is $0.5$. We see that SBO is always better than KG whenever $\beta >= 1$. Moreover, it is a lot better than KG when $log(\beta)\in(3,5)$. However, KG is slightly better than SBO when $log(\beta)\in(-2,0)$. This essentially means that $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ benefits SBO, because if $x$ is fixed, then SBO can learn $H(\w)=F\left(x,\w\right)$ for many different $\w$'s when it only evaluates this conditional expectation a few times. This confirms the affirmation made at the beginning of the section.
-
-Figure~\ref{fig:sim2} shows percentage increase between SBO and KG, when the difference between variances is $1/1024$. We see that SBO and KG are very similar. However, SBO is again much better when when $log(\beta)\in(3.8,4.2)$. We should note that SBO is better than KG when variance was $0.5$ in Figure~\ref{fig:sim1}, which confirms the affirmation made at the beginning of the section. Furthermore, if the difference between variances is very small and the covariance $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is large enough, SBO would be much better than KG. 
-
-By doing a factorial analysis, we see that $\beta$ benefits SBO, $A$ benefits KG, there is a positive interaction between $\beta$ and $A$, $n$ and $A$, and a negative interaction between $\beta$, $n$ and $A$, whenever $\beta$ is small enough. 
-
-As conclusion, a large covariance $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is fundamental, for SBO outperforms KG. A large difference between variances is helpful to improve SBO results, but it is not sufficient. 
+Figure~\ref{fig:citibike} compares the performance of SBO, KG and EI, plotting the number of samples beyond the first stage on the $x$ axis, and the average true quality of the solutions provided, $G(\mathrm{argmax}_x \mathbb{E}_n[G(x)])$, averaging over 300 independent runs of the three algorithms. We see that SBO was able to quickly find an allocation of bikes to groups that attains a small expected number of negatively affected trips. 
 
 
 % We estimated the parameters of the simulation using the data available at Citi Bike's website\footnote{https://www.citibikenyc.com/}. This dataset  contains start bike station, end bike station, station latitude and longitude, and trip time for each bike trip. We considered $329$ bike stations and $600$ bikes. 

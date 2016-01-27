@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/MacPorts 2014_5) (preloaded format=pdflatex 2015.2.21)  24 JAN 2016 04:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/MacPorts 2014_5) (preloaded format=pdflatex 2015.2.21)  24 JAN 2016 23:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -609,7 +609,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 494--497
 <8F.pdf, id=162, 578.16pt x 433.62pt>
 File: 8F.pdf Graphic file (type pdf)
  <use 8F.pdf>
-Package pdftex.def Info: 8F.pdf used on input line 523.
+Package pdftex.def Info: 8F.pdf used on input line 522.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
 <8Contours_of_estimation_of_F.pdf, id=163, 578.16pt x 433.62pt>
@@ -617,26 +617,26 @@ File: 8Contours_of_estimation_of_F.pdf Graphic file (type pdf)
 
 <use 8Contours_of_estimation_of_F.pdf>
 Package pdftex.def Info: 8Contours_of_estimation_of_F.pdf used on input line 52
-6.
+5.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
-Underfull \hbox (badness 1817) in paragraph at lines 526--526
+Underfull \hbox (badness 1817) in paragraph at lines 525--525
 []\OT1/ptm/m/n/9 (a) |SBO: The con-tours of
  []
 
 <9VOI.pdf, id=164, 578.16pt x 433.62pt>
 File: 9VOI.pdf Graphic file (type pdf)
  <use 9VOI.pdf>
-Package pdftex.def Info: 9VOI.pdf used on input line 532.
+Package pdftex.def Info: 9VOI.pdf used on input line 531.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
 <8a_n.pdf, id=165, 578.16pt x 433.62pt>
 File: 8a_n.pdf Graphic file (type pdf)
  <use 8a_n.pdf>
-Package pdftex.def Info: 8a_n.pdf used on input line 537.
+Package pdftex.def Info: 8a_n.pdf used on input line 536.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
-Underfull \hbox (badness 3250) in paragraph at lines 537--537
+Underfull \hbox (badness 3250) in paragraph at lines 536--536
 \OT1/ptm/m/n/9 and SBO's es-ti-mate $\OML/ztmcm/m/it/9 a[]\OT1/ztmcm/m/n/9 (\OM
 L/ztmcm/m/it/9 x\OT1/ztmcm/m/n/9 )$
  []
@@ -646,10 +646,10 @@ L/ztmcm/m/it/9 x\OT1/ztmcm/m/n/9 )$
 File: 9prior10VoiStandardGaussianSeed100samples100.pdf Graphic file (type pdf)
 <use 9prior10VoiStandardGaussianSeed100samples100.pdf>
 Package pdftex.def Info: 9prior10VoiStandardGaussianSeed100samples100.pdf used 
-on input line 542.
+on input line 541.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
 
-Underfull \hbox (badness 1796) in paragraph at lines 542--542
+Underfull \hbox (badness 1796) in paragraph at lines 541--541
 []\OT1/ptm/m/n/9 (d) |KG: The value of in-
  []
 
@@ -658,77 +658,96 @@ File: 8prior10StandardGaussianSeed100samples100.pdf Graphic file (type pdf)
 
 <use 8prior10StandardGaussianSeed100samples100.pdf>
 Package pdftex.def Info: 8prior10StandardGaussianSeed100samples100.pdf used on 
-input line 547.
+input line 546.
 (pdftex.def)             Requested size: 103.34666pt x 77.50568pt.
- [5]
-<comparisonSameanal.pdf, id=181, 578.16pt x 433.62pt>
+
+<comparisonSameanal.pdf, id=168, 578.16pt x 433.62pt>
 File: comparisonSameanal.pdf Graphic file (type pdf)
 
 <use comparisonSameanal.pdf>
-Package pdftex.def Info: comparisonSameanal.pdf used on input line 563.
-(pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
+Package pdftex.def Info: comparisonSameanal.pdf used on input line 555.
+(pdftex.def)             Requested size: 211.3883pt x 158.53795pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 563--563
-[]\OT1/ptm/m/n/9 (a) |Per-for-mance com-par-
+Underfull \hbox (badness 6412) in paragraph at lines 565--566
+[]\OT1/ptm/m/n/10 In our next ex-am-ples, we demon-strate that SBO
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 563--563
-\OT1/ptm/m/n/9 i-son be-tween SBO and
+Underfull \hbox (badness 6825) in paragraph at lines 565--566
+\OT1/ptm/m/n/10 should be used when the dif-fer-ence of vari-ances
  []
 
 
-Underfull \hbox (badness 4060) in paragraph at lines 563--563
-\OT1/ptm/m/n/9 two Bayesian op-ti-miza-tion
- []
-
-<comparisonSameConfiguration.pdf, id=184, 578.16pt x 433.62pt>
-File: comparisonSameConfiguration.pdf Graphic file (type pdf)
-
-<use comparisonSameConfiguration.pdf>
-Package pdftex.def Info: comparisonSameConfiguration.pdf used on input line 566
-.
-(pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 566--566
-[]\OT1/ptm/m/n/9 (b) |Per-for-mance com-par-
+Underfull \hbox (badness 1087) in paragraph at lines 565--566
+\OML/ztmcm/m/it/10 D\OT1/ztmcm/m/n/10 (\OML/ztmcm/m/it/10 x; w\OT1/ztmcm/m/n/10
+ ) := [] [] \OMS/ztmcm/m/n/10 ^^@ [] []$ \OT1/ptm/m/n/10 is
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 566--566
-\OT1/ptm/m/n/9 i-son be-tween SBO and
+Underfull \hbox (badness 10000) in paragraph at lines 567--569
+\OML/ztmcm/m/it/10 [] [] []$\OT1/ptm/m/n/10 , where $\OML/ztmcm/m/it/10 ^^L \O
+MS/ztmcm/m/n/10 2
  []
 
 
-Underfull \hbox (badness 4060) in paragraph at lines 566--566
-\OT1/ptm/m/n/9 two Bayesian op-ti-miza-tion
+Underfull \hbox (badness 10000) in paragraph at lines 567--569
+[]$\OT1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 1308) in paragraph at lines 566--566
-\OT1/ptm/m/n/9 meth-ods, on the Citi Bike
- []
-
-<testStationMapPng0-full.png, id=187, 803.0pt x 602.25pt>
-File: testStationMapPng0-full.png Graphic file (type png)
-
-<use testStationMapPng0-full.png>
-Package pdftex.def Info: testStationMapPng0-full.png used on input line 569.
-(pdftex.def)             Requested size: 117.43875pt x 88.07295pt.
-
-Overfull \hbox (23.4892pt too wide) in paragraph at lines 569--569
- [] 
+Underfull \hbox (badness 10000) in paragraph at lines 567--569
+\OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/n/10 = []$ \OT1/ptm/m/n/10 where $\OML/ztmc
+m/m/it/10 A \OMS/ztmcm/m/n/10 2 []$ \OT1/ptm/m/n/10 and
  []
 
 
-Underfull \hbox (badness 6675) in paragraph at lines 569--569
-\OT1/ptm/m/n/9 tions (cir-cles) in New
+Underfull \hbox (badness 1810) in paragraph at lines 567--569
+\OT1/ptm/m/n/10 it-er-a-tion, and $\OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/n/10 = [
+] \OMS/ztmcm/m/n/10 ^^@ \OML/ztmcm/m/it/10 []$\OT1/ptm/m/n/10 . We also sup-po
+se that
  []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 567--569
+\OML/ztmcm/m/it/10 w$ \OT1/ptm/m/n/10 is drawn uni-formly from $[]$.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 567--569
+\OT1/ptm/m/n/10 Con-se-quently, we have that $[] [] \OMS/ztmcm/m/n/10 ^^Y
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 567--569
+\OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/n/10 + \OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/
+n/10 = []$\OT1/ptm/m/n/10 , $[] [] \OMS/ztmcm/m/n/10 ^^Y \OML/ztmcm/m/it/10 []
+$\OT1/ptm/m/n/10 , and
+ []
+
+[5]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [6 <./8F.pdf> <./8Contours_of_estimation_of_F.pdf
+
+<contourPlotbetahN1A2ver2.pdf, id=184, 578.16pt x 433.62pt>
+File: contourPlotbetahN1A2ver2.pdf Graphic file (type pdf)
+
+<use contourPlotbetahN1A2ver2.pdf>
+Package pdftex.def Info: contourPlotbetahN1A2ver2.pdf used on input line 574.
+(pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
+
+<contourPlotbetahN8A2ver2.pdf, id=185, 578.16pt x 433.62pt>
+File: contourPlotbetahN8A2ver2.pdf Graphic file (type pdf)
+
+<use contourPlotbetahN8A2ver2.pdf>
+Package pdftex.def Info: contourPlotbetahN8A2ver2.pdf used on input line 577.
+(pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
+
+Underfull \hbox (badness 3240) in paragraph at lines 582--583
+\OT1/ptm/m/n/10 KG, when the dif-fer-ence be-tween vari-ances is $\OT1/ztmcm/m/
+n/10 0\OML/ztmcm/m/it/10 :\OT1/ztmcm/m/n/10 5$\OT1/ptm/m/n/10 .
+ []
+
+[6 <./8F.pdf> <./8Contours_of_estimation_of_F.pdf
 
 pdfTeX warning: pdflatex (file ./8Contours_of_estimation_of_F.pdf): PDF inclusi
 on: multiple pdfs with page group included in a single page
@@ -752,118 +771,76 @@ pdfTeX warning: pdflatex (file ./8prior10StandardGaussianSeed100samples100.pdf)
 
 pdfTeX warning: pdflatex (file ./comparisonSameanal.pdf): PDF inclusion: multip
 le pdfs with page group included in a single page
-> <./comparisonSameConfiguration.pdf
+> <./contourPlotbetahN1A2ver2.pdf
 
-pdfTeX warning: pdflatex (file ./comparisonSameConfiguration.pdf): PDF inclusio
-n: multiple pdfs with page group included in a single page
-> <./testStationMapPng0-full.png>]
-Underfull \hbox (badness 3199) in paragraph at lines 594--595
-[]\OT1/ptm/m/n/9 deterministic vec-tor that rep-re-sents the
- []
-
-
-Overfull \hbox (3.6017pt too wide) in paragraph at lines 592--601
- [] 
- []
-
-
-Underfull \hbox (badness 7907) in paragraph at lines 609--610
-[]\OT1/ptm/m/n/10 In our last ex-am-ples, we demon-strate that SBO
- []
-
-
-Underfull \hbox (badness 6825) in paragraph at lines 609--610
-\OT1/ptm/m/n/10 should be used when the dif-fer-ence of vari-ances
- []
-
-
-Underfull \hbox (badness 1087) in paragraph at lines 609--610
-\OML/ztmcm/m/it/10 D\OT1/ztmcm/m/n/10 (\OML/ztmcm/m/it/10 x; w\OT1/ztmcm/m/n/10
- ) := [] [] \OMS/ztmcm/m/n/10 ^^@ [] []$ \OT1/ptm/m/n/10 is
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 611--613
-\OML/ztmcm/m/it/10 [] [] []$\OT1/ptm/m/n/10 , where $\OML/ztmcm/m/it/10 ^^L \O
-MS/ztmcm/m/n/10 2
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 611--613
-[]$\OT1/ptm/m/n/10 ,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 611--613
-\OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/n/10 = []$ \OT1/ptm/m/n/10 where $\OML/ztmc
-m/m/it/10 A \OMS/ztmcm/m/n/10 2 []$ \OT1/ptm/m/n/10 and
- []
-
-
-Underfull \hbox (badness 1810) in paragraph at lines 611--613
-\OT1/ptm/m/n/10 it-er-a-tion, and $\OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/n/10 = [
-] \OMS/ztmcm/m/n/10 ^^@ \OML/ztmcm/m/it/10 []$\OT1/ptm/m/n/10 . We also sup-po
-se that
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 611--613
-\OML/ztmcm/m/it/10 w$ \OT1/ptm/m/n/10 is drawn uni-formly from $[]$.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 611--613
-\OT1/ptm/m/n/10 Con-se-quently, we have that $[] [] \OMS/ztmcm/m/n/10 ^^Y
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 611--613
-\OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/n/10 + \OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/
-n/10 = []$\OT1/ptm/m/n/10 , $[] [] \OMS/ztmcm/m/n/10 ^^Y \OML/ztmcm/m/it/10 []
-$\OT1/ptm/m/n/10 , and
- []
-
-
-Underfull \vbox (badness 1552) has occurred while \output is active []
-
-
-<contourPlotbetahN1A2ver2.pdf, id=417, 578.16pt x 433.62pt>
-File: contourPlotbetahN1A2ver2.pdf Graphic file (type pdf)
-
-<use contourPlotbetahN1A2ver2.pdf>
-Package pdftex.def Info: contourPlotbetahN1A2ver2.pdf used on input line 618.
-(pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
-
-<contourPlotbetahN8A2ver2.pdf, id=418, 578.16pt x 433.62pt>
-File: contourPlotbetahN8A2ver2.pdf Graphic file (type pdf)
-
-<use contourPlotbetahN8A2ver2.pdf>
-Package pdftex.def Info: contourPlotbetahN8A2ver2.pdf used on input line 621.
-(pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
-
-Underfull \hbox (badness 3240) in paragraph at lines 630--631
-\OT1/ptm/m/n/10 KG, when the dif-fer-ence be-tween vari-ances is $\OT1/ztmcm/m/
-n/10 0\OML/ztmcm/m/it/10 :\OT1/ztmcm/m/n/10 5$\OT1/ptm/m/n/10 .
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 636--637
-[]\OT1/ptm/m/n/10 As con-clu-sion, a large co-vari-ance
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 636--637
-[] []$ \OT1/ptm/m/n/10 is fun-da-men-tal, for
- []
-
-
-Underfull \vbox (badness 2503) has occurred while \output is active []
-
- [7 <./contourPlotbetahN1A2ver2.pdf> <./contourPlotbetahN8A2ver2.pdf
+pdfTeX warning: pdflatex (file ./contourPlotbetahN1A2ver2.pdf): PDF inclusion: 
+multiple pdfs with page group included in a single page
+> <./contourPlotbetahN8A2ver2.pdf
 
 pdfTeX warning: pdflatex (file ./contourPlotbetahN8A2ver2.pdf): PDF inclusion: 
 multiple pdfs with page group included in a single page
 >]
+Underfull \hbox (badness 10000) in paragraph at lines 588--589
+[]\OT1/ptm/m/n/10 In con-clu-sion, a large co-vari-ance
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 588--589
+[] []$ \OT1/ptm/m/n/10 is fun-da-men-tal, for
+ []
+
+<comparisonSameConfiguration.pdf, id=450, 578.16pt x 433.62pt>
+File: comparisonSameConfiguration.pdf Graphic file (type pdf)
+
+<use comparisonSameConfiguration.pdf>
+Package pdftex.def Info: comparisonSameConfiguration.pdf used on input line 598
+.
+(pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 598--598
+[]\OT1/ptm/m/n/9 (a) |Per-for-mance com-par-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 598--598
+\OT1/ptm/m/n/9 i-son be-tween SBO and
+ []
+
+
+Underfull \hbox (badness 4060) in paragraph at lines 598--598
+\OT1/ptm/m/n/9 two Bayesian op-ti-miza-tion
+ []
+
+
+Underfull \hbox (badness 1308) in paragraph at lines 598--598
+\OT1/ptm/m/n/9 meth-ods, on the Citi Bike
+ []
+
+<testStationMapPng0-full.png, id=453, 803.0pt x 602.25pt>
+File: testStationMapPng0-full.png Graphic file (type png)
+
+<use testStationMapPng0-full.png>
+Package pdftex.def Info: testStationMapPng0-full.png used on input line 601.
+(pdftex.def)             Requested size: 105.69415pt x 79.26933pt.
+
+Underfull \hbox (badness 2027) in paragraph at lines 601--601
+\OT1/ptm/m/n/9 where size and color rep-
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Underfull \hbox (badness 3199) in paragraph at lines 626--627
+[]\OT1/ptm/m/n/9 deterministic vec-tor that rep-re-sents the
+ []
+
+
+Overfull \hbox (3.6017pt too wide) in paragraph at lines 624--633
+ [] 
+ []
+
+[7 <./comparisonSameConfiguration.pdf> <./testStationMapPng0-full.png>]
 
 Package natbib Warning: Citation `langley00' undefined on input line 663.
 
@@ -907,9 +884,9 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 668.
  ) 
 Here is how much of TeX's memory you used:
  8327 strings out of 494213
- 122657 string characters out of 6157463
- 235393 words of memory out of 5000000
- 11404 multiletter control sequences out of 15000+600000
+ 122658 string characters out of 6157463
+ 239165 words of memory out of 5000000
+ 11403 multiletter control sequences out of 15000+600000
  50321 words of font info for 114 fonts, out of 8000000 for 9000
  430 hyphenation exceptions out of 8191
  36i,18n,45p,980b,543s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -925,10 +902,10 @@ mbol/usyr.pfb></opt/local/share/texmf-texlive/fonts/type1/urw/symbol/usyr.pfb><
 /opt/local/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></opt/local/sha
 re/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></opt/local/share/texmf-texli
 ve/fonts/type1/urw/times/utmri8a.pfb>
-Output written on example_paper.pdf (8 pages, 831082 bytes).
+Output written on example_paper.pdf (8 pages, 831414 bytes).
 PDF statistics:
- 571 PDF objects out of 1000 (max. 8388607)
- 310 compressed objects within 4 object streams
- 56 named destinations out of 1000 (max. 500000)
+ 572 PDF objects out of 1000 (max. 8388607)
+ 311 compressed objects within 4 object streams
+ 57 named destinations out of 1000 (max. 500000)
  56 words of extra memory for PDF output out of 10000 (max. 10000000)
 
