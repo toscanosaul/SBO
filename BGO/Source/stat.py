@@ -16,6 +16,7 @@ from matplotlib import pyplot as plt
 from . import SK
 from . import gradients
 
+
 class GaussianProcess:
     def __init__(self,dimKernel,numberTraining,trainingData=None,
                  kernel=None,scaledAlpha=1.0):
@@ -125,7 +126,7 @@ class SBOGP(GaussianProcess):
         
         if logproductExpectations is None:
             for i in xrange(n+self._numberTraining):
-                B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2)
+                B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,self._k)
         else:
             for i in xrange(n+self._numberTraining):
                 B[i]=self.B(x,dataObj.Xhist[i,:],self.n1,self.n2,self._k,logproductExpectations[i])
@@ -152,20 +153,74 @@ class SBOGP(GaussianProcess):
         else:
             return aN
         
-    ####Check
-    def plotAn(self,i,L,points,seed):
+        
+    
+    ##only checked for the analytic example. Not optimal.
+    def VarF(self,n,x,X,W,L,kernel,Bf,n1=1,n2=1,scaleAlpha=1.0):
+        alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
+
+        B=np.zeros([1,n+self._numberTraining])
+        for i in xrange(n+self._numberTraining):
+            B[:,i]=Bf(x,np.array([X[i,:],W[i,:]]),n1,n2,kernel)
+        temp2=linalg.solve_triangular(L,B.T,lower=True)
+
+      #  Ainv=linalg.inv(A)
+
+       # temp2=linalg.solve_triangular(L,B.T,lower=True)
+        return kernel.variance*.5*(1.0/((.25+alpha2)**.5))-np.dot(temp2.T,temp2)
+        
+    ####Check only for analytic example
+    def plotAn(self,i,L,points,path,data,X,W,kernel,Bf):
         m=points.shape[0]
         z=np.zeros(m)
+        var=np.zeros(m)
         for j in xrange(m):
-            z[j]=self.aN_grad(points[j,:],L,i,gradient=False)
+            z[j]=self.aN_grad(points[j,:],L,i,data,gradient=False)
+            var[j]=self.VarF(i,points[j,:],X,W,L,kernel,Bf)
         
         fig=plt.figure()
+
         plt.plot(points,-(points**2),label="G(x)")
         plt.plot(points,z,'--',label='$a_%d(x)$'%i)
         
         plt.xlabel('x',fontsize=26)
+        confidence=z+1.96*(var**.5)
+        plt.plot(points,confidence,'--',color='r',label="95% CI")
+        confidence2=z-1.96*(var**.5)
+        plt.plot(points,confidence2,'--',color='r')
+        
         plt.legend()
-        plt.savefig(os.path.join('%d'%seed+"run",'%d'%i+"a_n.pdf"))
+        plt.savefig(os.path.join(path,'%d'%i+"a_n.pdf"))
+        plt.close(fig)
+        
+       ###only for analytic example 
+    def plotmuN(self,n,L,temp1,kern,X,W,muStart,points,m,path):
+        w1=np.linspace(-3,3,m)
+        C,D=np.meshgrid(points,w1)
+     #   X=self._X
+     #   W=self._W
+     #   y=self._y[:,0]
+     #   m=C.shape[0]
+
+        B=np.zeros([m*m,n+self._numberTraining])
+        muN=np.zeros((m,m))
+
+      #  temp1=linalg.solve_triangular(L,np.array(y)-self._muStart,lower=True)
+        for j in xrange(m):
+            for k in xrange(m):
+                for i in xrange(n+self._numberTraining):
+                    B[j+k,i]=kern.K(np.concatenate((np.array([[C[j,k]]]),np.array([[D[j,k]]])),1),np.concatenate((X[i:i+1,:],W[i:i+1,:]),1))[:,0]
+                temp2=linalg.solve_triangular(L,B[j+k:j+k+1,:].T,lower=True)
+                muN[j,k]=muStart+np.dot(temp2.T,temp1)
+
+        fig=plt.figure()
+        CS=plt.contour(C,D,muN)
+        plt.clabel(CS, inline=1, fontsize=10)
+       # plt.title('Contours of estimation of F(x,w)')
+        plt.legend()
+        plt.xlabel('x',fontsize=26)
+        plt.ylabel('w',fontsize=24)
+        plt.savefig(os.path.join(path,'%d'%n+"muN.pdf"))
         plt.close(fig)
     
 

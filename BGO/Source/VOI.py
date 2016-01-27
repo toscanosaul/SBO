@@ -14,6 +14,9 @@ from scipy import linalg
 from numpy import linalg as LA
 from scipy.stats import norm
 from . import gradients
+import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
+from matplotlib import pyplot as plt
+import os
 
 
 class VOI:
@@ -345,6 +348,29 @@ class VOISBO(VOI):
         return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,gamma,BN,L,aux4=aux4,
                             inv=temp1,scratch=scratch1,grad=True,
                             kern=kern,XW=XW)
+
+    ####Check SBO only for analytic example
+###fix plotVOI
+    def plotVOI(self,n,L,path,data,temp2,a,scratch,kern,XW,B,m,points):
+        w1=np.linspace(-3,3,m)
+        C,D=np.meshgrid(points,w1)
+
+        z=np.zeros((m,m))
+        for j in xrange(m):
+            for k in xrange(m): 
+                z[j,k]=self.VOIfunc(n,np.array([[C[j,k],D[j,k]]]),False,L,temp2,a,scratch,kern,XW,B)
+        
+        
+        fig=plt.figure()
+        CS=plt.contour(C,D,z)
+        plt.clabel(CS, inline=1, fontsize=10)
+      #  plt.title('Contours of VOI, n=%d'%n1)
+        plt.xlabel('x',fontsize=26)
+        plt.ylabel('w',fontsize=24)
+        plt.savefig(os.path.join(path,'%d'%n+"VOI.pdf"))
+
+        plt.close(fig)
+
 
 class EI(VOI):
     def __init__(self,dimX,gradXKern=None,SEK=True,*args,**kargs):
