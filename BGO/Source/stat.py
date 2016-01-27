@@ -96,8 +96,6 @@ class SBOGP(GaussianProcess):
             self.gradXBforAn=gradients.gradXBforAnSEK
             
 
-        
-
     def aN_grad(self,x,L,n,dataObj,gradient=True,onlyGradient=False,logproductExpectations=None):
         """
         Computes a_{n} and it can compute its derivative. It evaluates a_{n},
@@ -153,8 +151,6 @@ class SBOGP(GaussianProcess):
         else:
             return aN
         
-        
-    
     ##only checked for the analytic example. Not optimal.
     def VarF(self,n,x,X,W,L,kernel,Bf,n1=1,n2=1,scaleAlpha=1.0):
         alpha2=0.5*((kernel.alpha[n1:n1+n2])**2)/scaleAlpha**2
@@ -181,7 +177,7 @@ class SBOGP(GaussianProcess):
         fig=plt.figure()
 
         plt.plot(points,-(points**2),label="G(x)")
-        plt.plot(points,z,'--',label='$a_%02d(x)$'%i)
+        plt.plot(points,z,'--',label="a_%d(x)$"%i)
         
         plt.xlabel('x',fontsize=26)
         confidence=z+1.96*(var**.5)
@@ -192,7 +188,7 @@ class SBOGP(GaussianProcess):
         plt.legend()
         plt.savefig(os.path.join(path,'%d'%i+"a_n.pdf"))
         plt.close(fig)
-        
+
        ###only for analytic example 
     def plotmuN(self,n,L,temp1,kern,X,W,muStart,points,m,path):
         w1=np.linspace(-3,3,m)
@@ -329,6 +325,40 @@ class KG(GaussianProcess):
             temp2=linalg.solve_triangular(L,gradX[:,j].T,lower=True)
             gradi[j]=np.dot(temp2.T,temp1)
         return a,gradi
+
+       ###only for analytic example 
+    def plotmuN(self,n,L,temp1,points,m,path,data,kern,Xhist):
+        w1=np.linspace(-3,3,m)
+        z=np.zeros(m)
+        var=np.zeros(m)
+        
+        tempN=n+self._numberTraining
+        B2=np.zeros([1,tempN])
+        
+        for i in xrange(m):
+            z[i]=self.muN(points[i,:],n,data,L,temp1,grad=False,onlyGradient=False)
+            temp=kern.K(np.array(points[i,:]).reshape((1,self.n1)))
+            for j in xrange(tempN):
+                B2[0,j]=kern.K(points[i:i+1,:],Xhist[j:j+1,:])
+            temp2=linalg.solve_triangular(L,B2.T,lower=True)
+            res=np.dot(temp2.T,temp2)
+            var[i]=temp-res
+
+
+        fig=plt.figure()
+
+        plt.plot(points,-(points**2),label="G(x)")
+        plt.plot(points,z,'--',label="mu_%d(x)$"%n)
+        
+        plt.xlabel('x',fontsize=26)
+        confidence=z+1.96*(var**.5)
+        plt.plot(points,confidence,'--',color='r',label="95% CI")
+        confidence2=z-1.96*(var**.5)
+        plt.plot(points,confidence2,'--',color='r')
+        
+        plt.legend()
+        plt.savefig(os.path.join(path,'%d'%n+"mu_n.pdf"))
+        plt.close(fig)
         
 class PIGP(GaussianProcess):
     def __init__(self,dimPoints,gradXKern,*args,**kargs):

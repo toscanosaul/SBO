@@ -674,6 +674,27 @@ class KG(VOI):
 
         return self.evalVOI(n,pointNew,a,b,c,keep,keep1,M,L,data.Xhist,kern,tempB,temp5,inner,inv1temp,grad)
 
+
+
+    ###checked only for analytic example
+    def plotVOI(self,n,points,L,data,kern,temp1,temp2,a,m,path):
+        z=np.zeros(m)
+        
+        for i in xrange(m):
+            z[i]=self.VOIfunc(n,points[i,:],L,data,kern,temp1,temp2,False,a,False)
+            
+        fig=plt.figure()
+
+        plt.plot(points,z,'--',label="VOI_%d(x)$"%n)
+        
+        plt.xlabel('x',fontsize=26)
+        
+        plt.legend()
+        plt.savefig(os.path.join(path,'%d'%n+"VOI_n.pdf"))
+        plt.close(fig)
+        
+        
+        
 class PI(VOI):
     def __init__(self,gradXKern,*args,**kargs):
         VOI.__init__(self,*args,**kargs)
