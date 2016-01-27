@@ -178,7 +178,7 @@ trainingPoints=nTemp2
 
 
 
-misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="KG",
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="KGnew",
                          prefix="AnalyticExample")
 
 """
@@ -417,5 +417,5 @@ kgObj=KG.KG(**l)
 We run the SBO algorithm.
 """
 
-kgObj.KGAlg(nTemp4,nRepeat=10,plots=True,Train=True)
+kgObj.KGAlg(nTemp4,nRepeat=10,plots=False,Train=True)
 

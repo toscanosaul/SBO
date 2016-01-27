@@ -178,7 +178,7 @@ trainingPoints=nTemp2
 
 
 
-misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="EI",
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="EInew",
                          prefix="AnalyticExample")
 
 """

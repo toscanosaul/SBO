@@ -173,7 +173,7 @@ trainingPoints=nTemp2
 #folder=os.path.join(nameDirectory,"SBO")
 
 misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,
-                         prefix="AnalyticExample")
+                         prefix="newAnalyticExample")
 
 """
 We define the data object.
@@ -523,5 +523,5 @@ sboObj=SBO.SBO(**l)
 We run the SBO algorithm.
 """
 
-sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=True)
+sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
