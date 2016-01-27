@@ -175,7 +175,7 @@ class SBOGP(GaussianProcess):
         z=np.zeros(m)
         var=np.zeros(m)
         for j in xrange(m):
-            z[j]=self.aN_grad(points[j,:],L,i,data,logproduct,gradient=False)
+            z[j]=self.aN_grad(points[j,:],L,i,data,logproductExpectations=logproduct,gradient=False)
             var[j]=self.VarF(i,points[j,:],X,W,L,kernel,Bf)
         
         fig=plt.figure()
