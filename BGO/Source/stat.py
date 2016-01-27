@@ -170,18 +170,18 @@ class SBOGP(GaussianProcess):
         return kernel.variance*.5*(1.0/((.25+alpha2)**.5))-np.dot(temp2.T,temp2)
         
     ####Check only for analytic example
-    def plotAn(self,i,L,points,path,data,X,W,kernel,Bf):
+    def plotAn(self,i,L,points,path,data,X,W,kernel,Bf,logproduct):
         m=points.shape[0]
         z=np.zeros(m)
         var=np.zeros(m)
         for j in xrange(m):
-            z[j]=self.aN_grad(points[j,:],L,i,data,gradient=False)
+            z[j]=self.aN_grad(points[j,:],L,i,data,logproduct,gradient=False,)
             var[j]=self.VarF(i,points[j,:],X,W,L,kernel,Bf)
         
         fig=plt.figure()
 
         plt.plot(points,-(points**2),label="G(x)")
-        plt.plot(points,z,'--',label='$a_%d(x)$'%i)
+        plt.plot(points,z,'--',label='$a_%02d(x)$'%i)
         
         plt.xlabel('x',fontsize=26)
         confidence=z+1.96*(var**.5)
