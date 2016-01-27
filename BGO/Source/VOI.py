@@ -685,7 +685,7 @@ class KG(VOI):
             
         fig=plt.figure()
 
-        plt.plot(points,z,'--',label="VOI_%d(x)$"%n)
+        plt.plot(points,z,'--',label="VOI_%d(x)"%n)
         
         plt.xlabel('x',fontsize=26)
         

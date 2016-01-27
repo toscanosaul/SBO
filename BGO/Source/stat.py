@@ -348,7 +348,7 @@ class KG(GaussianProcess):
         fig=plt.figure()
 
         plt.plot(points,-(points**2),label="G(x)")
-        plt.plot(points,z,'--',label="mu_%d(x)$"%n)
+        plt.plot(points,z,'--',label="mu_%d(x)"%n)
         
         plt.xlabel('x',fontsize=26)
         confidence=z+1.96*(var**.5)
