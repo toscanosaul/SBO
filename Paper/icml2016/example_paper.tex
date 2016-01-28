@@ -562,30 +562,42 @@ Figure~\ref{fig:tahi7} compares the performance of SBO, KG and EI, plotting the 
 \subsection{Simulated Problems}
 \label{sec:GPexample}
 
-In our next examples, we demonstrate that SBO should be used when the difference of variances $D(x,\w):=\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]-\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]$ is sufficiently large for many different points $(x,\w)$, or/and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is large enough.
+In our next examples, we demonstrate that SBO should be used when $\mbox{corr}\left[f\left(x,\w,\z\right),f\left(x,\w',\z'\right)|f,x,w,w'\right]$ is large enough.
+ %the difference of variances $D(x,\w):=\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]-\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]$ is sufficiently large for many different points $(x,\w)$, or/and% 
 
 We consider the following simulated problems. We define functions $f(x,\w,\z)=h(x,\w)+g(\z)$ on $\left[0,1\right]^{2}\times\mathbb{R}$ where $g(z)$ is drawn from a normal distribution with mean $0$ and variance $\alpha_{d}$, and $h$ is drawn from a Gaussian Process with mean $0$ and and covariance function $\Sigma\left(\left(x,\w\right),\left(x',\w'\right)\right)=\alpha_{h}\exp\left(-\beta\left\Vert \left(x,\w\right)-\left(x',\w'\right)\right\Vert _{2}^{2}\right)$, where $\beta\in\left\{ 2^{-b}:b\in\left\{ -4,-3,-2,-1,0,1,2,3,4,\ldots,15\right\} \right\} $, $\alpha_{h}=\frac{A}{n}$ where $A\in\left\{ \frac{1}{jn}:j\in\left\{ 2,4,8,16\right\} \right\} $ and $n\in\left\{ 1,2,4,8,16\right\} $ is the number of samples taken per iteration, and $\alpha_{d}=\frac{1}{n}-\alpha_{h}$. We also suppose that 
-$\w$ is drawn uniformly from $\left\{ 0,1/49,2/49,\ldots,1\right\} $. Consequently, we have that $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]\approx\alpha_{d}+\alpha_{h}=\frac{1}{n}$, $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]\approx\alpha_{d}$, and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]\approx\Sigma\left(\left(x,\w\right),\left(x,\w'\right)\right)$.
+$\w$ is drawn uniformly from $\left\{ 0,1/49,2/49,\ldots,1\right\} $. Consequently, we have that $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]\approx\alpha_{d}+\alpha_{h}=\frac{1}{n}$, $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]\approx\alpha_{d}$, and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]\approx\Sigma\left(\left(x,\w\right),\left(x,\w'\right)\right)$. Consequently,
 
+\begin{align*}
+\mbox{corr}\left[f\left(x,\w,\z\right),f\left(x,\w',\z'\right)|f,x,w,w'\right]=\frac{1}{jn-1}\mbox{exp}\left(-\beta\left\Vert \left(x,w\right)-\left(x,w'\right)\right\Vert _{2}^{2}\right),
+\end{align*}
+
+and the variance reduction is equal to
+
+\begin{align*}
+\frac{\mbox{Var}\left(f\left(x,w,z\right)|x\right)-\mbox{Var}\left(f\left(x,w,z\right)|x,w\right)}{\mbox{Var}\left(f\left(x,w,z\right)|x\right)}=\frac{1}{jn}.
+\end{align*}
+
+We should observe that when $\beta$ is too small or big, the correlation is small. On the other hand, the correlation is large enough if $\beta$ is not too big or small. 
 
 \begin{figure}[!htb]
     \centering
-\subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the difference between variances is $0.5$\label{fig:sim1}}[0.45\linewidth]{
+\subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the variance reduction is $0.5$\label{fig:sim1}}[0.45\linewidth]{
     \includegraphics[width=0.45\linewidth]{contourPlotbetahN1A2ver2.pdf}}
     \quad
-    \subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the difference between variances is $1/1024$ \label{fig:sim2}}[0.45\linewidth]{
+    \subcaptionbox{Percentage increase between SBO and a Bayesian optimization benchmark, the KG method, when the variance reduction is $1/16$ \label{fig:sim2}}[0.45\linewidth]{
       \includegraphics[width=0.45\linewidth]{contourPlotbetahN8A2ver2.pdf}}
-\caption{Performance results for SBO on simulated problems when the difference between variances is large enough  (plot a), Performance results for SBO on simulated problems when the difference between variances is small  (plot b).
+\caption{Performance results for SBO on simulated problems when the variance reduction is $0.5$  (plot a), Performance results for SBO on simulated problems when the variance reduction is too small  (plot b).
     \label{fig:simulated}}
 \end{figure}
 
-Figure~\ref{fig:sim1} shows percentage increase between SBO and KG, when the difference between variances is $0.5$. We see that SBO is always better than KG whenever $\beta >= 1$. Moreover, it is a lot better than KG when $log(\beta)\in(3,5)$. However, KG is slightly better than SBO when $log(\beta)\in(-2,0)$. This essentially means that $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ benefits SBO, because if $x$ is fixed, then SBO can learn $H(\w)=F\left(x,\w\right)$ for many different $\w$'s when it only evaluates this conditional expectation a few times. This confirms the affirmation made at the beginning of the section.
+Figure~\ref{fig:sim1} shows percentage increase between SBO and KG when the variance reduction is $0.5$, plotting $\mbox{log}(\beta)$ on the x axis. We see that SBO is always better than KG whenever $\beta >= 1$. Moreover, it is a lot better than KG when $log(\beta)\in(3,5)$. However, KG is slightly better than SBO when $log(\beta)\in(-2,0)$. This essentially means that the correlation benefits SBO, because if $x$ is fixed, then SBO can learn $H(\w)=F\left(x,\w\right)$ for many different $\w$'s when it only evaluates this conditional expectation a few times. This confirms the affirmation made at the beginning of the section.
 
-Figure~\ref{fig:sim2} shows percentage increase between SBO and KG, when the difference between variances is $1/1024$. We see that SBO and KG are very similar. However, SBO is again much better when when $log(\beta)\in(3.8,4.2)$. We should note that SBO is better than KG when variance was $0.5$ in Figure~\ref{fig:sim1}, which confirms the affirmation made at the beginning of the section. Furthermore, if the difference between variances is very small and the covariance $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is large enough, SBO would be much better than KG. 
+Figure~\ref{fig:sim2} shows percentage increase between SBO and KG, when the variance reduction is $1/16$. We see that SBO and KG are very similar. However, SBO is again much better when $log(\beta)\in(3.8,4.2)$. We also observe that the variance reduction benefits SBO's performance. 
 
-By doing a factorial analysis, we see that $\beta$ benefits SBO, $A$ benefits KG, there is a positive interaction between $\beta$ and $A$, $n$ and $A$, and a negative interaction between $\beta$, $n$ and $A$, whenever $\beta$ is small enough. 
+%By doing a factorial analysis, we see that $\beta$ benefits SBO, $A$ benefits KG, there is a positive interaction between $\beta$ and $A$, $n$ and $A$, and a negative interaction between $\beta$, $n$ and $A$, whenever $\beta$ is small enough. 
 
-In conclusion, a large covariance $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]$ is fundamental, for SBO outperforms KG. A large difference between variances is helpful to improve SBO results, but it is not sufficient.
+In conclusion, a large correlation $\mbox{corr}\left[f\left(x,\w,\z\right),f\left(x,\w',\z'\right)|f,x,w,w'\right]$ is fundamental, for SBO outperforms KG. A large variance reduction is helpful to improve SBO results, but it is not sufficient.
 
 \subsection{New York City Citi Bike System}
 \label{sec:citibike}
