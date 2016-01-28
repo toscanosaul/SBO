@@ -521,28 +521,28 @@ Figure~\ref{fig:tahi7} compares the performance of SBO, KG and EI, plotting the 
   \captionbox{The contours of $F\left(x,\w\right)=-x^{2}-\w$.}[0.45\linewidth]{
       \includegraphics[width=0.44\linewidth]{8F.pdf}}
       \quad
-  \subcaptionbox{SBO: The contours of SBO's estimate $\mu_n(x,\w)$ of $F\left(x,\w\right)$, at $n=4$.}[0.45\linewidth]{
-      \includegraphics[width=0.44\linewidth]{8Contours_of_estimation_of_F.pdf}}
+  \subcaptionbox{SBO: The contours of SBO's estimate $\mu_n(x,\w)$ of $F\left(x,\w\right)$, at $n=20$.}[0.45\linewidth]{
+      \includegraphics[width=0.44\linewidth]{20muN.pdf}}
 
   \subcaptionbox{
-      SBO: The contours of the value of information $V_n(x,\w)$ under SBO at $n=4$.
+      SBO: The contours of the value of information $V_n(x,\w)$ under SBO at $n=20$.
   SBO's value of information depends on both $x$ and $\w$.}[0.45\linewidth]{
-      \includegraphics[width=0.44\linewidth]{9VOI.pdf}
+      \includegraphics[width=0.44\linewidth]{20VOI.pdf}
   }
   \quad
   \subcaptionbox{
-  SBO: The objective $G(x)$, and SBO's estimate $a_n(x)$ and $95\%$ credible interval, at $n=4$.}[0.45\linewidth]{
-      \includegraphics[width=0.44\linewidth]{8a_n.pdf}
+  SBO: The objective $G(x)$, and SBO's estimate $a_n(x)$ and $95\%$ credible interval, at $n=20$.}[0.45\linewidth]{
+      \includegraphics[width=0.44\linewidth]{20a_n.pdf}
   }
 
   \subcaptionbox{
   KG: The value of information under KG.  KG's value of information depends only on $x$.}[0.45\linewidth]{
-      \includegraphics[width=0.44\linewidth]{9prior10VoiStandardGaussianSeed100samples100.pdf}
+      \includegraphics[width=0.44\linewidth]{20VOI_n.pdf}
   }
   \quad
   \subcaptionbox{
-  KG: The objective $G(x)$, and KG's estimate $a_n(x)$ and $95\%$ credible interval, at $n=4$.}[0.45\linewidth]{
-      \includegraphics[width=0.44\linewidth]{8prior10StandardGaussianSeed100samples100.pdf}
+  KG: The objective $G(x)$, and KG's estimate $a_n(x)$ and $95\%$ credible interval, at $n=20$.}[0.45\linewidth]{
+      \includegraphics[width=0.44\linewidth]{20mu_n.pdf}
   }
 \caption{
     ({\bf First row}) Left shows the contours of $F\left(x,\w\right)=-x^{2}-\w$.  Right shows the contours of SBO's estimate of $F$.  SBO builds a statistical model of $F(x,\w)$, which implies a statistical model on $G(x)$, rather than building a model on $G(x)$ directly like other Bayesian optimization methods.
