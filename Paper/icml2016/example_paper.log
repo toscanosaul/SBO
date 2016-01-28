@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/MacPorts 2014_5) (preloaded format=pdflatex 2015.2.21)  28 JAN 2016 12:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/MacPorts 2014_5) (preloaded format=pdflatex 2015.2.21)  28 JAN 2016 18:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -662,86 +662,70 @@ File: comparisonSameanal.pdf Graphic file (type pdf)
 Package pdftex.def Info: comparisonSameanal.pdf used on input line 555.
 (pdftex.def)             Requested size: 211.3883pt x 158.53795pt.
 
-Underfull \hbox (badness 6412) in paragraph at lines 565--566
-[]\OT1/ptm/m/n/10 In our next ex-am-ples, we demon-strate that SBO
- []
-
-
-Underfull \hbox (badness 6825) in paragraph at lines 565--566
-\OT1/ptm/m/n/10 should be used when the dif-fer-ence of vari-ances
- []
-
-
-Underfull \hbox (badness 1087) in paragraph at lines 565--566
-\OML/ztmcm/m/it/10 D\OT1/ztmcm/m/n/10 (\OML/ztmcm/m/it/10 x; w\OT1/ztmcm/m/n/10
- ) := [] [] \OMS/ztmcm/m/n/10 ^^@ [] []$ \OT1/ptm/m/n/10 is
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 567--569
+Underfull \hbox (badness 10000) in paragraph at lines 568--570
 \OML/ztmcm/m/it/10 [] [] []$\OT1/ptm/m/n/10 , where $\OML/ztmcm/m/it/10 ^^L \O
 MS/ztmcm/m/n/10 2
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 567--569
+Underfull \hbox (badness 10000) in paragraph at lines 568--570
 []$\OT1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 567--569
+Underfull \hbox (badness 10000) in paragraph at lines 568--570
 \OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/n/10 = []$ \OT1/ptm/m/n/10 where $\OML/ztmc
 m/m/it/10 A \OMS/ztmcm/m/n/10 2 []$ \OT1/ptm/m/n/10 and
  []
 
 
-Underfull \hbox (badness 1810) in paragraph at lines 567--569
+Underfull \hbox (badness 1810) in paragraph at lines 568--570
 \OT1/ptm/m/n/10 it-er-a-tion, and $\OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/n/10 = [
 ] \OMS/ztmcm/m/n/10 ^^@ \OML/ztmcm/m/it/10 []$\OT1/ptm/m/n/10 . We also sup-po
 se that
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 567--569
+Underfull \hbox (badness 10000) in paragraph at lines 568--570
 \OML/ztmcm/m/it/10 w$ \OT1/ptm/m/n/10 is drawn uni-formly from $[]$.
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 567--569
+Underfull \hbox (badness 10000) in paragraph at lines 568--570
 \OT1/ptm/m/n/10 Con-se-quently, we have that $[] [] \OMS/ztmcm/m/n/10 ^^Y
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 567--569
+Underfull \hbox (badness 10000) in paragraph at lines 568--570
 \OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/n/10 + \OML/ztmcm/m/it/10 [] \OT1/ztmcm/m/
 n/10 = []$\OT1/ptm/m/n/10 , $[] [] \OMS/ztmcm/m/n/10 ^^Y \OML/ztmcm/m/it/10 []
 $\OT1/ptm/m/n/10 , and
  []
 
-[5]
-Underfull \vbox (badness 10000) has occurred while \output is active []
 
+Underfull \hbox (badness 10000) in paragraph at lines 568--570
+[] [] \OMS/ztmcm/m/n/10 ^^Y \OT1/ztmcm/m/n/10 ^^F []$\OT1/ptm/m/n/10 .
+ []
+
+[5]
+Overfull \hbox (78.80672pt too wide) in paragraph at lines 573--573
+[] 
+ []
 
 <contourPlotbetahN1A2ver2.pdf, id=184, 578.16pt x 433.62pt>
 File: contourPlotbetahN1A2ver2.pdf Graphic file (type pdf)
 
 <use contourPlotbetahN1A2ver2.pdf>
-Package pdftex.def Info: contourPlotbetahN1A2ver2.pdf used on input line 574.
+Package pdftex.def Info: contourPlotbetahN1A2ver2.pdf used on input line 586.
 (pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
 
 <contourPlotbetahN8A2ver2.pdf, id=185, 578.16pt x 433.62pt>
 File: contourPlotbetahN8A2ver2.pdf Graphic file (type pdf)
 
 <use contourPlotbetahN8A2ver2.pdf>
-Package pdftex.def Info: contourPlotbetahN8A2ver2.pdf used on input line 577.
+Package pdftex.def Info: contourPlotbetahN8A2ver2.pdf used on input line 589.
 (pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
-
-Underfull \hbox (badness 3240) in paragraph at lines 582--583
-\OT1/ptm/m/n/10 KG, when the dif-fer-ence be-tween vari-ances is $\OT1/ztmcm/m/
-n/10 0\OML/ztmcm/m/it/10 :\OT1/ztmcm/m/n/10 5$\OT1/ptm/m/n/10 .
- []
-
-[6 <./8F.pdf> <./20muN.pdf
+ [6 <./8F.pdf> <./20muN.pdf
 
 pdfTeX warning: pdflatex (file ./20muN.pdf): PDF inclusion: multiple pdfs with 
 page group included in a single page
@@ -765,80 +749,77 @@ pdfTeX warning: pdflatex (file ./20mu_n.pdf): PDF inclusion: multiple pdfs with
 
 pdfTeX warning: pdflatex (file ./comparisonSameanal.pdf): PDF inclusion: multip
 le pdfs with page group included in a single page
-> <./contourPlotbetahN1A2ver2.pdf
-
-pdfTeX warning: pdflatex (file ./contourPlotbetahN1A2ver2.pdf): PDF inclusion: 
-multiple pdfs with page group included in a single page
-> <./contourPlotbetahN8A2ver2.pdf
-
-pdfTeX warning: pdflatex (file ./contourPlotbetahN8A2ver2.pdf): PDF inclusion: 
-multiple pdfs with page group included in a single page
 >]
-Underfull \hbox (badness 10000) in paragraph at lines 588--589
-[]\OT1/ptm/m/n/10 In con-clu-sion, a large co-vari-ance
+Underfull \hbox (badness 10000) in paragraph at lines 600--601
+[]\OT1/ptm/m/n/10 In con-clu-sion, a large cor-re-la-tion
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 588--589
-[] []$ \OT1/ptm/m/n/10 is fun-da-men-tal, for
+Underfull \hbox (badness 10000) in paragraph at lines 600--601
+[] []$ \OT1/ptm/m/n/10 is fun-da-men-tal,
  []
 
-<newcomparisonSameConfiguration.pdf, id=432, 578.16pt x 433.62pt>
+<newcomparisonSameConfiguration.pdf, id=355, 578.16pt x 433.62pt>
 File: newcomparisonSameConfiguration.pdf Graphic file (type pdf)
 
 <use newcomparisonSameConfiguration.pdf>
 Package pdftex.def Info: newcomparisonSameConfiguration.pdf used on input line 
-598.
+610.
 (pdftex.def)             Requested size: 105.69415pt x 79.26566pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 598--598
+Underfull \hbox (badness 10000) in paragraph at lines 610--610
 []\OT1/ptm/m/n/9 (a) |Per-for-mance com-par-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 598--598
+Underfull \hbox (badness 10000) in paragraph at lines 610--610
 \OT1/ptm/m/n/9 i-son be-tween SBO and
  []
 
 
-Underfull \hbox (badness 4060) in paragraph at lines 598--598
+Underfull \hbox (badness 4060) in paragraph at lines 610--610
 \OT1/ptm/m/n/9 two Bayesian op-ti-miza-tion
  []
 
 
-Underfull \hbox (badness 1308) in paragraph at lines 598--598
+Underfull \hbox (badness 1308) in paragraph at lines 610--610
 \OT1/ptm/m/n/9 meth-ods, on the Citi Bike
  []
 
-<testStationMapPng0-full.png, id=435, 803.0pt x 602.25pt>
+<testStationMapPng0-full.png, id=358, 803.0pt x 602.25pt>
 File: testStationMapPng0-full.png Graphic file (type png)
 
 <use testStationMapPng0-full.png>
-Package pdftex.def Info: testStationMapPng0-full.png used on input line 601.
+Package pdftex.def Info: testStationMapPng0-full.png used on input line 613.
 (pdftex.def)             Requested size: 105.69415pt x 79.26933pt.
 
-Underfull \hbox (badness 2027) in paragraph at lines 601--601
+Underfull \hbox (badness 2027) in paragraph at lines 613--613
 \OT1/ptm/m/n/9 where size and color rep-
  []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-Underfull \hbox (badness 3199) in paragraph at lines 626--627
+Underfull \hbox (badness 3199) in paragraph at lines 638--639
 []\OT1/ptm/m/n/9 deterministic vec-tor that rep-re-sents the
  []
 
 
-Overfull \hbox (3.6017pt too wide) in paragraph at lines 624--633
+Overfull \hbox (3.6017pt too wide) in paragraph at lines 636--645
  [] 
  []
 
-[7 <./newcomparisonSameConfiguration.pdf> <./testStationMapPng0-full.png>]
 
-Package natbib Warning: Citation `langley00' undefined on input line 663.
+Package natbib Warning: Citation `langley00' undefined on input line 675.
 
-(./example_paper.bbl
+(./example_paper.bbl [7 <./contourPlotbetahN1A2ver2.pdf> <./contourPlotbetahN8A
+2ver2.pdf
+
+pdfTeX warning: pdflatex (file ./contourPlotbetahN8A2ver2.pdf): PDF inclusion: 
+multiple pdfs with page group included in a single page
+> <./newcomparisonSameConfiguration.pdf
+
+pdfTeX warning: pdflatex (file ./newcomparisonSameConfiguration.pdf): PDF inclu
+sion: multiple pdfs with page group included in a single page
+> <./testStationMapPng0-full.png>]
 Underfull \hbox (badness 1082) in paragraph at lines 13--17
 \OT1/ptm/m/n/10 hi-er-ar-chi-cal re-in-force-ment learn-ing.  \OT1/ptm/m/it/10 
 arXiv preprint
@@ -862,24 +843,24 @@ s .
 
 Package natbib Warning: There were undefined citations.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 668.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 680.
 [8]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 668.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 680.
  (./example_paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 668.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 668.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 680.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 680.
 Package rerunfilecheck Info: File `example_paper.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 668.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 680.
  ) 
 Here is how much of TeX's memory you used:
  8327 strings out of 494213
  122208 string characters out of 6157463
- 239165 words of memory out of 5000000
+ 238098 words of memory out of 5000000
  11403 multiletter control sequences out of 15000+600000
  50321 words of font info for 114 fonts, out of 8000000 for 9000
  430 hyphenation exceptions out of 8191
@@ -896,10 +877,10 @@ mbol/usyr.pfb></opt/local/share/texmf-texlive/fonts/type1/urw/symbol/usyr.pfb><
 /opt/local/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></opt/local/sha
 re/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></opt/local/share/texmf-texli
 ve/fonts/type1/urw/times/utmri8a.pfb>
-Output written on example_paper.pdf (8 pages, 825374 bytes).
+Output written on example_paper.pdf (8 pages, 825379 bytes).
 PDF statistics:
- 554 PDF objects out of 1000 (max. 8388607)
- 295 compressed objects within 3 object streams
+ 553 PDF objects out of 1000 (max. 8388607)
+ 294 compressed objects within 3 object streams
  57 named destinations out of 1000 (max. 500000)
  56 words of extra memory for PDF output out of 10000 (max. 10000000)
 
