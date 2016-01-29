@@ -523,5 +523,5 @@ sboObj=SBO.SBO(**l)
 We run the SBO algorithm.
 """
 
-sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=True)
+sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
