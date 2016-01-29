@@ -173,7 +173,7 @@ trainingPoints=nTemp2
 #folder=os.path.join(nameDirectory,"SBO")
 
 misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,
-                         prefix="newAnalyticExample")
+                         prefix="newAnalyticExample2")
 
 """
 We define the data object.

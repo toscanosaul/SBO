@@ -180,7 +180,7 @@ trainingPoints=nTemp2
 
 
 misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="KGnew",
-                         prefix="AnalyticExample")
+                         prefix="newAnalyticExample2")
 
 """
 We define the data object.
