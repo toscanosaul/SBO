@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/MacPorts 2014_5) (preloaded format=pdflatex 2015.2.21)  28 JAN 2016 19:10
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/MacPorts 2014_5) (preloaded format=pdflatex 2015.2.21)  28 JAN 2016 19:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -759,7 +759,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 600--601
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 600--601
-[] []$ \OT1/ptm/m/n/10 is fun-da-men-tal,
+[] []$ \OT1/ptm/m/n/10 is fun-da-men-tal, for
+ []
+
+
+Underfull \hbox (badness 1701) in paragraph at lines 600--601
+\OT1/ptm/m/n/10 SBO out-per-forms KG. A large vari-ance re-duc-tion is
  []
 
 <newcomparisonSameConfiguration.pdf, id=355, 578.16pt x 433.62pt>
@@ -880,7 +885,7 @@ mbol/usyr.pfb></opt/local/share/texmf-texlive/fonts/type1/urw/symbol/usyr.pfb><
 /opt/local/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></opt/local/sha
 re/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></opt/local/share/texmf-texli
 ve/fonts/type1/urw/times/utmri8a.pfb>
-Output written on example_paper.pdf (8 pages, 825311 bytes).
+Output written on example_paper.pdf (8 pages, 825300 bytes).
 PDF statistics:
  553 PDF objects out of 1000 (max. 8388607)
  294 compressed objects within 3 object streams
