@@ -591,9 +591,9 @@ We should observe that when $\beta$ is too small or big, the correlation is smal
     \label{fig:simulated}}
 \end{figure}
 
-Figure~\ref{fig:sim1} shows percentage increase between SBO and KG when the variance reduction is $0.5$, plotting $\mbox{log}(\beta)$ on the x axis. We see that SBO is always better than KG whenever $\beta >= 1$. Moreover, it is a lot better than KG when $log(\beta)\in(3,5)$. However, KG is slightly better than SBO when $log(\beta)\in(-2,0)$. This essentially means that the correlation benefits SBO, because if $x$ is fixed, then SBO can learn $H(\w)=F\left(x,\w\right)$ for many different $\w$'s when it only evaluates this conditional expectation a few times. This confirms the affirmation made at the beginning of the section.
+Figure~\ref{fig:sim1} shows percentage increase between SBO and KG when the variance reduction is $0.5$, plotting $\mbox{log}(\beta)$ on the x axis. We see that SBO is always better than KG whenever $\beta >= 1$. Moreover, it is a lot better than KG when $log(\beta)\in(3,5)$. However, KG is slightly better than SBO when $log(\beta)\in(-2,0)$. This essentially means that the correlation benefits SBO, because if $x$ is fixed, then SBO can learn $H(\w)=F\left(x,\w\right)$ for many different $\w$'s when it only evaluates this conditional expectation a few times. We can also see that a large variance reduction is not enough for SBO outperforms KG. 
 
-Figure~\ref{fig:sim2} shows percentage increase between SBO and KG, when the variance reduction is $1/16$. We see that SBO and KG are very similar. However, SBO is again much better when $log(\beta)\in(3.8,4.2)$. We also observe that the variance reduction benefits SBO's performance. 
+Figure~\ref{fig:sim2} shows percentage increase between SBO and KG, when the variance reduction is $1/16$. We see that SBO and KG are very similar. However, SBO is again much better when $log(\beta)\in(3.8,4.2)$. We also observe that the variance reduction benefits SBO's performance.
 
 %By doing a factorial analysis, we see that $\beta$ benefits SBO, $A$ benefits KG, there is a positive interaction between $\beta$ and $A$, $n$ and $A$, and a negative interaction between $\beta$, $n$ and $A$, whenever $\beta$ is small enough. 
 
