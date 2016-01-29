@@ -562,14 +562,14 @@ Figure~\ref{fig:tahi7} compares the performance of SBO, KG and EI, plotting the 
 \subsection{Simulated Problems}
 \label{sec:GPexample}
 
-In our next examples, we demonstrate that SBO should be used when $\mbox{corr}\left[f\left(x,\w,\z\right),f\left(x,\w',\z'\right)|f,x,w,w'\right]$ is large enough.
+In our next examples, we demonstrate that SBO should be used when the correlation $\mbox{corr}\left[f\left(x,w,z\right),f\left(x,w'z\right)|x,w\right]$ is large enough. We also show that the variance reduction $\frac{\mbox{Var}\left(f\left(x,w,z\right)|x\right)-\mbox{Var}\left(f\left(x,w,z\right)|x,w\right)}{\mbox{Var}\left(f\left(x,w,z\right)|x\right)}$ benefits SBO.
  %the difference of variances $D(x,\w):=\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]-\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]$ is sufficiently large for many different points $(x,\w)$, or/and% 
 
 We consider the following simulated problems. We define functions $f(x,\w,\z)=h(x,\w)+g(\z)$ on $\left[0,1\right]^{2}\times\mathbb{R}$ where $g(z)$ is drawn from a normal distribution with mean $0$ and variance $\alpha_{d}$, and $h$ is drawn from a Gaussian Process with mean $0$ and and covariance function $\Sigma\left(\left(x,\w\right),\left(x',\w'\right)\right)=\alpha_{h}\exp\left(-\beta\left\Vert \left(x,\w\right)-\left(x',\w'\right)\right\Vert _{2}^{2}\right)$, where $\beta\in\left\{ 2^{-b}:b\in\left\{ -4,-3,-2,-1,0,1,2,3,4,\ldots,15\right\} \right\} $, $\alpha_{h}=\frac{A}{n}$ where $A\in\left\{ \frac{1}{jn}:j\in\left\{ 2,4,8,16\right\} \right\} $ and $n\in\left\{ 1,2,4,8,16\right\} $ is the number of samples taken per iteration, and $\alpha_{d}=\frac{1}{n}-\alpha_{h}$. We also suppose that 
 $\w$ is drawn uniformly from $\left\{ 0,1/49,2/49,\ldots,1\right\} $. Consequently, we have that $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x\right]\approx\alpha_{d}+\alpha_{h}=\frac{1}{n}$, $\mbox{Var}\left[f\left(x,\w,\z\right)|f,x,\w\right]\approx\alpha_{d}$, and $\mbox{Cov}\left[f\left(x,\w,\z\right),f\left(x,\w',\z\right)|f,x,z\right]\approx\Sigma\left(\left(x,\w\right),\left(x,\w'\right)\right)$. Consequently,
-
 \begin{align*}
-\mbox{corr}\left[f\left(x,\w,\z\right),f\left(x,\w',\z'\right)|f,x,w,w'\right]=\frac{1}{jn-1}\mbox{exp}\left(-\beta\left\Vert \left(x,w\right)-\left(x,w'\right)\right\Vert _{2}^{2}\right),
+\mbox{corr}\left[f\left(x,w,z\right),f\left(x,w'z\right)|x,w\right]&=\frac{1}{jn-1}\times\\  
+&\mbox{exp}\left(-\beta\left\Vert \left(x,w\right)-\left(x,w'\right)\right\Vert _{2}^{2}\right),
 \end{align*}
 
 and the variance reduction is equal to
