@@ -352,7 +352,7 @@ class VOISBO(VOI):
     ####Check SBO only for analytic example
 ###fix plotVOI
     def plotVOI(self,n,L,path,data,temp2,a,scratch,kern,XW,B,m,points):
-        w1=np.linspace(-3,3,m)
+        w1=np.linspace(-0.5,0.5,m)
         C,D=np.meshgrid(points,w1)
 
         z=np.zeros((m,m))
