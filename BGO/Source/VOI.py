@@ -689,7 +689,7 @@ class KG(VOI):
         
         plt.xlabel('x',fontsize=26)
         pylab.xlim([-0.5,0.5])
-        plt.legend()
+      #  plt.legend()
         plt.savefig(os.path.join(path,'%d'%n+"VOI_n.pdf"))
         plt.close(fig)
         
