@@ -17,7 +17,7 @@ from . import gradients
 import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 from matplotlib import pyplot as plt
 import os
-
+import pylab
 
 class VOI:
     def __init__(self,numberTraining):
@@ -688,7 +688,7 @@ class KG(VOI):
         plt.plot(points,z,'--',label="VOI_%d(x)"%n)
         
         plt.xlabel('x',fontsize=26)
-        
+        pylab.xlim([-0.5,0.5])
         plt.legend()
         plt.savefig(os.path.join(path,'%d'%n+"VOI_n.pdf"))
         plt.close(fig)

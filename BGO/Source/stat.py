@@ -177,7 +177,7 @@ class SBOGP(GaussianProcess):
         fig=plt.figure()
 
         plt.plot(points,-(points**2),label="G(x)")
-        plt.plot(points,z,'--',label="a_%d(x)"%i)
+        plt.plot(points,z,'--',label="$a_n$")
         
         plt.xlabel('x',fontsize=26)
         confidence=z+1.96*(var**.5)
@@ -354,14 +354,14 @@ class KG(GaussianProcess):
         fig=plt.figure()
 
         plt.plot(points,-(points**2),label="G(x)")
-        plt.plot(points,z,'--',label="mu_%d(x)"%n)
+        plt.plot(points,z,'--',label="$\mu_n$")
         
         plt.xlabel('x',fontsize=26)
         confidence=z+1.96*(var**.5)
         plt.plot(points,confidence,'--',color='r',label="95% CI")
         confidence2=z-1.96*(var**.5)
         plt.plot(points,confidence2,'--',color='r')
-        
+        pylab.xlim([-0.5,0.5]) 
         plt.legend()
         plt.savefig(os.path.join(path,'%d'%n+"mu_n.pdf"))
         plt.close(fig)
