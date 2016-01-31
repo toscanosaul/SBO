@@ -16,6 +16,12 @@ from matplotlib import pyplot as plt
 from . import SK
 from . import gradients
 import pylab
+import matplotlib
+
+font = {'family' : 'normal',
+        'size'   : 30}
+matplotlib.rc('font', **font)
+
 
 class GaussianProcess:
     def __init__(self,dimKernel,numberTraining,trainingData=None,
@@ -175,13 +181,16 @@ class SBOGP(GaussianProcess):
             var[j]=self.VarF(i,points[j,:],X,W,L,kernel,Bf)
         
         fig=plt.figure()
-
+        fig.set_size_inches(12.5, 10.8)
         plt.plot(points,-(points**2),label="G(x)")
         plt.plot(points,z,'--',label="$a_n$")
-        
-        plt.xlabel('x',fontsize=26)
+        ax=plt.subplot(111)
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        plt.xlabel('x',fontsize=30)
         confidence=z+1.96*(var**.5)
-        plt.plot(points,confidence,'--',color='r',label="95% CI")
+        plt.plot(points,confidence,'--',color='r',label="95% \n CI")
         confidence2=z-1.96*(var**.5)
         plt.plot(points,confidence2,'--',color='r')
         ax = plt.subplot(111)
@@ -190,7 +199,8 @@ class SBOGP(GaussianProcess):
 
         # Put a legend to the right of the current axis
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-        plt.legend()
+    #    plt.legend()
+        pylab.ylim([-0.6,0.5])
         pylab.xlim([-0.5,0.5])
         plt.savefig(os.path.join(path,'%d'%i+"a_n.pdf"))
         plt.close(fig)
@@ -216,12 +226,13 @@ class SBOGP(GaussianProcess):
                 muN[j,k]=muStart+np.dot(temp2.T,temp1)
 
         fig=plt.figure()
+        fig.set_size_inches(11.5, 10.8)
         CS=plt.contour(C,D,muN)
-        plt.clabel(CS, inline=1, fontsize=10)
+        plt.clabel(CS, inline=1, fontsize=30)
        # plt.title('Contours of estimation of F(x,w)')
         plt.legend()
-        plt.xlabel('x',fontsize=26)
-        plt.ylabel('w',fontsize=24)
+        plt.xlabel('x',fontsize=30)
+        plt.ylabel('w',fontsize=30)
         plt.savefig(os.path.join(path,'%d'%n+"muN.pdf"))
         plt.close(fig)
     
@@ -334,7 +345,7 @@ class KG(GaussianProcess):
 
        ###only for analytic example 
     def plotmuN(self,n,L,temp1,points,m,path,data,kern,Xhist):
-        w1=np.linspace(-3,3,m)
+        w1=np.linspace(-0.5,0.5,m)
         z=np.zeros(m)
         var=np.zeros(m)
         
@@ -352,17 +363,20 @@ class KG(GaussianProcess):
 
 
         fig=plt.figure()
-
+        fig.set_size_inches(12.5, 10.8)
         plt.plot(points,-(points**2),label="G(x)")
         plt.plot(points,z,'--',label="$\mu_n$")
-        
-        plt.xlabel('x',fontsize=26)
+        ax=plt.subplot(111)
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+        plt.xlabel('x',fontsize=30)
         confidence=z+1.96*(var**.5)
-        plt.plot(points,confidence,'--',color='r',label="95% CI")
+        plt.plot(points,confidence,'--',color='r',label="95% \n CI")
         confidence2=z-1.96*(var**.5)
         plt.plot(points,confidence2,'--',color='r')
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         pylab.xlim([-0.5,0.5]) 
-        plt.legend()
+       # plt.legend()
         plt.savefig(os.path.join(path,'%d'%n+"mu_n.pdf"))
         plt.close(fig)
         
