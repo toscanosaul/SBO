@@ -15,7 +15,7 @@ import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 from matplotlib import pyplot as plt
 from . import SK
 from . import gradients
-
+import pylab
 
 class GaussianProcess:
     def __init__(self,dimKernel,numberTraining,trainingData=None,
@@ -184,8 +184,14 @@ class SBOGP(GaussianProcess):
         plt.plot(points,confidence,'--',color='r',label="95% CI")
         confidence2=z-1.96*(var**.5)
         plt.plot(points,confidence2,'--',color='r')
-        
+        ax = plt.subplot(111)
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+        # Put a legend to the right of the current axis
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         plt.legend()
+        pylab.xlim([-0.5,0.5])
         plt.savefig(os.path.join(path,'%d'%i+"a_n.pdf"))
         plt.close(fig)
 
