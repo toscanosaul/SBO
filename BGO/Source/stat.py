@@ -191,7 +191,7 @@ class SBOGP(GaussianProcess):
 
        ###only for analytic example 
     def plotmuN(self,n,L,temp1,kern,X,W,muStart,points,m,path):
-        w1=np.linspace(-3,3,m)
+        w1=np.linspace(-.5,.5,m)
         C,D=np.meshgrid(points,w1)
      #   X=self._X
      #   W=self._W
