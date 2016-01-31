@@ -18,6 +18,13 @@ import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 from matplotlib import pyplot as plt
 import os
 import pylab
+import matplotlib
+
+font = {'family' : 'normal',
+         # 'weight' : 'bold',
+         'size'   : 30}
+
+matplotlib.rc('font', **font)
 
 class VOI:
     def __init__(self,numberTraining):
@@ -362,11 +369,12 @@ class VOISBO(VOI):
         
         
         fig=plt.figure()
+        fig.set_size_inches(13, 10.8)
         CS=plt.contour(C,D,z)
-        plt.clabel(CS, inline=1, fontsize=10)
+        plt.clabel(CS, inline=1, fontsize=30)
       #  plt.title('Contours of VOI, n=%d'%n1)
-        plt.xlabel('x',fontsize=26)
-        plt.ylabel('w',fontsize=24)
+        plt.xlabel('x',fontsize=30)
+        plt.ylabel('w',fontsize=30)
         plt.savefig(os.path.join(path,'%d'%n+"VOI.pdf"))
 
         plt.close(fig)
@@ -684,10 +692,10 @@ class KG(VOI):
             z[i]=self.VOIfunc(n,points[i,:],L,data,kern,temp1,temp2,False,a,False)
             
         fig=plt.figure()
-
+        fig.set_size_inches(11.8, 10.8)
         plt.plot(points,z,'--',label="VOI_%d(x)"%n)
         
-        plt.xlabel('x',fontsize=26)
+        plt.xlabel('x',fontsize=30)
         pylab.xlim([-0.5,0.5])
       #  plt.legend()
         plt.savefig(os.path.join(path,'%d'%n+"VOI_n.pdf"))
