@@ -181,7 +181,7 @@ class SBOGP(GaussianProcess):
             var[j]=self.VarF(i,points[j,:],X,W,L,kernel,Bf)
         
         fig=plt.figure()
-        fig.set_size_inches(12.5, 10.8)
+        fig.set_size_inches(20, 20)
         plt.plot(points,-(points**2),label="G(x)")
         plt.plot(points,z,'--',label="$a_n$")
         ax=plt.subplot(111)
@@ -207,7 +207,7 @@ class SBOGP(GaussianProcess):
 
        ###only for analytic example 
     def plotmuN(self,n,L,temp1,kern,X,W,muStart,points,m,path):
-        w1=np.linspace(-.5,.5,m)
+        w1=np.linspace(-3,3,m)
         C,D=np.meshgrid(points,w1)
      #   X=self._X
      #   W=self._W
@@ -226,11 +226,13 @@ class SBOGP(GaussianProcess):
                 muN[j,k]=muStart+np.dot(temp2.T,temp1)
 
         fig=plt.figure()
-        fig.set_size_inches(11.5, 10.8)
-        CS=plt.contour(C,D,muN)
-        plt.clabel(CS, inline=1, fontsize=30)
+        fig.set_size_inches(20, 20)
+        num_levels = 5
+        CS=plt.contourf(C,D,muN,num_levels,cmap=plt.cm.PRGn)
+        plt.colorbar(CS)
+       # plt.clabel(CS, inline=1, fontsize=30)
        # plt.title('Contours of estimation of F(x,w)')
-        plt.legend()
+       # plt.legend()
         plt.xlabel('x',fontsize=30)
         plt.ylabel('w',fontsize=30)
         plt.savefig(os.path.join(path,'%d'%n+"muN.pdf"))
@@ -363,7 +365,7 @@ class KG(GaussianProcess):
 
 
         fig=plt.figure()
-        fig.set_size_inches(12.5, 10.8)
+        fig.set_size_inches(20, 20)
         plt.plot(points,-(points**2),label="G(x)")
         plt.plot(points,z,'--',label="$\mu_n$")
         ax=plt.subplot(111)
