@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 This file defines the statistical model used.
 It includes the statistical models for SBO, KG,
