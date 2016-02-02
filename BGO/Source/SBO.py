@@ -375,10 +375,8 @@ class SBO:
             wSt=self.Obj.simulatorW(nStart)
 	    XWst=np.concatenate((Xst,wSt),1)
 	    args3=self.getParametersOptVoi(i)
-	    
 	    pool = mp.Pool(processes=numProcesses)
 	    jobs = []
-
             for j in range(nStart):
                 job = pool.apply_async(misc.VOIOptWrapper, args=(self,XWst[j:j+1,:],),
 				       kwds=args3)
@@ -394,7 +392,6 @@ class SBO:
                 self.optRuns.append(jobs[j].get())
             except Exception as e:
                 print "Error optimizing VOI"
-                
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
 	    fl.writeNewPointSBO(self,self.optRuns[j])
