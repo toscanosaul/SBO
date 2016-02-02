@@ -18,7 +18,7 @@ import pylab
 import matplotlib
 
 font = {'family' : 'normal',
-        'size'   : 30}
+        'size'   : 50}
 matplotlib.rc('font', **font)
 
 
@@ -187,7 +187,7 @@ class SBOGP(GaussianProcess):
         box = ax.get_position()
         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-        plt.xlabel('x',fontsize=30)
+        plt.xlabel('x',fontsize=40)
         confidence=z+1.96*(var**.5)
         plt.plot(points,confidence,'--',color='r',label="95% \n CI")
         confidence2=z-1.96*(var**.5)
@@ -232,8 +232,8 @@ class SBOGP(GaussianProcess):
        # plt.clabel(CS, inline=1, fontsize=30)
        # plt.title('Contours of estimation of F(x,w)')
        # plt.legend()
-        plt.xlabel('x',fontsize=30)
-        plt.ylabel('w',fontsize=30)
+        plt.xlabel('x',fontsize=40)
+        plt.ylabel('w',fontsize=40)
         plt.savefig(os.path.join(path,'%d'%n+"muN.pdf"))
         plt.close(fig)
     
@@ -370,7 +370,7 @@ class KG(GaussianProcess):
         ax=plt.subplot(111)
         box = ax.get_position()
         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-        plt.xlabel('x',fontsize=30)
+        plt.xlabel('x',fontsize=40)
         confidence=z+1.96*(var**.5)
         plt.plot(points,confidence,'--',color='r',label="95% \n CI")
         confidence2=z-1.96*(var**.5)

@@ -22,7 +22,7 @@ import matplotlib
 
 font = {'family' : 'normal',
          # 'weight' : 'bold',
-         'size'   : 40}
+         'size'   : 50}
 
 matplotlib.rc('font', **font)
 
@@ -359,10 +359,8 @@ class VOISBO(VOI):
     ####Check SBO only for analytic example
 ###fix plotVOI
     def plotVOI(self,n,L,path,data,temp2,a,scratch,kern,XW,B,m,points):
-  #      limit=max(0.5,np.max(abs(XW[:,1])))+1.0
         w1=np.linspace(min(-0.5,-np.max(abs(XW[:,1])))-1.0,max(0.5,np.max(abs(XW[:,1])))+1.0,m)
         C,D=np.meshgrid(points,w1)
-
         z=np.zeros((m,m))
         for j in xrange(m):
             for k in xrange(m): 
@@ -371,34 +369,24 @@ class VOISBO(VOI):
         
         fig=plt.figure()
         num_levels = 5
-       # midpoint=0
-       # levels=np.linspace(0, z.max(),num_levels)
-        #levels = np.linspace(-0.5, 10, num_levels, endpoint=True)
-       # midp = np.mean(np.c_[levels[:-1], levels[1:]], axis=1)
-       # vals = np.interp(midp, [z.min(), 0, z.max], [0, 0.5, 1])
-       # colors = plt.cm.PRGn(vals)
-       # cmap, norm = from_levels_and_colors(levels, colors)
         fig.set_size_inches(20, 20)
         CS=plt.contourf(C,D,z,num_levels,cmap=plt.cm.PRGn)
         plt.colorbar(CS)
-      #  plt.clabel(CS, inline=1, fontsize=30)
-      #  plt.title('Contours of VOI, n=%d'%n1)
         Xp=XW[0:self._numberTraining,0]
         Wp=XW[0:self._numberTraining,1]
-       # print XW
-        pylab.plot(Xp,Wp,'o',color='red',markersize=40,label="Training point")
+        pylab.plot(Xp,Wp,'o',color='red',markersize=30,label="Training point")
         if n>0:
             Xp=XW[self._numberTraining:self._numberTraining+n,0]
             Wp=XW[self._numberTraining:self._numberTraining+n,1]
-            pylab.plot(Xp,Wp,'o',color='firebrick',markersize=40,label="Chosen point")
+            pylab.plot(Xp,Wp,'o',color='firebrick',markersize=30,label="Chosen point")
         ax = plt.subplot(111)
         box = ax.get_position()
         ax.set_position([box.x0, box.y0+box.height*0.1, box.width, box.height*0.9])
 
         # Put a legend to the right of the current axis
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.06),ncol=2)
-        plt.xlabel('x',fontsize=30)
-        plt.ylabel('w',fontsize=30)
+        plt.xlabel('x',fontsize=40)
+        plt.ylabel('w',fontsize=40)
         plt.savefig(os.path.join(path,'%d'%n+"VOI.pdf"))
 
         plt.close(fig)
@@ -729,7 +717,7 @@ class KG(VOI):
         ax.set_position([box.x0, box.y0+box.height*0.1, box.width, box.height*0.9])
 
         # Put a legend to the right of the current axis
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.06),ncol=2,fontsize=40)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.06),ncol=2,fontsize=30)
         
         pylab.xlim([-0.5,0.5])
       #  plt.legend()
