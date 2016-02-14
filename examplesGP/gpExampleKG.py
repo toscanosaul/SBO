@@ -46,6 +46,7 @@ nTemp4=int(sys.argv[4]) #number of iterations
 nTemp5=sys.argv[5] #True if code is run in parallel; False otherwise.
 nTemp6=int(sys.argv[6]) #number of restarts for the optimization method
 
+
 if nTemp5=='F':
     nTemp5=False
     nTemp6=1
@@ -117,6 +118,7 @@ domainX=np.linspace(0,1,ngrid)
 domainW=np.linspace(0,1,ngrid)
 
 
+randomSeedFile=int(sys.argv[10])
 defineFunction=sys.argv[9]
 
 if defineFunction=='F':
@@ -156,7 +158,8 @@ if defineFunction:
   #  np.savetxt(f,noisy)
   #  f.close()
 else:
-    output=np.loadtxt(os.path.join("functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"))    
+    output=np.loadtxt(os.path.join('%d'%randomSeedFile+"functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"))
+  #  output=np.loadtxt(os.path.join(afunctions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"))    
   #  noisy=np.loadtxt("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
 
 
@@ -260,7 +263,7 @@ Objective=inter.objective(None,n1,noisyG,numberSamplesForG,sampleFromXVn,
 
 
 """
-We define the miscellaneous object.
+We define the mt.
 """
 parallel=nTemp5
 
@@ -271,9 +274,8 @@ trainingPoints=nTemp2
 #folder=os.path.join(nameDirectory,"SBO")
 
 
-
 misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="KG",
-                         prefix=os.path.join("results","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3))
+                         prefix=os.path.join('%d'%randomSeedFile+"results","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3))
 
 """
 We define the data object.

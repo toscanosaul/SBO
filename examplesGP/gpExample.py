@@ -46,6 +46,7 @@ nTemp4=int(sys.argv[4]) #number of iterations
 nTemp5=sys.argv[5] #True if code is run in parallel; False otherwise.
 nTemp6=int(sys.argv[6]) #number of restarts for the optimization method
 
+
 if nTemp5=='F':
     nTemp5=False
     nTemp6=1
@@ -119,12 +120,16 @@ domainW=np.linspace(0,1,ngrid)
 
 defineFunction=sys.argv[9]
 
+randomSeedFile=int(sys.argv[10])
+
 if defineFunction=='F':
     defineFunction=False
 else:
     defineFunction=True
 
 if defineFunction:
+
+    np.random.seed(randomSeedFile)
     z=np.zeros((ngrid*ngrid,2))
     
     for i in range(ngrid):
@@ -133,35 +138,41 @@ if defineFunction:
             z[i*ngrid+j,1]=domainW[j]
     
     output=h2(z)
-    
-    f=open(os.path.join("functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"),'w')
+    z1=np.zeros(100)
+
+    for i in range(100):
+	z[i]=
+    if not os.path.exists('%d'%randomSeedFile+"functions"):
+    	os.makedirs('%d'%randomSeedFile+"functions") 
+    f=open(os.path.join('%d'%randomSeedFile+"functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"),'w')
     np.savetxt(f,output)
     f.close()
     
     valuesOutput=np.zeros(ngrid)
     
-    for j in xrange(ngrid):
-        results=np.zeros(ngrid)
-        for i in xrange(ngrid):
-            results[i]=output[j*ngrid+i]
-        valuesOutput[j]=np.mean(results)
-    
-    f=open(os.path.join("functions","valuesof"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"),'w')
-    np.savetxt(f,valuesOutput)
-    f.close()
+     
+  #  for j in xrange(ngrid):
+  #      results=np.zeros(ngrid)
+  #      for i in xrange(ngrid):
+  #          results[i]=output[j*ngrid+i]
+  #      valuesOutput[j]=np.mean(results)
 
-    
+  #  f=open(os.path.join('%d'%randomSeedFile+"functions","valuesof"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"),'w')
+  #  np.savetxt(f,valuesOutput)
+  #  f.close()
+
  #   f=open("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt",'w')
  #   noisy=np.random.normal(0,np.sqrt(alphad),(ngrid*ngrid,ngrid))
   #  np.savetxt(f,noisy)
   #  f.close()
 else:
-    output=np.loadtxt(os.path.join("functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"))
+    print randomSeedFile
+    output=np.loadtxt(os.path.join('%d'%randomSeedFile+"functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"))
   #  noisy=np.loadtxt("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
 
 
 ###########
-
+np.random.seed(randomSeed)
 def getindex(x):
     dx=1.0/(ngrid-1)
     i=round(x/dx)
@@ -272,7 +283,8 @@ trainingPoints=nTemp2
 #folder=os.path.join(nameDirectory,"SBO")
 
 misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,
-                         prefix=os.path.join("results","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3))
+                         prefix=os.path.join('%d'%randomSeedFile+"results","function"
+			+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3))
 
 """
 We define the data object.
