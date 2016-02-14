@@ -14,8 +14,8 @@ font = {'family' : 'normal',
     'weight' : 'bold',
     'size'   : 15}
 
-repetitions=2
-end=1001
+repetitions=1001
+end=2001
 
 
 samplesIteration=[1]
@@ -63,11 +63,14 @@ if load is True:
                 for i in range(repetitions,end):
 			try:
 				output=np.loadtxt(os.path.join('%d'%i+"functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+".txt"))
+				output2=np.loadtxt(os.path.join('%d'%i+"functions","function"+"betah"+'%f'%betah+
+                                    "Aparam"+'%f'%Aparam+'%d'%nTemp3+"noise"+".txt"))
+				tempNoise=np.mean(output2)
 				for k1 in xrange(ngrid):
   					results=np.zeros(ngrid)
   					for k2 in xrange(ngrid):
             					results[k2]=output[k1*ngrid+k2]
-					valuesOutput[k1]=np.mean(results)
+					valuesOutput[k1]=np.mean(results)+tempNoise
                         	f=open(os.path.join("%d"%i+"functions","rangeof"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%n+".txt"),'w')
 				rang=np.zeros(2)
 				rang[0]=np.min(valuesOutput)
@@ -164,31 +167,31 @@ write=load
 
 
 if write is True:
-    matfile = '100300manyfunctionsAvsbetabetaweighteddifferences.mat'
+    matfile = '10012000manyfunctionsAvsbetabetaweighteddifferences.mat'
     scipy.io.savemat(matfile, mdict={'out': differences}, oned_as='row')
     
-    matfile = '100300manyfunctionsnewAvsbetalargebetavarDiffweighted.mat'
+    matfile = '10012000manyfunctionsnewAvsbetalargebetavarDiffweighted.mat'
     scipy.io.savemat(matfile, mdict={'out': varDifferences}, oned_as='row')
     
-    matfile = '100300manyfunctionsAvsbetabetaweighteddifferences2.mat'
+    matfile = '10012000manyfunctionsAvsbetabetaweighteddifferences2.mat'
     scipy.io.savemat(matfile, mdict={'out': differences2}, oned_as='row')
     
-    matfile = '100300manyfunctionsnewAvsbetalargebetavarDiffweighted2.mat'
+    matfile = '10012000manyfunctionsnewAvsbetalargebetavarDiffweighted2.mat'
     scipy.io.savemat(matfile, mdict={'out': varDifferences2}, oned_as='row')
-    matfile = '100300manyfunctionsAvsbetabetaweighteddifferences3.mat'
+    matfile = '10012000manyfunctionsAvsbetabetaweighteddifferences3.mat'
     scipy.io.savemat(matfile, mdict={'out': differences3}, oned_as='row')
     
-    matfile = '100300manyfunctionsnewAvsbetalargebetavarDiffweighted3.mat'
+    matfile = '10012000manyfunctionsnewAvsbetalargebetavarDiffweighted3.mat'
     scipy.io.savemat(matfile, mdict={'out': varDifferences3}, oned_as='row')
-    matfile = '100300manyfunctionsAvsbetabetaweighteddifferences4.mat'
+    matfile = '10012000manyfunctionsAvsbetabetaweighteddifferences4.mat'
     scipy.io.savemat(matfile, mdict={'out': differences4}, oned_as='row')
     
-    matfile = '100300manyfunctionsnewAvsbetalargebetavarDiffweighted4.mat'
+    matfile = '10012000manyfunctionsnewAvsbetalargebetavarDiffweighted4.mat'
     scipy.io.savemat(matfile, mdict={'out': varDifferences4}, oned_as='row')
-    matfile = '100300manyfunctionsAvsbetabetaweighteddifferences5.mat'
+    matfile = '10012000manyfunctionsAvsbetabetaweighteddifferences5.mat'
     scipy.io.savemat(matfile, mdict={'out': differences5}, oned_as='row')
     
-    matfile = '100300manyfunctionsnewAvsbetalargebetavarDiffweighted5.mat'
+    matfile = '10012000manyfunctionsnewAvsbetalargebetavarDiffweighted5.mat'
     scipy.io.savemat(matfile, mdict={'out': varDifferences5}, oned_as='row')
-    matfile = '100200manyfunctionsnewAvsbetalargebetaNUMBERELEMENTSDiffweighted.mat'
+    matfile = '10012000manyfunctionsnewAvsbetalargebetaNUMBERELEMENTSDiffweighted.mat'
     scipy.io.savemat(matfile, mdict={'out': numberElements}, oned_as='row')
