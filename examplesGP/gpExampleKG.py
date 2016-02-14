@@ -161,6 +161,8 @@ else:
     output=np.loadtxt(os.path.join('%d'%randomSeedFile+"functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"))
   #  output=np.loadtxt(os.path.join(afunctions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"))    
   #  noisy=np.loadtxt("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
+    output2=np.loadtxt(os.path.join('%d'%randomSeedFile+"functions","function"+"betah"+'%f'%betah+
+                                    "Aparam"+'%f'%Aparam+'%d'%nTemp3+"noise"+".txt"))
 
 
 ###########
@@ -174,11 +176,11 @@ def getindex(x):
 def evalf(x):
     i=getindex(x)
     j=int(np.random.randint(0,ngrid,1))
-
+    k=int(np.random.randint(0,100,1))
     h1=output[i*ngrid+j]
-
+    h2=output(k)
     #h1+noisy[i*ngrid+j,k]
-    return h1+np.random.normal(0,np.sqrt(alphad),1)
+    return h1+h2
 
 
     
@@ -249,12 +251,16 @@ def estimationObjective(x,N=1000):
  #   z=simulateZ(N)
     j=getindex(x)
     results=np.zeros(ngrid)
+    results2=np.zeros(100)
 
     for i in xrange(ngrid):
         results[i]=output[j*ngrid+i]
+        
+    for k in xrange(100):
+        results2[k]=output2[k]
 
 
-    return np.mean(results),0
+    return np.mean(results)+np.mean(results2),0
 
 
 #checar todo, pero parace que hasta aqui casi ya

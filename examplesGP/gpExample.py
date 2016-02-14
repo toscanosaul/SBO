@@ -141,12 +141,18 @@ if defineFunction:
     z1=np.zeros(100)
 
     for i in range(100):
-	z[i]=
+	z1[i]=np.random.normal(0,np.sqrt(alphad),1)
+        
     if not os.path.exists('%d'%randomSeedFile+"functions"):
     	os.makedirs('%d'%randomSeedFile+"functions") 
     f=open(os.path.join('%d'%randomSeedFile+"functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"),'w')
     np.savetxt(f,output)
     f.close()
+    
+    f=open(os.path.join('%d'%randomSeedFile+"functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+"noise"+".txt"),'w')
+    np.savetxt(f,z1)
+    f.close()
+    output2=z1
     
     valuesOutput=np.zeros(ngrid)
     
@@ -168,6 +174,8 @@ if defineFunction:
 else:
     print randomSeedFile
     output=np.loadtxt(os.path.join('%d'%randomSeedFile+"functions","function"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+'%d'%nTemp3+".txt"))
+    output2=np.loadtxt(os.path.join('%d'%randomSeedFile+"functions","function"+"betah"+'%f'%betah+
+                                    "Aparam"+'%f'%Aparam+'%d'%nTemp3+"noise"+".txt"))
   #  noisy=np.loadtxt("noise"+"betah"+'%f'%betah+"Aparam"+'%f'%Aparam+".txt")
 
 
@@ -179,12 +187,13 @@ def getindex(x):
     return i
 
 #k is already index
-def evalf(x,w):
+def evalf(x,w,zind):
     i=getindex(x)
     j=getindex(w)
     h1=output[i*ngrid+j]
+    zt=output2[zind]
     #h1+noisy[i*ngrid+j,k]
-    return h1+np.random.normal(0,np.sqrt(alphad),1)
+    return h1+zt
 
 def evalf2(x,j,k):
     i=getindex(x)
@@ -209,8 +218,9 @@ def noisyF(XW,n):
     w=XW[0,n1:n1+n2]
     #z=simulateZ(n)
     res=np.zeros(n)
+    temp=np.random.randint(0,100,n)
     for i in xrange(n):
-        res[i]=evalf(x,w)
+        res[i]=evalf(x,w,int(temp[i]))
         ##alphad/n
     return np.mean(res),alphad/n
 
@@ -258,12 +268,17 @@ def estimationObjective(x,N=1000):
  #   z=simulateZ(N)
     j=getindex(x)
     results=np.zeros(ngrid)
+    
+    results2=np.zeros(100)
 
     for i in xrange(ngrid):
         results[i]=output[j*ngrid+i]
+        
+    for k in xrange(100):
+        results2[k]=output2[k]
 
 
-    return np.mean(results),0
+    return np.mean(results)+np.mean(results2),0
 
 
 #checar todo, pero parace que hasta aqui casi ya
