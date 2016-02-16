@@ -178,7 +178,7 @@ def evalf(x):
     j=int(np.random.randint(0,ngrid,1))
     k=int(np.random.randint(0,100,1))
     h1=output[i*ngrid+j]
-    h2=output(k)
+    h2=output2[k]
     #h1+noisy[i*ngrid+j,k]
     return h1+h2
 
