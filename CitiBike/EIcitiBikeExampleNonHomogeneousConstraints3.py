@@ -223,7 +223,7 @@ trainingPoints=nTemp2
 #nameDirectory="Results"+'%d'%numberSamplesForG+"AveragingSamples"+'%d'%trainingPoints+"TrainingPoints"
 #folder=os.path.join(nameDirectory,"KG")
 
-misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="EI",
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForG,tP=trainingPoints,ALG="EI2",
 			 prefix="FinalNonHomogeneous011116")
 
 """
@@ -240,7 +240,7 @@ tempFour=tempFour.reshape((trainingPoints,1))
 Xtrain=np.concatenate((tempX,tempFour),1)
 
 dataObj=inter.data(Xtrain,yHist=None,varHist=None)
-dataObj.getTrainingDataKG(trainingPoints,noisyG,numberSamplesForG,parallel)
+dataObj.getTrainingDataKG(trainingPoints,noisyG,numberSamplesForG,False)
 
 """
 We define the statistical object.
