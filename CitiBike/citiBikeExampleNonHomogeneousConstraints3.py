@@ -251,7 +251,7 @@ trainingPoints=nTemp2
 #folder=os.path.join(nameDirectory,"SBO")
 
 misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,
-                         prefix="FinalNonHomogeneous011116")
+                         prefix="2FinalNonHomogeneous011116")
 
 """
 We define the data object.
@@ -270,7 +270,7 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 
-dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,parallel)
+dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,False)
 #dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,True)
 
 
