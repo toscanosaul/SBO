@@ -163,6 +163,8 @@ class VOISBO(VOI):
         new=np.concatenate((xNew,wNew)).reshape((1,n1+n2))
 
         gamma=np.transpose(kernel.A(new,past))
+        
+        
         temp1=linalg.solve_triangular(L,gamma,lower=True)
 
         b=(BN-np.dot(temp2.T,temp1))
@@ -369,7 +371,7 @@ class VOISBO(VOI):
         
         fig=plt.figure()
         num_levels = 5
-        fig.set_size_inches(20, 20)
+        fig.set_size_inches(24, 24)
         CS=plt.contourf(C,D,z,num_levels,cmap=plt.cm.PRGn)
         plt.colorbar(CS)
         Xp=XW[0:self._numberTraining,0]
@@ -384,9 +386,9 @@ class VOISBO(VOI):
         ax.set_position([box.x0, box.y0+box.height*0.1, box.width, box.height*0.9])
 
         # Put a legend to the right of the current axis
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.06),ncol=2)
-        plt.xlabel('x',fontsize=40)
-        plt.ylabel('w',fontsize=40)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09),ncol=2)
+        plt.xlabel('x',fontsize=60)
+        plt.ylabel('w',fontsize=60)
         plt.savefig(os.path.join(path,'%d'%n+"VOI.pdf"))
 
         plt.close(fig)
@@ -704,9 +706,9 @@ class KG(VOI):
             z[i]=self.VOIfunc(n,points[i,:],L,data,kern,temp1,temp2,False,a,False)
             
         fig=plt.figure()
-        fig.set_size_inches(20, 20)
+        fig.set_size_inches(21, 21)
         plt.plot(points,z,'-')
-        plt.xlabel('x',fontsize=40)
+        plt.xlabel('x',fontsize=60)
         Xp=data.Xhist[0:self._numberTraining,0]
         pylab.plot(Xp,np.zeros(len(Xp))+0.00009,'o',color='red',markersize=40,label="Training point")
         if n>0:
@@ -717,7 +719,7 @@ class KG(VOI):
         ax.set_position([box.x0, box.y0+box.height*0.1, box.width, box.height*0.9])
 
         # Put a legend to the right of the current axis
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.06),ncol=2,fontsize=30)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09),ncol=2,fontsize=50)
         
         pylab.xlim([-0.5,0.5])
       #  plt.legend()

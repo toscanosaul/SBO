@@ -32,7 +32,7 @@ class SEK:
             -noise: Noise of the outputs.
         """
         if scaleAlpha is None:
-            scaleAlpha=1.0
+            scaleAlpha=np.ones(n)
         self.scaleAlpha=scaleAlpha
         self.dimension=n
         self.alpha=np.ones(n)
@@ -133,6 +133,7 @@ class SEK:
         N=X.shape[0]
         try:
             L=np.linalg.cholesky(K)
+            
             alp=inverseComp(L,y2)
             logLike=-0.5*np.dot(y2,alp)-np.sum(np.log(np.diag(L)))-0.5*N*np.log(2.0*np.pi)
             if gradient==False:
@@ -143,7 +144,7 @@ class SEK:
             K2=self.A(X,alpha=alpha,variance=variance)
             for i in range(self.dimension):
                 derivative=np.zeros((N,N))
-                derivative=K2*(-(0.5/(self.scaleAlpha**2))*(alpha[i]**2)*((X[:,i][:,None]-X[:,i][None,:])**2))
+                derivative=K2*(-(0.5/(self.scaleAlpha[i]**2))*(alpha[i]**2)*((X[:,i][:,None]-X[:,i][None,:])**2))
                 temp3=inverseComp(L,derivative)
                 gradient[i]=0.5*np.trace(np.dot(temp,derivative)-temp3)
             
@@ -169,7 +170,7 @@ class SEK:
             K2=self.A(X,alpha=alpha,variance=variance)
             for i in range(self.dimension):
                 derivative=np.zeros((N,N))
-                derivative=K2*(-(0.5/(self.scaleAlpha**2))*(alpha[i]**2)*((X[:,i][:,None]-X[:,i][None,:])**2))
+                derivative=K2*(-(0.5/(self.scaleAlpha[i]**2))*(alpha[i]**2)*((X[:,i][:,None]-X[:,i][None,:])**2))
                 temp2=np.dot(temp-L,derivative)
                 gradient[i]=0.5*np.trace(temp2)
             

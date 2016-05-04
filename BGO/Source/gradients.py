@@ -17,7 +17,7 @@ def gradXBforAnSEK(x,n,B,kern,X,n1,nT):
           nT: Number of training points
     """
     gradXB=np.zeros((n1,n+nT))
-    alpha1=0.5*((kern.alpha[0:n1])**2)/(kern.scaleAlpha)**2
+    alpha1=0.5*((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
     for i in xrange(n+nT):
         gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
     return gradXB
@@ -38,7 +38,7 @@ def gradXBSEK(new,kern,BN,keep,points,n1):
           points: Discretization of the domain of x
           n1: Dimension of x
     """
-    alpha1=0.5*((kern.alpha[0:n1])**2)/(kern.scaleAlpha)**2
+    alpha1=0.5*((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
     xNew=new[0,0:n1].reshape((1,n1))
     gradXBarray=np.zeros([len(keep),n1])
     M=len(keep)
@@ -67,10 +67,10 @@ def gradXWSigmaOfuncSEK(n,new,kern,Xtrain2,Wtrain2,n1,n2,nT):
     tempN=n+nT
     past=np.concatenate((Xtrain2,Wtrain2),1)
     gamma=np.transpose(kern.A(new,past))
-    alpha1=0.5*((kern.alpha[0:n1])**2)/(kern.scaleAlpha)**2
+    alpha1=0.5*((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
     gradWSigma0=np.zeros([n+nT+1,n2])
 
-    alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha)**2
+    alpha2=0.5*((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha[n1:n1+n2])**2
     xNew=new[0,0:n1]
     wNew=new[0,n1:n1+n2]
     for i in xrange(n+nT):
