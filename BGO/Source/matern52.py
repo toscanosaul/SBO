@@ -14,11 +14,12 @@ import multiprocessing as mp
 from . import misc
 from . import optimization
 from scipy import array, linalg, dot
+from scipy.spatial.distance import cdist
 
 SQRT_3 = np.sqrt(3.0)
 SQRT_5 = np.sqrt(5.0)
 
-class SEK:
+class MATTERN52:
     def __init__(self,n,scaleAlpha=None,nRestarts=10,X=None,y=None,
                  noise=None,optName='bfgs'):
         """
@@ -61,7 +62,7 @@ class SEK:
         dic['mu']=self.mu
         return dic
 
-    def K(self, X, X2=None,alpha=None,variance=None):
+    def K(self, X, X2=None,alpha=None,variance=None,distances=False):
         """
         Computes the covariance matrix cov(X[i,:],X2[j,:]).
         
@@ -79,16 +80,19 @@ class SEK:
             
         if X2 is None:
             X=X*alpha/self.scaleAlpha
-            Xsq=np.sum(np.square(X), 1)
-            r=-2.*np.dot(X, X.T) + (Xsq[:, None] + Xsq[None, :])
-            r = np.clip(r, 0, np.inf)
-            return variance*np.exp(-0.5*r)
+            X2=X
         else:
             X=X*alpha/self.scaleAlpha
             X2=X2*alpha/self.scaleAlpha
-            r=-2.*np.dot(X, X2.T) + (np.sum(np.square(X), 1)[:, None] + np.sum(np.square(X2), 1)[None, :])
-            r = np.clip(r, 0, np.inf)
-            return variance*np.exp(-0.5*r)
+            
+        r2=np.abs(cdist(X,X2,'sqeuclidean'))
+        r=np.sqrt(r2)
+        cov=(1.0 + SQRT_5*r + (5.0/3.0)*r2) * np.exp (-SQRT_5* r)
+        
+        if distances:
+            return distance*cov,r,r2
+        
+        return variance*cov
     
     def A(self,X,X2=None,noise=None,alpha=None,variance=None):
         """
@@ -145,15 +149,28 @@ class SEK:
             
             temp=np.dot(alp[:,None],alp[None,:])
             K2=self.A(X,alpha=alpha,variance=variance)
+            
+            X2=X
+            dist = np.sqrt(np.sum(np.square((X[:,None,:]-X2[None,:,:])*(self.alpha/self.scaleAlpha)),-1))
+            invdist = 1./np.where(dist!=0.,dist,np.inf)
+            dist2M = (np.square(X[:,None,:]-X2[None,:,:])*self.alpha**2)/(2.0*self.scaleAlpha**2)
+           # dvar = (1+np.sqrt(5.)*dist+5./3*dist**2)*np.exp(-np.sqrt(5.)*dist)
+           
+           # dl = (self.variance * 5./3 * dist * (1 + np.sqrt(5.)*dist ) * np.exp(-np.sqrt(5.)*dist))[:,:,np.newaxis] * dist2M*invdist[:,:,np.newaxis]
+         #  target[0] += np.sum(dvar*dL_dK)
+            
+            derivative=np.zeros((N,N))
+            dl = -(self.variance * 5./3 * dist * (1 + np.sqrt(5.)*dist ) * np.exp(-np.sqrt(5.)*dist))[:,:,np.newaxis] * dist2M*invdist[:,:,np.newaxis]
+        
             for i in range(self.dimension):
-                derivative=np.zeros((N,N))
-                derivative=K2*(-(0.5/(self.scaleAlpha[i]**2))*(alpha[i]**2)*((X[:,i][:,None]-X[:,i][None,:])**2))
+                derivative=dl[:,:,i]
                 temp3=inverseComp(L,derivative)
                 gradient[i]=0.5*np.trace(np.dot(temp,derivative)-temp3)
             
             der=self.K(X,alpha=alpha,variance=variance)
             temp3=inverseComp(L,der)
             gradient[self.dimension]=0.5*np.trace(np.dot(temp,der)-temp3)
+            
 
             der=np.ones((N,N))
             temp3=inverseComp(L,der)
@@ -161,29 +178,8 @@ class SEK:
             return logLike,gradient
         except:
             print "no"
-            L=np.linalg.inv(K)
-            det=np.linalg.det(K)
-            logLike=-0.5*np.dot(y2,np.dot(L,y2))-0.5*N*np.log(2*np.pi)-0.5*np.log(det)
-            if gradient==False:
-                return logLike
-            gradient=np.zeros(self.dimension+2)
-            
-            alp=np.dot(L,y2)
-            temp=np.dot(alp[:,None],alp.T[None,:])
-            K2=self.A(X,alpha=alpha,variance=variance)
-            for i in range(self.dimension):
-                derivative=np.zeros((N,N))
-                derivative=K2*(-(0.5/(self.scaleAlpha[i]**2))*(alpha[i]**2)*((X[:,i][:,None]-X[:,i][None,:])**2))
-                temp2=np.dot(temp-L,derivative)
-                gradient[i]=0.5*np.trace(temp2)
-            
-            temp2=np.dot(temp-L,K2)
-            gradient[self.dimension]=0.5*np.trace(temp2)
-            
-            der=np.ones((N,N))
-            temp2=np.dot(temp-L,der)
-            gradient[self.dimension+1]=0.5*np.trace(temp2)
-            return logLike,gradient
+
+        return logLike,gradient
             
     def gradientLogLikelihood(self,X,y,noise=None,alpha=None,variance=None,mu=None):
         """
@@ -327,3 +323,5 @@ class SEK:
 
 
         
+
+
