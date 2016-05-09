@@ -1,5 +1,7 @@
 from numpy import linalg as LA
 import numpy as np
+from math import *
+
 
 def PMF(num_user,num_item,train,val,epsilon=50,lamb=0.01,maxepoch=50,num_feat=10):
     """
@@ -9,8 +11,8 @@ def PMF(num_user,num_item,train,val,epsilon=50,lamb=0.01,maxepoch=50,num_feat=10
     maxepoch: number of epochs
     """
     
-    num_batches= 100 # Number of batches
-    momentum=0.8
+    num_batches= 80 # Number of batches
+    momentum=0.95
     
 
     pairs_tr = train.shape[0] #training data
@@ -41,11 +43,10 @@ def PMF(num_user,num_item,train,val,epsilon=50,lamb=0.01,maxepoch=50,num_feat=10
             
             ###compute predictions
 
-            
+  
+	    
             pred=np.sum(np.multiply(w1_M1[batch_itID,:],w1_P1[batch_uID,:]),1)
-
             rawErr=pred-ratings
-
             
             ######compute gradients
             IX_m=2*np.multiply(rawErr[:,np.newaxis],w1_P1[batch_uID,:])\
@@ -82,7 +83,7 @@ def cross_validation(num_user,num_item,train,val,epsilon=1,lamb=0.01,maxepoch=50
     
     error=0
     for i in range(n):
-        error+=PMF(num_user,num_item,num_Feat,train[i],val[i],epsilon,lamb,maxepoch,num_Feat)
+        error+=PMF(num_user,num_item,train[i],val[i],epsilon,lamb,maxepoch,num_Feat)
     return error/n
 
 
@@ -100,8 +101,9 @@ if __name__=='__main__':
         val.append(test)
 
     num_feature=9
-    print cross_validation(num_user,num_item,train,val,epsilon=1,lamb=0.01,maxepoch=50,num_Feat=10)
-    
+    #a=PMF(num_user,num_item,train[3],val[3],epsilon=0.2,lamb=0.291,maxepoch=89,num_feat=9)
+    a = cross_validation(num_user,num_item,train,val,epsilon=0.2,lamb=0.29,maxepoch=89,num_Feat=9)
+    print sqrt(a)
     
 
 
