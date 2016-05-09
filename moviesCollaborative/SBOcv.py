@@ -57,12 +57,12 @@ n1=4
 n2=1
 
 ###rate leraning, regularizing parameter, rank, epoch
-lowerX=[0.001,0.1,1,1]
-upperX=[0.201,1.1,21,201]
+lowerX=[0.01,0.1,1,1]
+upperX=[1.01,2.1,21,201]
 
 
 
-nGrid=[11,11,5,11]
+nGrid=[6,6,11,6]
 
 domainX=[]
 for i in range(n1):
@@ -98,7 +98,7 @@ for i in range(1,6):
 
 def g(x,w1):
     val=PMF(num_user,num_item,train[w1],validate[w1],x[0],x[1],int(x[3]),int(x[2]))
-    return val
+    return -val*100
     
 
 def noisyF(XW,n):
@@ -189,9 +189,15 @@ Generate the training data
 """
 
 Xtrain=sampleFromXVn(trainingPoints).reshape((trainingPoints,n1))
-Wtrain=simulatorW(trainingPoints).reshape((trainingPoints,1))
-XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
+dt=trainingPoints/n1
+Wtrain=[]
+for i in range(n1):
+    Wtrain+=[i]*dt
+Wtrain=np.array(Wtrain).reshape((trainingPoints,1))
+
+XWtrain=np.concatenate((Xtrain,Wtrain),1)
+print XWtrain
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 
 dataObj.getTrainingDataSBO(trainingPoints,noisyF,numberSamplesForF,False)
