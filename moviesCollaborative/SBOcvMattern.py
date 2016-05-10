@@ -211,8 +211,6 @@ We define the statistical object.
 dimensionKernel=n1+n2
 scaleAlpha=np.array([1,1,20,200,4])
 
-kernel=mattern52.MATTERN52(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
-
 
 
 def expectation(x,X,z,alpha1,alpha2):
@@ -261,7 +259,7 @@ def B(x,XW,n1,n2,kernel,logproductExpectations=None):
 stat=stat.SBOGP(B=B,dimNoiseW=n2,dimPoints=n1,trainingData=dataObj,
                 dimKernel=n1+n2, numberTraining=trainingPoints,
                 computeLogProductExpectationsForAn=
-                None,scaledAlpha=scaleAlpha,SEK=False,mattern52=True)
+                None,scaledAlpha=scaleAlpha,SEK=False,mat52=True)
 
 
 """
@@ -310,7 +308,7 @@ def gradWB(new,kern,BN,keep,points):
 
 VOIobj=VOI.VOISBO(dimX=n1, pointsApproximation=pointsVOI,
                   gradWBfunc=gradWB,dimW=n2,
-                  numberTraining=trainingPoints,SEK=False,mattern52=True)
+                  numberTraining=trainingPoints,SEK=False,mat52=True)
 
 
 """
