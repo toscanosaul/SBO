@@ -41,7 +41,7 @@ def gradXBforAnMattern52(x,n,B,kern,X,n1,nT,W):
     alpha2=((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha[n1:n1+n2])**2
     
     for i in xrange(n+nT):
-        temp=alpha1*((X[i,:]-x)**2)
+        temp=alpha1*(np.sum((X[i,:]-x)**2))
         sum1=0
         for j in range(n1):
             r=temp+alpha2*((W[i,:]-j)**2)
@@ -100,7 +100,7 @@ def gradXBMattern52(new,kern,BN,keep,points,n1,n2):
     M=len(keep)
     
     for i in range(M):
-        temp=alpha1*((points[keep[i],:]-xNew)**2)
+        temp=alpha1*(np.sum((points[keep[i],:]-xNew)**2))
         sum1=0
         for j in range(n1):
             r=temp+alpha2*((wNew-j)**2)
@@ -108,7 +108,7 @@ def gradXBMattern52(new,kern,BN,keep,points,n1,n2):
                  *(alpha1*(xNew-points[keep[i],:]))
         gradXBarray[i,:]=sum1
 
-    return gradXBarray
+    return kern.variance*gradXBarray
 
 def gradXWSigmaOfuncSEK(n,new,kern,Xtrain2,Wtrain2,n1,n2,nT):
     """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
@@ -169,11 +169,11 @@ def gradXWSigmaOfuncMattern52(n,new,kern,Xtrain2,Wtrain2,n1,n2,nT):
     wNew=new[0,n1:n1+n2]
 
     for i in xrange(n+nT):
-        temp=alpha1*((xNew-Xtrain2[i,:])**2)
+        temp=alpha1*(np.sum((xNew-Xtrain2[i,:])**2))
         r=temp+alpha2*((wNew-Wtrain2[i,:])**2)
         a=(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))
-        gradXSigma0[i,:]=a*alpha1*(xNew-Xtrain2[i,:])
-        gradWSigma0[i,:]=a*alpha2*(wNew-Wtrain2[i,:])
+        gradXSigma0[i,:]=kern.variance*a*alpha1*(xNew-Xtrain2[i,:])
+        gradWSigma0[i,:]=kern.variance*a*alpha2*(wNew-Wtrain2[i,:])
     return gradXSigma0,gradWSigma0
 
 ####KG
