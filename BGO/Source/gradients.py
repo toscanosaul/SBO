@@ -3,7 +3,7 @@ import numpy as np
 
 
 #####SBO
-def gradXBforAnSEK(x,n,B,kern,X,n1,nT,W=None):
+def gradXBforAnSEK(x,n,B,kern,X,n1,nT,W=None,n2=None):
     """Computes the gradient of B(x,i) for i in {1,...,n+nTraining}
        where nTraining is the number of training points
       
@@ -22,7 +22,7 @@ def gradXBforAnSEK(x,n,B,kern,X,n1,nT,W=None):
         gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
     return gradXB
 
-def gradXBforAnMattern52(x,n,B,kern,X,n1,nT,W):
+def gradXBforAnMattern52(x,n,B,kern,X,n1,nT,W,n2):
     """Computes the gradient of B(x,i) for i in {1,...,n+nTraining}
        where nTraining is the number of training points (only for
        multiple I.S.)
