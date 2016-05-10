@@ -46,7 +46,7 @@ class GaussianProcess:
     
 class SBOGP(GaussianProcess):
     def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn=None, computeLogProductExpectationsForAn=None,
-                 SEK=True,mattern52=False,*args,**kargs):
+                 SEK=True,mat52=False,*args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
         """
         Statistical model for SBO.
@@ -99,7 +99,7 @@ class SBOGP(GaussianProcess):
                            noise=self.data.varHist,
                            scaleAlpha=self.scaledAlpha)
             self.gradXBforAn=gradients.gradXBforAnSEK
-        if mattern52:
+        if mat52:
             self._k=mattern52.MATTERN52(self.n1+self.n2,X=self.data.Xhist,
                                         y=self.data.yHist[:,0],
                                         noise=self.data.varHist,

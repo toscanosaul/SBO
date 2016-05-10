@@ -57,7 +57,7 @@ class VOI:
 class VOISBO(VOI):
     def __init__(self,dimW,dimX,gradWBfunc,pointsApproximation,
                  gradXBfunc=None,gradXWSigmaOfunc=None,SEK=True,
-                 mattern52=False,
+                 mat52=False,
                  *args,**kargs):
         """
         Value of Information used for SBO.
@@ -117,7 +117,7 @@ class VOISBO(VOI):
             self._gradXWSigmaOfunc=gradients.gradXWSigmaOfuncSEK
             self._gradXBfunc=gradients.gradXBSEK
             
-        if mattern52:
+        if mat52:
             self._gradXWSigmaOfunc=gradients.gradXWSigmaOfuncMattern52
             self._gradXBfunc=gradients.gradXBMattern52
             
