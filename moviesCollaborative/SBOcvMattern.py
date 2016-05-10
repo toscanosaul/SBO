@@ -215,9 +215,9 @@ scaleAlpha=np.array([1,1,20,200,4])
 
 def expectation(x,X,z,alpha1,alpha2):
     num=0
-    temp=alpha1*((X-x)**2)
+    temp=alpha1*(np.sum((X-x)**2))
     for i in range(n1):
-	r=temp+alpha2*((z-i)**2)
+	r=temp+alpha2*(np.sum((z-i)**2))
 	num+=(1+np.sqrt(5*r)+(5.0/3.0)*r)*np.exp(-np.sqrt(5*r))
     return num/(n1)
 
@@ -297,7 +297,7 @@ def gradWB(new,kern,BN,keep,points):
     
     for j in range(M):
 	sum1=0
-        temp=alpha1*((X-points[keep[j],:])**2)
+        temp=alpha1*(np.sum((X-points[keep[j],:])**2))
 	
         for j in range(n1):
             r=temp+alpha2*((W-j)**2)
