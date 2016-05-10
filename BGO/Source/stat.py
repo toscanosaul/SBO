@@ -13,6 +13,7 @@ import os
 import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 from matplotlib import pyplot as plt
 from . import SK
+from . import mattern52
 from . import gradients
 import pylab
 import matplotlib

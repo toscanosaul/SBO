@@ -14,6 +14,7 @@ from scipy import linalg
 from numpy import linalg as LA
 from scipy.stats import norm
 from . import gradients
+from . import mattern52
 import matplotlib;matplotlib.rcParams['figure.figsize'] = (8,6)
 from matplotlib import pyplot as plt
 import os
