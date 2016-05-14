@@ -140,10 +140,10 @@ def estimationObjective(x,N=1):
     sol=0
     x=np.reshape(x,(1,n1))
     print x
-  #  for i in range(5):
-#	temp=np.concatenate((x,np.array([[i]])),1)
-#        sol+=noisyF(temp,0)[0]
-    return 1.0,0
+    for i in range(5):
+	temp=np.concatenate((x,np.array([[i]])),1)
+        sol+=noisyF(temp,0)[0]
+    return sol/float(5),0
 
 
 numberIS=5
