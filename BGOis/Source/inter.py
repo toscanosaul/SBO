@@ -102,7 +102,7 @@ class opt:
                  transformationDomainXVn=None,transformationDomainXAn=None,
                  transformationDomainW=None,projectGradient=None,
                  functionGradientAscentVn=None,functionGradientAscentAn=None,
-                 functionConditionOpt=None,xtol=None,consVn=None,consAn=None,
+                 functionConditionOpt=None,xtol=None,xtolAn=None,consVn=None,consAn=None,
                  MethodVn=None,MethodAn=None):
         """
         Args:
@@ -205,6 +205,7 @@ class opt:
         self.functionGradientAscentAn=functionGradientAscentAn
         self.functionConditionOpt=functionConditionOpt
         self.xtol=xtol
+        self.xtolAn=xtolAn
         self.consVn=consVn
         self.consAn=consAn
         self.MethodVn=MethodVn

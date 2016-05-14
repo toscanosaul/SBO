@@ -464,7 +464,7 @@ class SBO:
 	else:
 
 	    opt=op.OptSteepestDescent(n1=self.opt.dimXsteepestAn,projectGradient=self.opt.projectGradient,
-				  xStart=start,xtol=self.opt.xtol,
+				  xStart=start,xtol=self.opt.xtolAn,
 				  stopFunction=self.opt.functionConditionOpt)
 	    def g1(x,grad,onlyGradient=False):
 		temp=g(x,grad,onlyGradient)
