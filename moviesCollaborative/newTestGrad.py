@@ -567,28 +567,23 @@ cons=({'type':'ineq',
        'jac': jac8b})
 
 def projectGradient(x,direction,xo):
-    alph=[] 
+    alphL=[]
+    alphU=[]
+ 
     if (any(x[0:4]<0)):
 	ind=np.where(direction[0:4]<0)[0]
-        quotient=(-xo[ind].astype(float))/direction[ind]
-        alp=np.min(quotient)
-        alph.append(alp)       
+        x[ind]=0
    
     if (any(x[2:4]<1)):
        	ind=np.where(direction[2:n1]<1)[0]
-        quotient=(-xo[ind].astype(float)+1.0)/direction[ind]
-        alp2=np.min(quotient)
-        alph.append(alp2)
+	x[ind]=1
 	
     if (any(x[0:2]>2)):
        	ind=np.where(direction[0:2]>0)[0]
-        quotient=(-xo[ind].astype(float)+2.0)/direction[ind]
-        alp2=np.min(quotient)
-        alph.append(alp2) 
+	x[ind]=2
         
-    if (len(alph)==0):
-        return x
-    return xo+direction*min(alph)  
+
+    return x
 
 
 def stopFunction(x):
