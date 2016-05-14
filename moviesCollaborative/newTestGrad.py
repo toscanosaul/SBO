@@ -572,17 +572,23 @@ def projectGradient(x,direction,xo,step):
     st=step
 
     if (any(x[0:2]<0)):
-	ind=np.where(direction[0:2]<0)[0]
-	if (any(direction[ind])>=0):
+	ind=np.where(x[0:2]<0)[0]
+	
+
+	if (any(direction[ind]>=0)):
+
 	    return xo
 	quotient=(-xo[ind].astype(float))/direction[ind]
         alp=np.min(quotient)
-        st=np.min(st,alp)
-   
+
+        st=min(st,alp)
+
     if (any(x[2:4]<1)):
-       	ind=np.where(direction[2:n1]<1)[0]
+
+       	ind=np.where(x[2:n1]<1)[0]
 	ind=ind+2
-	if (any(direction[ind])>=0):
+	if (any(direction[ind]>=0)):
+
 	    return xo
 	quotient=(-xo[ind].astype(float)+1.0)/direction[ind]
         alp=np.min(quotient)
@@ -590,13 +596,16 @@ def projectGradient(x,direction,xo,step):
 
 	
     if (any(x[0:2]>2)):
-       	ind=np.where(direction[0:2]>0)[0]
-	if (any(direction[ind])<=0):
+
+       	ind=np.where(x[0:2]>2)[0]
+	if (any(direction[ind]<=0)):
+	 
 	    return xo
 	quotient=(-xo[ind].astype(float)+2.0)/direction[ind]
         alp=np.min(quotient)
         st=np.min(st,alp)
     
+
 
     return xo+direction*st
 
@@ -629,6 +638,8 @@ l['dataObj']=dataObj
 
 sboObj=SBO.SBO(**l)
 #sboObj.optVOIParal(0,1,0)
-#sboObj.optAnParal(0)
-sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
+sboObj.trainModel(numStarts=1)
+sboObj.optAnnoParal(0)
+
+#sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
