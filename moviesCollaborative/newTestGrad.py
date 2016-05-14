@@ -566,8 +566,8 @@ cons=({'type':'ineq',
 
 def projectGradient(x,direction,xo):
     alph=[] 
-    if (any(x[0:4]<=0)):
-	ind=np.where(direction[0:4]<=0)[0]
+    if (any(x[0:4]<0)):
+	ind=np.where(direction[0:4]<0)[0]
         quotient=(-xo[ind].astype(float))/direction[ind]
         alp=np.min(quotient)
         alph.append(alp)       
@@ -584,12 +584,15 @@ def projectGradient(x,direction,xo):
 
 
 def stopFunction(x):
-    return np.max(np.abs(x))
+    s=np.rint(abs(x[0,2:n1]))
+    t=np.max(s)
+    d=np.max(abs(x[0,0:2]))
+    return np.max([d,t])
 
 
 opt=inter.opt(nTemp6,n1,n1,transformationDomainXVn,transformationDomainXAn,
               transformationDomainW,projectGradient,functionGradientAscentVn,
-              functionGradientAscentAn,stopFunction,1e-5,cons,consA,"GRADIENT","GRADIENT")
+              functionGradientAscentAn,stopFunction,1e-2,1e-5/np.sqrt(numberIS),cons,consA,"GRADIENT","GRADIENT")
 
 
 
@@ -608,6 +611,6 @@ l['dataObj']=dataObj
 
 sboObj=SBO.SBO(**l)
 
-#sboObj.optAnnoParal(0)
-sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
+sboObj.optAnnoParal(0)
+#sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
