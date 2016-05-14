@@ -566,24 +566,38 @@ cons=({'type':'ineq',
         'fun': const8b,
        'jac': jac8b})
 
-def projectGradient(x,direction,xo):
+def projectGradient(x,direction,xo,step):
     alphL=[]
     alphU=[]
- 
-    if (any(x[0:4]<0)):
-	ind=np.where(direction[0:4]<0)[0]
-        x[ind]=0
+    st=step
+    if (any(x[0:2]<0)):
+	ind=np.where(direction[0:2]<0)[0]
+	if (any(direction[ind])>=0):
+	    return x
+	quotient=(-xo[ind].astype(float))/direction[ind]
+        alp=np.min(quotient)
+        st=np.min(st,alp)
    
     if (any(x[2:4]<1)):
        	ind=np.where(direction[2:n1]<1)[0]
-	x[ind]=1
+	ind=ind+2
+	if (any(direction[ind])>=0):
+	    return x
+	quotient=(-xo[ind].astype(float)+1.0)/direction[ind]
+        alp=np.min(quotient)
+        st=np.min(st,alp)
+
 	
     if (any(x[0:2]>2)):
        	ind=np.where(direction[0:2]>0)[0]
-	x[ind]=2
+	if (any(direction[ind])<=0):
+	    return x
+	quotient=(-xo[ind].astype(float)+2.0)/direction[ind]
+        alp=np.min(quotient)
+        st=np.min(st,alp)
         
 
-    return x
+    return xo+direction*st
 
 
 def stopFunction(x):
