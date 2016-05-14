@@ -600,7 +600,7 @@ def stopFunction(x):
 
 opt=inter.opt(nTemp6,n1,n1,transformationDomainXVn,transformationDomainXAn,
               transformationDomainW,projectGradient,functionGradientAscentVn,
-              functionGradientAscentAn,stopFunction,1e-2,1e-5/np.sqrt(numberIS),cons,consA,"GRADIENT","GRADIENT")
+              functionGradientAscentAn,stopFunction,1e-2,1e-8/np.sqrt(numberIS),cons,consA,"GRADIENT","GRADIENT")
 
 
 
