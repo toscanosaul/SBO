@@ -140,12 +140,30 @@ def estimationObjective(x,N=1):
     sol=0
     x=np.reshape(x,(1,n1))
     print x
-    for i in range(5):
-	temp=np.concatenate((x,np.array([[i]])),1)
-        sol+=noisyF(temp,0)[0]
-    return sol/float(5),0
+    try:
+	
+	pool = mp.Pool()
+	jobs = []
+	for j in range(5):
+	    temp=np.concatenate((x,np.array([[j]])),1)
+	    job = pool.apply_async(noisyF, (temp,0))
+	    jobs.append(job)
+	pool.close()  # signal that no more data coming in
+	pool.join()  # wait for all the tasks to complete
+    except KeyboardInterrupt:
+	print "Ctrl+c received, terminating and joining pool."
+	pool.terminate()
+	pool.join()
+    sols=[]
+    for j in range(5):
+	try:
+	   sols.append(jobs[j].get()[0])
+	except Exception as e:
+	    print "Error computing CV"
+    if len(sols)==5:
+	return np.mean(sols),0
+ 
 
-#print estimationObjective(np.array([0.1,0.1,1,1]))
 
 numberIS=5
 
@@ -570,7 +588,7 @@ def projectGradient(x,direction,xo,step):
     alphL=[]
     alphU=[]
     st=step
-
+    print x
     if (any(x[0:2]<0)):
 	ind=np.where(x[0:2]<0)[0]
 	
@@ -584,7 +602,7 @@ def projectGradient(x,direction,xo,step):
         st=min(st,alp)
 
     if (any(x[2:4]<1)):
-
+    
        	ind=np.where(x[2:n1]<1)[0]
 	ind=ind+2
 	if (any(direction[ind]>=0)):
@@ -592,21 +610,18 @@ def projectGradient(x,direction,xo,step):
 	    return xo
 	quotient=(-xo[ind].astype(float)+1.0)/direction[ind]
         alp=np.min(quotient)
-        st=np.min(st,alp)
+        st=min(st,alp)
 
 	
     if (any(x[0:2]>2)):
-
        	ind=np.where(x[0:2]>2)[0]
 	if (any(direction[ind]<=0)):
-	 
 	    return xo
 	quotient=(-xo[ind].astype(float)+2.0)/direction[ind]
         alp=np.min(quotient)
-        st=np.min(st,alp)
+        st=min(st,alp)
+
     
-
-
     return xo+direction*st
 
 
