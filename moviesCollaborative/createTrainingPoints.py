@@ -117,7 +117,7 @@ numberSamplesForF=1
 dataObj.getTrainingDataSBO(trainingPoints*numberIS,noisyF,numberSamplesForF,True)
 trainingPoints*=numberIS
 
-path=os.path.join(trainingPoints,'%d'%nTemp+"numberOfTP"+'%d'%trainingPoints)
+path=os.path.join(trainingPoints,"%dnumberOfTP%d"%(nTemp,trainingPoints))
 
 fl.createNewFilesFunc(path,nTemp)
 
