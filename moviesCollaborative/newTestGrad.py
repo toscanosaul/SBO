@@ -611,6 +611,6 @@ l['dataObj']=dataObj
 
 sboObj=SBO.SBO(**l)
 
-sboObj.optAnnoParal(0)
-#sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
+#sboObj.optAnnoParal(0)
+sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
