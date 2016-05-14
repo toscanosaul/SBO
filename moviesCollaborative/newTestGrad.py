@@ -310,10 +310,10 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
 
     tempW=x[0:1,n1:n1+n2]
     xFinal=np.concatenate((tempX,tempW),1)
-    print "aver11"
+
     temp=VOI.VOIfunc(i,xFinal,L=L,temp2=temp2,a=a,grad=grad,scratch=scratch,onlyGradient=onlyGradient,
                           kerns=kern,XW=XW,B=Bfunc)
-    print "aver22"
+   
     
 
     if onlyGradient:
