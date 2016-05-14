@@ -145,6 +145,7 @@ def estimationObjective(x,N=1):
         sol+=noisyF(temp,0)[0]
     return sol/float(5),0
 
+#print estimationObjective(np.array([0.1,0.1,1,1]))
 
 numberIS=5
 
@@ -577,7 +578,13 @@ def projectGradient(x,direction,xo):
        	ind=np.where(direction[2:n1]<1)[0]
         quotient=(-xo[ind].astype(float)+1.0)/direction[ind]
         alp2=np.min(quotient)
-        alph.append(alp2)       
+        alph.append(alp2)
+	
+    if (any(x[0:2]>2)):
+       	ind=np.where(direction[0:2]>0)[0]
+        quotient=(-xo[ind].astype(float)+2.0)/direction[ind]
+        alp2=np.min(quotient)
+        alph.append(alp2) 
         
     if (len(alph)==0):
         return x
@@ -611,7 +618,7 @@ l['dataObj']=dataObj
 
 
 sboObj=SBO.SBO(**l)
-sboObj.optVOIParal(0,1,0)
+#sboObj.optVOIParal(0,1,0)
 #sboObj.optAnParal(0)
-#sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
+sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
