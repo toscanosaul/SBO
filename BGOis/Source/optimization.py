@@ -240,12 +240,12 @@ class OptSteepestDescent(Optimization):
         X=xStart
         g1=-100
         n1=self.n1
+	g1,g2=f(X,grad=True,onlyGradient=False)
         while tolMet==False:
             iter=iter+1
-            oldEval=g1
-            oldPoint=X
+  
 	
-            g1,g2=f(X,grad=True,onlyGradient=False)
+            
             if (tolMet==True):
                 break
 
@@ -259,21 +259,28 @@ class OptSteepestDescent(Optimization):
                 df=df.reshape((1,x.shape[1]))
 		z=1.0*df[0,:]
 		return z
-  	    g2=g2.reshape((1,len(oldPoint[0,:])))
+  	    g2=g2.reshape((1,len(X[0,:])))
 	  #  print oldPoint,g2
-	    lineSearch2=line_search(fLine,gradfLine,oldPoint[0,:],g2[0,:])
-	    print lineSearch2
+	    lineSearch2=line_search(fLine,gradfLine,X[0,:],-1.0*g2[0,:])
+
             step=lineSearch2[0]
             if step is None:
 	       print "step is none"
 	       tolMet=True
                g1,g2=f(X,grad=True,onlyGradient=False)
 	       return X,g1,g2,iter
-            X=X+lineSearch2[0]*g2
-            X[0,:]=self.projectGradient(X[0,:],g2[0,:],oldPoint[0,:])
-            if self.stopFunction(X[0,:]-oldPoint[0,:])<tol or iter > maxit:
+	    oldPoint=X
+	    oldEval=g1
+            X=X-lineSearch2[0]*g2
+	    
+            X[0,:]=self.projectGradient(X[0,:],-g2[0,:],oldPoint[0,:])
+	    
+	    
+          #  oldPoint=X
+	    g1,g2=f(X,grad=True,onlyGradient=False)
+            if self.stopFunction(g2)<tol or iter > maxit:
                 tolMet=True
-                g1,g2=f(X,grad=True,onlyGradient=False)
+             #   g1,g2=f(X,grad=True,onlyGradient=False)
                 return X,g1,g2,iter
                 
     def opt(self,f=None,df=None):

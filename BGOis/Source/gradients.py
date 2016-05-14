@@ -23,7 +23,6 @@ def gradXBforAnSEK(x,n,B,kerns,X,n1,nT,W=None,n2=None):
         w=int(W[i])
         kern=kerns[w]
         alpha1=0.5*((kern.alpha[0:n1])**2)/((kern.scaleAlpha[0:n1])**2)
-      
 
         gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
     return gradXB

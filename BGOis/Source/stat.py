@@ -170,7 +170,8 @@ class SBOGP(GaussianProcess):
                                     n2)
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
             gradAn=np.dot(inv1.transpose(),temp4)
-
+            
+    
             return gradAn
 
         inv2=linalg.solve_triangular(L,B.transpose(),lower=True)
@@ -182,7 +183,7 @@ class SBOGP(GaussianProcess):
                                     dataObj.Xhist[0:n+self._numberTraining,n1:n1+n2])
             temp4=linalg.solve_triangular(L,gradXB.transpose(),lower=True)
             gradAn=np.dot(inv1.transpose(),temp4)
-
+            
             return aN,gradAn
         else:
             return aN
