@@ -112,6 +112,7 @@ XWtrain=np.concatenate((Xtrain,Wtrain),1)
 print XWtrain
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 
+numberSamplesForF=1
 
 dataObj.getTrainingDataSBO(trainingPoints*numberIS,noisyF,numberSamplesForF,True)
 trainingPoints*=numberIS
