@@ -101,7 +101,7 @@ print XWtrain
 dataObj=inter.data(XWtrain,yHist=None,varHist=None)
 
 
-dataObj.getTrainingDataSBO(trainingPoints*numberIS,noisyF,numberSamplesForF,False)
+dataObj.getTrainingDataSBO(trainingPoints*numberIS,noisyF,numberSamplesForF,True)
 trainingPoints*=numberIS
 
 path=os.path.join(trainingPoints,'%d'%nTemp+"numberOfTP"+'%d'%trainingPoints)
