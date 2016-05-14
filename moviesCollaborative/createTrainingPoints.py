@@ -20,7 +20,7 @@ nTemp=int(sys.argv[1])  #random seed
 nTemp2=int(sys.argv[2]) #number of training points
 
 np.random.seed(nTemp)
-trainingPoints=nTem2
+trainingPoints=nTemp2
 
 """
 We define the objective object.
