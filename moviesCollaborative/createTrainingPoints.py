@@ -66,8 +66,8 @@ def noisyF(XW,n):
     w=XW[0,n1:n1+n2]
 
     w=int(w)
- #   return g(x,w),0.0
-    return np.sum(x)+w,0.0
+    return g(x,w),0.0
+    #return np.sum(x)+w,0.0
 
 
 
@@ -117,9 +117,11 @@ numberSamplesForF=1
 dataObj.getTrainingDataSBO(trainingPoints*numberIS,noisyF,numberSamplesForF,True)
 trainingPoints*=numberIS
 
-path=os.path.join(trainingPoints,"%dnumberOfTP%d"%(nTemp,trainingPoints))
+dir1="trainingpoints"
+path=os.path.join(dir1,"%dnumberOfTP%d"%(nTemp,trainingPoints))
+os.makedirs(path)
 
-fl.createNewFilesFunc(path,nTemp)
+files.createNewFilesFunc(path,nTemp)
 
 rs=nTemp
 tempDir=os.path.join(path,'%d'%rs+"XHist.txt")
