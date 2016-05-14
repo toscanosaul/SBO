@@ -242,11 +242,11 @@ class OptSteepestDescent(Optimization):
         X=xStart
         g1=-100
         n1=self.n1
-	print "problem"
+	
 	g1,g2=f(X,grad=True,onlyGradient=False)
-	print "ah"
+
         while tolMet==False:
-	    print "1"
+	
             iter=iter+1
   
 	
@@ -265,10 +265,10 @@ class OptSteepestDescent(Optimization):
 		z=1.0*df[0,:]
 		return z
   	    g2=g2.reshape((1,len(X[0,:])))
-	    print "2"
+
 	  #  print oldPoint,g2
 	    lineSearch2=line_search(fLine,gradfLine,X[0,:],-1.0*g2[0,:])
-	    print "3"
+
             step=lineSearch2[0]
 	    
             if step is None:

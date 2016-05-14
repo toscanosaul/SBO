@@ -179,14 +179,14 @@ class VOISBO(VOI):
         gamma[ind1,:]=gamma2
         
         temp1=linalg.solve_triangular(L,gamma,lower=True)
-        print temp2,temp1
+     
         b=(BN-np.dot(temp2.T,temp1))
-        print "bien22"
+     
         aux4=np.dot(temp1.T,temp1)
-        print "bien22"
+    
         b2=kernel.K(xNew)-aux4
         b2=np.clip(b2,0,np.inf)
-        print "bien22"
+  
         try:
             b=b/(np.sqrt(b2))
 
@@ -343,7 +343,7 @@ class VOISBO(VOI):
 
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
                                     temp2=temp2,past=XW,kerns=kerns,B=B)
-        print "ok1"
+  
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)

@@ -319,7 +319,7 @@ class SBO:
 	    cons=self.opt.consVn
 	    opt.run(f=g1,df=dg,cons=cons)
 	else:
-	    print "bien"
+	   
 	    opt=op.OptSteepestDescent(n1=self.opt.dimXsteepestVn,projectGradient=self.opt.projectGradient,
 				      stopFunction=self.opt.functionConditionOpt,xStart=start,
 				      xtol=self.opt.xtol)
@@ -330,9 +330,9 @@ class SBO:
 		if grad==True and onlyGradient==True:
 		    return -1.0*temp
 		return -1.0*temp
-	    print "oks"
+	  
 	    opt.run(f=g1)
-	    print "yeah"
+	
 
 
         self.optRuns.append(opt)
