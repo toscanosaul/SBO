@@ -241,12 +241,16 @@ class SBO:
 		
 	
 	    optIS=-1
-	    optVOI=-100
+	    optVOI=None
 	    optPoint=None
 	    if self.miscObj.parallel:
 		for j in range(self.numberIS):
 		    a,b=self.optVOIParal(i,self.opt.numberParallel,j)
-		    if b>optVOI:
+		    if optVOI is None:
+			optVOI=b
+			optPoint=a
+			optIS=j
+		    elif b>optVOI:
 			optVOI=b
 			optPoint=a
 			optIS=j
@@ -255,7 +259,11 @@ class SBO:
 	    else:
 		for j in range(self.numberIS):
 		    a,b=self.optVOInoParal(i,j)
-		    if b>optVOI:
+		    if optVOI is None:
+			optVOI=b
+			optPoint=a
+			optIS=j
+		    elif b>optVOI:
 			optVOI=b
 			optPoint=a
 			optIS=j
