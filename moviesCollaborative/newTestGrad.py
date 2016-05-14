@@ -638,8 +638,8 @@ l['dataObj']=dataObj
 
 sboObj=SBO.SBO(**l)
 #sboObj.optVOIParal(0,1,0)
-sboObj.trainModel(numStarts=1)
-sboObj.optAnnoParal(0)
+#sboObj.trainModel(numStarts=1)
+#sboObj.optAnnoParal(0)
 
-#sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
+sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
