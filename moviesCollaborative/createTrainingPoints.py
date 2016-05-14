@@ -19,6 +19,17 @@ from pmf import cross_validation,PMF
 nTemp=int(sys.argv[1])  #random seed 
 nTemp2=int(sys.argv[2]) #number of training points
 
+n1=4
+n2=1
+
+###rate leraning, regularizing parameter, rank, epoch
+lowerX=[0.01,0.1,1,1]
+upperX=[1.01,2.1,21,201]
+
+
+
+nGrid=[6,6,11,6]
+
 np.random.seed(nTemp)
 trainingPoints=nTemp2
 
