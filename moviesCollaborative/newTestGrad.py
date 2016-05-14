@@ -588,7 +588,6 @@ def projectGradient(x,direction,xo,step):
     alphL=[]
     alphU=[]
     st=step
-    print x
     if (any(x[0:2]<0)):
 	ind=np.where(x[0:2]<0)[0]
 	
