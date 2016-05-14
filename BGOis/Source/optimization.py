@@ -279,14 +279,14 @@ class OptSteepestDescent(Optimization):
 	    oldPoint=X
 	    oldEval=g1
             X=X-lineSearch2[0]*g2
-	    
 
-            X[0,:]=self.projectGradient(X[0,:],-g2[0,:],oldPoint[0,:])
-	    
+            X[0,:]=self.projectGradient(X[0,:],-g2[0,:],oldPoint[0,:],step)
+	
 	    
           #  oldPoint=X
 	    g1,g2=f(X,grad=True,onlyGradient=False)
-	    
+
+
             if self.stopFunction((oldPoint-X))<tol or iter > maxit:
                 tolMet=True
              #   g1,g2=f(X,grad=True,onlyGradient=False)
