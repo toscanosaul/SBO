@@ -650,10 +650,10 @@ sboObj=SBO.SBO(**l)
 
 
 #sboObj.optVOIParal(0,1,0)
-#sboObj.trainModel(numStarts=1)
+sboObj.trainModel(numStarts=10)
 #sboObj.optAnnoParal(0)
 
-sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
+#sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
 
 def test():
@@ -665,8 +665,8 @@ def test():
     kerns=stat._k
     
     wNew=0
-    
-    xNew=np.array([[-0.65,1.67,14,174]])
+
+    xNew=np.array([[-8.187,-29.026,14,171]])
     
     kernel=kerns[int(wNew)]
     
@@ -693,14 +693,11 @@ def test():
     B=np.zeros(250)
     
     for i in xrange(250):
-	kernel2=kerns[int(dataObj.Xhist[i,n1])]
-	t=kernel2.A(xNew,dataObj.Xhist[i:i+1,0:n1])
-	print t/(float(5))
 	B[i]=stat.B(xNew,dataObj.Xhist[i,:],n1,n2,kerns)
-	print B[i]
+	#print B[i]
     print "ya"
     inv2=linalg.solve_triangular(L,B,lower=True)
     aN=np.dot(inv2.transpose(),inv1)
     
     print aN
-
+test()
