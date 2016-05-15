@@ -113,7 +113,7 @@ class SBOGP(GaussianProcess):
                                         y=self.data.yHist[ind,0],
                                         noise=self.data.varHist[ind],
                                         scaleAlpha=self.scaledAlpha)
-                self._k.append(tmp)
+                self._k.append(temp)
             self.gradXBforAn=gradients.gradXBforAnMattern52
             
             
