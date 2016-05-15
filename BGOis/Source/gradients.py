@@ -27,7 +27,7 @@ def gradXBforAnSEK(x,n,B,kerns,X,n1,nT,W=None,n2=None):
         gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
     return gradXB
 
-def gradXBforAnMattern52(x,n,B,kern,X,n1,nT,W,n2):
+def gradXBforAnMattern52(x,n,B,kerns,X,n1,nT,W,n2):
     """Computes the gradient of B(x,i) for i in {1,...,n+nTraining}
        where nTraining is the number of training points (only for
        multiple I.S.)
@@ -41,19 +41,20 @@ def gradXBforAnMattern52(x,n,B,kern,X,n1,nT,W,n2):
           n1: Dimension of x
           nT: Number of training points
     """
+    IS=len(kerns)
     gradXB=np.zeros((n1,n+nT))
-    alpha1=((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
+    
     alpha2=((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha[n1:n1+n2])**2
     
     for i in xrange(n+nT):
-        temp=(np.sum(alpha1*((X[i,:]-x)**2)))
-        sum1=0
-        for j in range(n1):
-            r=temp+alpha2*((W[i,:]-j)**2)
-            sum1=sum1+(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))\
+        w=int(W[i])
+        kern=kerns[w]
+        alpha1=((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
+        r=(np.sum(alpha1*((X[i,:]-x)**2)))
+        a=(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))\
                  *(alpha1*(x-X[i,:]))
-        gradXB[:,i]=sum1
-    return kern.variance*gradXB/float(n1)
+        gradXB[:,i]=kern.variance*a
+    return gradXB/float(IS)
 
 
 def gradXBSEK(new,kerns,BN,keep,points,n1,n2=None):
@@ -83,7 +84,7 @@ def gradXBSEK(new,kerns,BN,keep,points,n1,n2=None):
     return gradXBarray
 
 
-def gradXBMattern52(new,kern,BN,keep,points,n1,n2):
+def gradXBMattern52(new,kerns,BN,keep,points,n1,n2):
     """Computes the vector of gradients with respect to x_{n+1} of
         B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
         where x_{p} is a point in the discretization of the domain of x.
@@ -98,19 +99,19 @@ def gradXBMattern52(new,kern,BN,keep,points,n1,n2):
           points: Discretization of the domain of x
           n1: Dimension of x
     """
+    kern=kerns[int(new[0,n1])]
     alpha1=((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
-    alpha2=((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha[n1:n1+n2])**2
+
     xNew=new[0,0:n1].reshape((1,n1))
     wNew=new[0,n1:n1+n2].reshape((1,n2))
     gradXBarray=np.zeros([len(keep),n1])
     M=len(keep)
     
+
     for i in range(M):
         temp=(np.sum(alpha1*((points[keep[i],:]-xNew)**2)))
-        sum1=0
-        for j in range(n1):
-            r=temp+alpha2*((wNew-j)**2)
-            sum1=sum1+(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))\
+        r=temp
+        sum1=(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))\
                  *(alpha1*(xNew-points[keep[i],:]))
         gradXBarray[i,:]=sum1
 
@@ -148,10 +149,13 @@ def gradXWSigmaOfuncSEK(n,new,kerns,Xtrain2,Wtrain2,n1,n2,nT,gamma):
     xNew=new[0,0:n1]
     
     for i in xrange(n+nT):
-        gradXSigma0[i,:]=-2.0*gamma[i]*alpha1*(xNew-Xtrain2[i,:])
+        
+        if wNew==int(Wtrain2[i,0]):
+            gradXSigma0[i,:]=-2.0*gamma[i]*alpha1*(xNew-Xtrain2[i,:])
     return gradXSigma0
 
-def gradXWSigmaOfuncMattern52(n,new,kern,Xtrain2,Wtrain2,n1,n2,nT):
+
+def gradXWSigmaOfuncMattern52(n,new,kerns,Xtrain2,Wtrain2,n1,n2,nT,gamma=None):
     """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
         all the past observations XW[i,]. Sigma_{0} is the covariance of
         the GP on F.
@@ -167,23 +171,27 @@ def gradXWSigmaOfuncMattern52(n,new,kern,Xtrain2,Wtrain2,n1,n2,nT):
           n2: Dimension of w
           nT: Number of training points
     """
-    gradXSigma0=np.zeros([n+nT+1,n1])
+    
+    gradXSigma0=np.zeros([n+nT,n1])
     tempN=n+nT
     past=np.concatenate((Xtrain2,Wtrain2),1)
-    gamma=np.transpose(kern.A(new,past))
+    wNew=int(new[0,n1:n1+n2])
+    kern=kerns[wNew]
+    #gamma=np.transpose(kern.A(new,past))
     alpha1=((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
-    gradWSigma0=np.zeros([n+nT+1,n2])
+  #  gradWSigma0=np.zeros([n+nT+1,n2])
 
-    alpha2=((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha[n1:n1+n2])**2
+  #  alpha2=((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha[n1:n1+n2])**2
     xNew=new[0,0:n1]
     wNew=new[0,n1:n1+n2]
 
     for i in xrange(n+nT):
-        temp=(np.sum(alpha1*((xNew-Xtrain2[i,:])**2)))
-        r=temp+alpha2*((wNew-Wtrain2[i,:])**2)
-        a=(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))
-        gradXSigma0[i,:]=kern.variance*a*alpha1*(xNew-Xtrain2[i,:])
-        gradWSigma0[i,:]=kern.variance*a*alpha2*(wNew-Wtrain2[i,:])
+        if wNew==int(Wtrain2[i,0]):
+            temp=(np.sum(alpha1*((xNew-Xtrain2[i,:])**2)))
+            r=temp
+            a=(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))
+            gradXSigma0[i,:]=kern.variance*a*alpha1*(xNew-Xtrain2[i,:])
+          #  gradWSigma0[i,:]=kern.variance*a*alpha2*(wNew-Wtrain2[i,:])
     return gradXSigma0,gradWSigma0
 
 ####KG

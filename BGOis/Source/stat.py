@@ -106,9 +106,12 @@ class SBOGP(GaussianProcess):
                 self._k.append(tmp)
             self.gradXBforAn=gradients.gradXBforAnSEK
         if mat52:
-            self._k=mattern52.MATTERN52(self.n1+self.n2,X=self.data.Xhist,
-                                        y=self.data.yHist[:,0],
-                                        noise=self.data.varHist,
+            self._k=[]
+            for i in range(self.numberIS):
+                ind=np.where(self.data.Xhist[:,self.n1]==i)[0]
+                temp=mattern52.MATTERN52(self.n1,X=self.data.Xhist[ind,0:self.n1],
+                                        y=self.data.yHist[ind,0],
+                                        noise=self.data.varHist[ind],
                                         scaleAlpha=self.scaledAlpha)
             self.gradXBforAn=gradients.gradXBforAnMattern52
             
