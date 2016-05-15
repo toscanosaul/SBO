@@ -44,7 +44,7 @@ def gradXBforAnMattern52(x,n,B,kerns,X,n1,nT,W,n2=None):
     IS=len(kerns)
     gradXB=np.zeros((n1,n+nT))
     
-    alpha2=((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha[n1:n1+n2])**2
+   
     
     for i in xrange(n+nT):
         w=int(W[i])
