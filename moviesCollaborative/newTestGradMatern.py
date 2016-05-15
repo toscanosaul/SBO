@@ -13,6 +13,9 @@ import json
 from BGOis.Source import *
 import time
 from pmf import cross_validation,PMF
+from scipy import linalg
+from numpy import linalg as LA
+from scipy.spatial.distance import cdist
 
 
 nTemp=int(sys.argv[1])  #random seed 
@@ -239,6 +242,7 @@ def B(x,XW,n1,n2,kernels,logproductExpectations=None):
                                   where W[i,:] is a point in the history.
           
     """
+
     x=np.array(x).reshape((x.shape[0],n1))
     results=np.zeros(x.shape[0])
     #parameterLamb=parameterSetsPoisson
@@ -246,16 +250,19 @@ def B(x,XW,n1,n2,kernels,logproductExpectations=None):
     inda=n1+n2
     W=XW[n1:inda]
     kernel=kernels[int(W)]
-    alpha1=((kernel.alpha[0:n1])**2)/scaleAlpha[0:n1]**2
+    alpha1=((kernel.alpha[0:n1])**2)/kernel.scaleAlpha[0:n1]**2
     variance0=kernel.variance
     
    
- 
+
     for i in xrange(x.shape[0]):
+
 	r=(np.sum(alpha1*((X-x[i,:])**2)))
-	a=(1+np.sqrt(5*r)+(5.0/3.0)*r)*np.exp(-np.sqrt(5*r))
+	a=(1.0+np.sqrt(5.0*r)+(5.0/3.0)*r)*np.exp(-np.sqrt(5.0*r))
         results[i]=variance0*a
-    return results
+
+    return results/float(numberIS)
+
 
 
 
@@ -264,6 +271,7 @@ stat=stat.SBOGP(B=B,dimNoiseW=n2,dimPoints=n1,trainingData=dataObj,
                 dimKernel=n1, numberTraining=trainingPoints,
                 computeLogProductExpectationsForAn=
                 None,IS=numberIS,scaledAlpha=scaleAlpha,SEK=False,mat52=True)
+
 
 
 """
@@ -638,9 +646,61 @@ l['dataObj']=dataObj
 
 
 sboObj=SBO.SBO(**l)
+
+
+
 #sboObj.optVOIParal(0,1,0)
 #sboObj.trainModel(numStarts=1)
 #sboObj.optAnnoParal(0)
 
 sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
+
+
+def test():
+    print dataObj.Xhist[0,:]
+    A=stat.computeA(dataObj.Xhist[0:250,:],noise=dataObj.varHist[0:250])
+    y2=dataObj.yHist[0:250]
+    L=np.linalg.cholesky(A)
+    
+    kerns=stat._k
+    
+    wNew=0
+    
+    xNew=np.array([[-0.65,1.67,14,174]])
+    
+    kernel=kerns[int(wNew)]
+    
+    
+    inv1=linalg.solve_triangular(L,y2,lower=True)
+    past=dataObj.Xhist
+    ind1=np.where(past[:,n1]==int(wNew))[0]
+    past2=past[ind1,0:n1]
+    gamma2=np.transpose(kernel.A(xNew,past2))
+    gamma=np.zeros((past.shape[0],1))
+    
+    gamma[ind1,:]=gamma2
+    
+    
+    
+    inv2=linalg.solve_triangular(L,gamma,lower=True)
+    
+    Fn=np.dot(inv2.transpose(),inv1)
+    
+    print Fn
+    print y2[0]
+    #print noisyF(np.concatenate((xNew,np.array([[0]])),1),0)
+    
+    B=np.zeros(250)
+    
+    for i in xrange(250):
+	kernel2=kerns[int(dataObj.Xhist[i,n1])]
+	t=kernel2.A(xNew,dataObj.Xhist[i:i+1,0:n1])
+	print t/(float(5))
+	B[i]=stat.B(xNew,dataObj.Xhist[i,:],n1,n2,kerns)
+	print B[i]
+    print "ya"
+    inv2=linalg.solve_triangular(L,B,lower=True)
+    aN=np.dot(inv2.transpose(),inv1)
+    
+    print aN
 
