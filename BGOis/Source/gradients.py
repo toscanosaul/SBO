@@ -107,7 +107,7 @@ def gradXBMattern52(new,kerns,BN,keep,points,n1,n2):
     gradXBarray=np.zeros([len(keep),n1])
     M=len(keep)
     
-
+    IS=len(kerns)
     for i in range(M):
         temp=(np.sum(alpha1*((points[keep[i],:]-xNew)**2)))
         r=temp
@@ -115,7 +115,7 @@ def gradXBMattern52(new,kerns,BN,keep,points,n1,n2):
                  *(alpha1*(xNew-points[keep[i],:]))
         gradXBarray[i,:]=sum1
 
-    return kern.variance*gradXBarray
+    return kern.variance*gradXBarray/float(IS)
 
 def gradXWSigmaOfuncSEK(n,new,kerns,Xtrain2,Wtrain2,n1,n2,nT,gamma):
     """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
