@@ -192,7 +192,7 @@ def gradXWSigmaOfuncMattern52(n,new,kerns,Xtrain2,Wtrain2,n1,n2,nT,gamma=None):
             a=(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))
             gradXSigma0[i,:]=kern.variance*a*alpha1*(xNew-Xtrain2[i,:])
           #  gradWSigma0[i,:]=kern.variance*a*alpha2*(wNew-Wtrain2[i,:])
-    return gradXSigma0,gradWSigma0
+    return gradXSigma0
 
 ####KG
 def gradXKernelSEK(x,n,kern,trainingPoints,X,n1):
