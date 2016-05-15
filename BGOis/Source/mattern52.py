@@ -57,7 +57,7 @@ class MATTERN52:
         of the GP.
         """
         dic={}
-        dic['alphaPaper']=0.5*(self.alpha**2)/self.scaleAlpha
+        dic['alphaPaper']=(self.alpha**2)/(self.scaleAlpha**2)
         dic['variance']=self.variance
         dic['mu']=self.mu
         return dic
@@ -145,7 +145,7 @@ class MATTERN52:
         logLike=-0.5*np.dot(y2,alp)-np.sum(np.log(np.diag(L)))-0.5*N*np.log(2.0*np.pi)
         if gradient==False:
             return logLike
-        gradient=np.zeros(self.dimension+2)
+        gradient=np.zeros(self.dimension+1)
         
         temp=np.dot(alp[:,None],alp[None,:])
         K2=self.A(X,alpha=alpha,variance=variance)
@@ -172,9 +172,6 @@ class MATTERN52:
         gradient[self.dimension]=0.5*np.trace(np.dot(temp,der)-temp3)
         
 
-        der=np.ones((N,N))
-        temp3=inverseComp(L,der)
-        gradient[self.dimension+1]=0.5*np.trace(np.dot(temp,der)-temp3)
         return logLike,gradient
        # except:
         #    print "no"
@@ -195,7 +192,7 @@ class MATTERN52:
             -mu: Mean parameter of the GP.
             -gradient: True if we want the gradient; False otherwise.
         """
-        return self.logLikelihood(X,y,noise=noise,alpha=alpha,variance=variance,mu=mu,gradient=True)[1]
+        return self.logLikelihood(X,y,noise=noise,alpha=alpha,variance=variance,mu=0,gradient=True)[1]
     
     def minuslogLikelihoodParameters(self,t):
         """
@@ -206,8 +203,8 @@ class MATTERN52:
         """
         alpha=t[0:self.dimension]
         variance=np.exp(t[self.dimension])
-        mu=t[self.dimension+1]
-        return -self.logLikelihood(self.X,self.y,self.noise,alpha=alpha,variance=variance,mu=mu)
+      #  mu=t[self.dimension+1]
+        return -self.logLikelihood(self.X,self.y,self.noise,alpha=alpha,variance=variance,mu=0)
     
     def minusGradLogLikelihoodParameters(self,t):
         """
@@ -218,8 +215,8 @@ class MATTERN52:
         """
         alpha=t[0:self.dimension]
         variance=np.exp(t[self.dimension])
-        mu=t[self.dimension+1]
-        return -self.gradientLogLikelihood(self.X,self.y,self.noise,alpha=alpha,variance=variance,mu=mu)
+       # mu=t[self.dimension+1]
+        return -self.gradientLogLikelihood(self.X,self.y,self.noise,alpha=alpha,variance=variance,mu=0)
 
     def optimizeKernel(self,start=None,optimizer=None,**kwargs):
         """
@@ -232,7 +229,7 @@ class MATTERN52:
             
         """
         if start is None:
-            start=np.concatenate((np.log(self.alpha**2),np.log(self.variance),self.mu))
+            start=np.concatenate((np.log(self.alpha**2),np.log(self.variance)))
         if optimizer is None:
             optimizer=self.optimizationMethod
         
@@ -253,14 +250,14 @@ class MATTERN52:
         dim=self.dimension
         alpha=np.random.randn(dim)
         variance=np.random.rand(1)
-        st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),[0.0]))
+        st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance)))
         args2={}
         args2['start']=st
         job=misc.kernOptWrapper(self,**args2)
         temp=job.xOpt
         self.alpha=np.sqrt(np.exp(np.array(temp[0:self.dimension])))
         self.variance=np.exp(np.array(temp[self.dimension]))
-        self.mu=np.array(temp[self.dimension+1])
+        #self.mu=np.array(temp[self.dimension+1])
 
     def train(self,scaledAlpha,numStarts=None,numProcesses=None,**kwargs):
         """
@@ -280,7 +277,7 @@ class MATTERN52:
             alpha=np.random.randn(numStarts,dim)
             variance=np.random.rand(numStarts,1)
             tempZero=np.zeros((numStarts,1))
-            st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),tempZero),1)
+            st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance)),1)
             for i in range(numStarts):
                # alpha=np.random.randn(dim)
                # variance=np.random.rand(1)
@@ -308,7 +305,7 @@ class MATTERN52:
             temp=self.optRuns[i].xOpt
             self.alpha=np.sqrt(np.exp(np.array(temp[0:self.dimension])))
             self.variance=np.exp(np.array(temp[self.dimension]))
-            self.mu=np.array(temp[self.dimension+1])
+           # self.mu=np.array(temp[self.dimension+1])
 
     
     def printPar(self):
