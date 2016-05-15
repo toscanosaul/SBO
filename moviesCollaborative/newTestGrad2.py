@@ -210,7 +210,7 @@ We define the statistical object.
 """
 
 dimensionKernel=n1
-scaleAlpha=np.array([1.0,1.0,20.0,200.0])
+scaleAlpha=np.array([4.0,4.0,20.0,200.0])
 
 #kernel=mattern52.MATTERN52(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
@@ -633,7 +633,7 @@ def stopFunction(x):
 
 opt=inter.opt(nTemp6,n1,n1,transformationDomainXVn,transformationDomainXAn,
               transformationDomainW,projectGradient,functionGradientAscentVn,
-              functionGradientAscentAn,stopFunction,1e-2,1e-8/np.sqrt(numberIS),cons,consA,"GRADIENT","GRADIENT")
+              functionGradientAscentAn,stopFunction,1e-2,1e-2,cons,consA,"GRADIENT","GRADIENT")
 
 
 
