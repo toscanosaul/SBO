@@ -290,7 +290,7 @@ class SBO:
 		    optPoint=a
 		    optIS=t
 	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
-	    fl.writeSolution(self,self.optPoint)
+	    fl.writeNewPointSBO(self,optPoint)
 	else:
 	    for t in range(self.nIS):
 		a,b=self.optVOInoParal(i,IS=t,corregional=True)
@@ -303,7 +303,7 @@ class SBO:
 		    optPoint=a
 		    optIS=t
 	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
-	    fl.writeSolution(self,self.optPoint)
+	    fl.writeNewPointSBO(self,optPoint)
 	    
 	    
     def optimizeVOI(self,start, i,L,temp2,a,B,scratch,corregional=False,IS=0):
@@ -417,6 +417,7 @@ class SBO:
 	w1=wSt[0:0+1,:]
 	tempN=self.numberTraining+i
 	st=x1
+	
 	args2=self.getParametersOptVoi(i)
 	args2['corregional']=corregional
 	args2['IS']=IS
