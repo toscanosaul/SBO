@@ -40,7 +40,7 @@ class MATTERN52:
         self.scaleAlpha=scaleAlpha
         self.dimension=n
         self.alpha=np.ones(n)
-        self.variance=[1.0]
+        self.variance=np.array([1.0])
         self.mu=[0.0]
         self.optimizationMethod=optName
 
@@ -92,6 +92,7 @@ class MATTERN52:
         if distances:
             return distance*cov,r,r2
         
+
         return variance*cov
     
     def A(self,X,X2=None,noise=None,alpha=None,variance=None):
@@ -151,9 +152,9 @@ class MATTERN52:
         K2=self.A(X,alpha=alpha,variance=variance)
         
         X2=X
-        dist = np.sqrt(np.sum(np.square((X[:,None,:]-X2[None,:,:])*(self.alpha/self.scaleAlpha)),-1))
+        dist = np.sqrt(np.sum(np.square((X[:,None,:]-X2[None,:,:])*(alpha/self.scaleAlpha)),-1))
         invdist = 1./np.where(dist!=0.,dist,np.inf)
-        dist2M = (np.square(X[:,None,:]-X2[None,:,:])*self.alpha**2)/(2.0*self.scaleAlpha**2)
+        dist2M = (np.square(X[:,None,:]-X2[None,:,:])*alpha**2)/(2.0*self.scaleAlpha**2)
        # dvar = (1+np.sqrt(5.)*dist+5./3*dist**2)*np.exp(-np.sqrt(5.)*dist)
        
        # dl = (self.variance * 5./3 * dist * (1 + np.sqrt(5.)*dist ) * np.exp(-np.sqrt(5.)*dist))[:,:,np.newaxis] * dist2M*invdist[:,:,np.newaxis]
@@ -202,7 +203,7 @@ class MATTERN52:
             t: hyperparameters of the kernel.
         """
         alpha=t[0:self.dimension]
-        variance=np.exp(t[self.dimension])
+        variance=(t[self.dimension])
       #  mu=t[self.dimension+1]
         return -self.logLikelihood(self.X,self.y,self.noise,alpha=alpha,variance=variance,mu=0)
     
@@ -214,7 +215,7 @@ class MATTERN52:
             t: hyperparameters of the kernel.
         """
         alpha=t[0:self.dimension]
-        variance=np.exp(t[self.dimension])
+        variance=(t[self.dimension])
        # mu=t[self.dimension+1]
         return -self.gradientLogLikelihood(self.X,self.y,self.noise,alpha=alpha,variance=variance,mu=0)
 
