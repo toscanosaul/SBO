@@ -231,7 +231,7 @@ def expectation(x,X,z,alpha1,alpha2):
 	num+=(1+np.sqrt(5*r)+(5.0/3.0)*r)*np.exp(-np.sqrt(5*r))
     return num/(n1)
 
-def B(x,XW,n1,n2,kernels,logproductExpectations=None):
+def B(x,XW,n1,n2,kernel,logproductExpectations=None):
     """Computes B(x)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
       
        Args:
