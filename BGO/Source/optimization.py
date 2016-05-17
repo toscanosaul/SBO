@@ -268,6 +268,7 @@ class OptSteepestDescent(Optimization):
                 df=df.reshape((1,x.shape[1]))
 		z=1.0*df[0,:]
 		return z
+	
   	    g2=g2.reshape((1,len(X[0,:])))
 
 	  #  print oldPoint,g2

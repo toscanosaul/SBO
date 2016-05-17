@@ -526,7 +526,7 @@ class SBO:
        # xTrans=self.opt.transformationDomainXAn(opt.xOpt[0:1,0:self.opt.dimXsteepestAn])
        # self.optPointsArray.append(xTrans)
     
-    def optAnnoParal(self,i,logProd=True):
+    def optAnnoParal(self,i,logProd=False):
 	"""
 	Runs the single-start gradient ascent method to optimize a_{i}.
 	
@@ -556,7 +556,7 @@ class SBO:
 	self.optRuns.append(misc.AnOptWrapper(self,start=Xst[0:1,:],**args2))
 	fl.writeSolution(self,self.optRuns[0])
 
-    def optAnParal(self,i,nStart,logProd=True,numProcesses=None):
+    def optAnParal(self,i,nStart,logProd=False,numProcesses=None):
 	"""
 	Runs in parallel the multi-start gradient ascent method
 	to optimize a_{i}.
