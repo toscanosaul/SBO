@@ -258,7 +258,7 @@ class SBO:
 	else:
 	    for i in range(m):
 		print i
-		self.runISvoi(self,i,self.miscObj.parallel)
+		self.runISvoi(i,self.miscObj.parallel)
 	
 		print i
 		#Otimize a_{n}
