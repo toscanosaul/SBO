@@ -61,6 +61,10 @@ class SLSP(Optimization):
         self.fOpt = -1.0*optResult.fun
         self.gradOpt=optResult.jac
         self.nIterations=optResult.nit
+	
+#	print optResult.status
+	#print optResult.success
+	#print optResult.message
        # self.status=statuses[optResult[2]['warnflag']]
 	return 0
 
@@ -99,12 +103,20 @@ class OptBFGS(Optimization):
             dictOpt['pgtol']=self.gtol
         if self.bfgsFactor is not None:
             dictOpt['factr']=self.bfgsFactor
-            
+        dictOpt['factr']=1
+	dictOpt['pgtol']=10e-10
         optResult=fmin_l_bfgs_b(f,self.xStart,df,maxfun=self.maxFun,**dictOpt)
   
         self.xOpt=optResult[0]
         self.fOpt = optResult[1]
         self.status=statuses[optResult[2]['warnflag']]
+	self.gradOpt=optResult[2]['grad']
+	self.nIterations=optResult[2]['nit']
+	print self.status
+	print self.nIterations
+	print self.gradOpt
+#	print optResult[2]['funcalls']
+
         
         
 class OptSteepestDescent(Optimization):
@@ -211,6 +223,7 @@ class OptSteepestDescent(Optimization):
         else:
             return self.goldenSection(fns,al,al,ar,0,tol=tol)
     
+
     def steepestAscent(self,f):
 	"""
 	Steepest Ascent algorithm.
@@ -222,49 +235,65 @@ class OptSteepestDescent(Optimization):
 		    grad: True if we want the gradient; False otherwise.
 		    onlyGradient: True if we only want the gradient; False otherwise.
 	"""
+	
         xStart=self.xStart
         tol=self.xtol
         maxit=self.maxIters
         maxtry=self.maxtry
         tolMet=False
+	
         iter=0
         X=xStart
         g1=-100
         n1=self.n1
+	
+	g1,g2=f(X,grad=True,onlyGradient=False)
+
         while tolMet==False:
+	
             iter=iter+1
-            oldEval=g1
-            oldPoint=X
-            g1,g2=f(X,grad=True)
+  
+	
+            
             if (tolMet==True):
                 break
-            def fns(alpha,X_=oldPoint,g2=g2):
-                tmp=X_+alpha*g2
-                return f(tmp,grad=False)
+
 	    def fLine(x):
 		x=x.reshape((1,len(x)))
-		z=-1.0*f(x,grad=False)
+		z=1.0*f(x,grad=False)
 		return z
             def gradfLine(x):
 		x=x.reshape((1,len(x)))
    		df=f(x,grad=True,onlyGradient=True)
                 df=df.reshape((1,x.shape[1]))
-		z=-1.0*df[0,:]
+		z=1.0*df[0,:]
 		return z
-  	    g2=g2.reshape((1,len(oldPoint[0,:])))
+  	    g2=g2.reshape((1,len(X[0,:])))
 
-	    lineSearch2=line_search(fLine,gradfLine,oldPoint[0,:],g2[0,:])
+	  #  print oldPoint,g2
+	    lineSearch2=line_search(fLine,gradfLine,X[0,:],-1.0*g2[0,:])
+
             step=lineSearch2[0]
+	    
             if step is None:
 	       print "step is none"
 	       tolMet=True
-               g1,g2=f(X,grad=True)
+               g1,g2=f(X,grad=True,onlyGradient=False)
 	       return X,g1,g2,iter
-            X=X+lineSearch2[0]*g2
-            X[0,:]=self.projectGradient(X[0,:],g2[0,:],oldPoint[0,:])
-            if self.stopFunction(X[0,:]-oldPoint[0,:])<tol or iter > maxit:
+	    oldPoint=X
+	    oldEval=g1
+            X=X-lineSearch2[0]*g2
+
+            X[0,:]=self.projectGradient(X[0,:],-g2[0,:],oldPoint[0,:],step)
+	
+	    
+          #  oldPoint=X
+	    g1,g2=f(X,grad=True,onlyGradient=False)
+
+
+            if self.stopFunction((oldPoint-X))<tol or iter > maxit:
                 tolMet=True
-                g1,g2=f(X,grad=True)
+             #   g1,g2=f(X,grad=True,onlyGradient=False)
                 return X,g1,g2,iter
                 
     def opt(self,f=None,df=None):
@@ -279,10 +308,11 @@ class OptSteepestDescent(Optimization):
 		    onlyGradient: True if we only want the gradient; False otherwise.
 	
 	"""
+
         x,g,g1,it=self.steepestAscent(f)
         self.xOpt=x
-        self.fOpt =g
-        self.gradOpt=g1
+        self.fOpt = -1.0*g
+        self.gradOpt= -1.0*g1
         self.nIterations=it
         
 

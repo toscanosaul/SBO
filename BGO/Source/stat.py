@@ -15,6 +15,8 @@ from matplotlib import pyplot as plt
 from . import SK
 from . import mattern52
 from . import gradients
+from . import corregionalization
+from . import corregionalization
 import pylab
 import matplotlib
 
@@ -47,7 +49,7 @@ class GaussianProcess:
     
 class SBOGP(GaussianProcess):
     def __init__(self,B,dimNoiseW,dimPoints,gradXBforAn=None, computeLogProductExpectationsForAn=None,
-                 SEK=True,mat52=False,*args,**kargs):
+                 SEK=True,mat52=False,corregMat52=False,nIS=0,*args,**kargs):
         GaussianProcess.__init__(self,*args,**kargs)
         """
         Statistical model for SBO.
@@ -94,6 +96,7 @@ class SBOGP(GaussianProcess):
         self.B=B
         self.gradXBforAn=gradXBforAn
         self.computeLogProductExpectationsForAn=computeLogProductExpectationsForAn
+        self.nIS=nIS
         if SEK:
             self._k=SK.SEK(self.n1+self.n2,X=self.data.Xhist,
                            y=self.data.yHist[:,0],
@@ -106,6 +109,13 @@ class SBOGP(GaussianProcess):
                                         noise=self.data.varHist,
                                         scaleAlpha=self.scaledAlpha)
             self.gradXBforAn=gradients.gradXBforAnMattern52
+        if corregMat52:
+            self._k=corregionalization.CORRE(self.n1,self.nIS,X=self.data.Xhist,
+                                        y=self.data.yHist[:,0],
+                                        noise=self.data.varHist,
+                                        scaleAlpha=self.scaledAlpha)
+            self.gradXBforAn=gradients.gradXBforAnCorregMattern52
+            
             
             
 

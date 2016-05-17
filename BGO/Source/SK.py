@@ -138,6 +138,7 @@ class SEK:
             L=np.linalg.cholesky(K)
             
             alp=inverseComp(L,y2)
+            
             logLike=-0.5*np.dot(y2,alp)-np.sum(np.log(np.diag(L)))-0.5*N*np.log(2.0*np.pi)
             if gradient==False:
                 return logLike
@@ -154,7 +155,7 @@ class SEK:
             der=self.K(X,alpha=alpha,variance=variance)
             temp3=inverseComp(L,der)
             gradient[self.dimension]=0.5*np.trace(np.dot(temp,der)-temp3)
-
+    
             der=np.ones((N,N))
             temp3=inverseComp(L,der)
             gradient[self.dimension+1]=0.5*np.trace(np.dot(temp,der)-temp3)
@@ -184,6 +185,7 @@ class SEK:
             temp2=np.dot(temp-L,der)
             gradient[self.dimension+1]=0.5*np.trace(temp2)
             return logLike,gradient
+
             
     def gradientLogLikelihood(self,X,y,noise=None,alpha=None,variance=None,mu=None):
         """
@@ -245,6 +247,11 @@ class SEK:
         opt.run(f=self.minuslogLikelihoodParameters,df=self.minusGradLogLikelihoodParameters)
         self.optRuns.append(opt)
         self.optPointsArray.append(opt.xOpt)
+      #  print "start is"
+        print np.sqrt(np.sum(opt.gradOpt**2))
+        print opt.nIterations
+        print opt.status
+        
     
     
     def trainnoParallel(self,scaledAlpha,**kwargs):

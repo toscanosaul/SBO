@@ -174,9 +174,9 @@ class SBO:
         self.optPointsArray=[]
 	self._solutions=[]
         self._valOpt=[]
-	
+	self.corregional=self.Obj.corregional
 	self.path=os.path.join(miscObj.folder,'%d'%self.miscObj.rs+"run")
-	
+	self.nIS=self.Obj.nIS
 	self.parameters=None
 	if not os.path.exists(self.path):
 	    os.makedirs(self.path)
@@ -196,66 +196,117 @@ class SBO:
         if Train is True:
             self.trainModel(numStarts=nRepeat,**kwargs) #Train model
         points=self._VOI._points
-        for i in range(m):
-            print i
-	    #Optimize VOI
-	    if plots:
-		tempN=self.numberTraining+i
-		At=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
-		Lt=np.linalg.cholesky(At)
-		gridX=self._VOI._points
-		tempX=self.dataObj.Xhist[0:tempN,1:self._dimW+1]
-		logProd=self.stat.computeLogProductExpectationsForAn(tempX,
-                                                         tempN,self.stat._k)
-
-		self.stat.plotAn(i,Lt,gridX,self.path,self.dataObj,self.dataObj.Xhist[:,0:1],
-				 self.dataObj.Xhist[:,1:2],self.stat._k,self.stat.B,logProd)
-
-		Bhist=np.zeros((self._VOI.sizeDiscretization,tempN))
-		for j in xrange(0,tempN):
-		    temp=self.stat.B(self._VOI._points,self.dataObj.Xhist[j,:],self._n1,
-				     self._dimW,self.stat._k)
-		    Bhist[:,j]=temp
-		muStartt=self.stat._k.mu
-		yt=self.dataObj.yHist
-		temp2t=linalg.solve_triangular(Lt,(Bhist).T,lower=True)
-		temp1t=linalg.solve_triangular(Lt,np.array(yt)-muStartt,lower=True)
-		a=muStartt+np.dot(temp2t.T,temp1t)
-		m2=self._VOI._points.shape[0]
-		scratch=np.zeros((m2,tempN))
-		
-
-		for j in xrange(m2):
-		    scratch[j,:]=linalg.solve_triangular(Lt,Bhist[j,:].transpose(),lower=True)
-		self._VOI.plotVOI(i,Lt,self.path,self.dataObj,temp2t,a,scratch,
-				  self.stat._k,self.dataObj.Xhist,self.stat.B,m2,
-				  self._VOI._points)
-		
-		
-		####mu_n
-	
-		self.stat.plotmuN(i,Lt,temp1t,self.stat._k,self.dataObj.Xhist[:,0:1],
-				  self.dataObj.Xhist[:,1:2],muStartt,
-				  self._VOI._points,m2,self.path)
-		
+	if self.corregional is False:
+	    for i in range(m):
+		print i
+		#Optimize VOI
+		if plots:
+		    tempN=self.numberTraining+i
+		    At=self.stat._k.A(self.dataObj.Xhist[0:tempN,:],noise=self.dataObj.varHist[0:tempN])
+		    Lt=np.linalg.cholesky(At)
+		    gridX=self._VOI._points
+		    tempX=self.dataObj.Xhist[0:tempN,1:self._dimW+1]
+		    logProd=self.stat.computeLogProductExpectationsForAn(tempX,
+							     tempN,self.stat._k)
+    
+		    self.stat.plotAn(i,Lt,gridX,self.path,self.dataObj,self.dataObj.Xhist[:,0:1],
+				     self.dataObj.Xhist[:,1:2],self.stat._k,self.stat.B,logProd)
+    
+		    Bhist=np.zeros((self._VOI.sizeDiscretization,tempN))
+		    for j in xrange(0,tempN):
+			temp=self.stat.B(self._VOI._points,self.dataObj.Xhist[j,:],self._n1,
+					 self._dimW,self.stat._k)
+			Bhist[:,j]=temp
+		    muStartt=self.stat._k.mu
+		    yt=self.dataObj.yHist
+		    temp2t=linalg.solve_triangular(Lt,(Bhist).T,lower=True)
+		    temp1t=linalg.solve_triangular(Lt,np.array(yt)-muStartt,lower=True)
+		    a=muStartt+np.dot(temp2t.T,temp1t)
+		    m2=self._VOI._points.shape[0]
+		    scratch=np.zeros((m2,tempN))
+		    
+    
+		    for j in xrange(m2):
+			scratch[j,:]=linalg.solve_triangular(Lt,Bhist[j,:].transpose(),lower=True)
+		    self._VOI.plotVOI(i,Lt,self.path,self.dataObj,temp2t,a,scratch,
+				      self.stat._k,self.dataObj.Xhist,self.stat.B,m2,
+				      self._VOI._points)
+		    
+		    
+		    ####mu_n
+	    
+		    self.stat.plotmuN(i,Lt,temp1t,self.stat._k,self.dataObj.Xhist[:,0:1],
+				      self.dataObj.Xhist[:,1:2],muStartt,
+				      self._VOI._points,m2,self.path)
+		    
+		if self.miscObj.parallel:
+		    self.optVOIParal(i,self.opt.numberParallel) 
+		else:
+		    self.optVOInoParal(i)
+		print i
+		#Otimize a_{n}
+		if self.miscObj.parallel:
+		    self.optAnParal(i,self.opt.numberParallel)
+		else:
+		    self.optAnnoParal(i)
+		print i
+	    #Optimize a_{n}
 	    if self.miscObj.parallel:
-		self.optVOIParal(i,self.opt.numberParallel) 
+		self.optAnParal(m,self.opt.numberParallel)
 	    else:
-		self.optVOInoParal(i)
-            print i
-	    #Otimize a_{n}
+		self.optAnnoParal(i)
+	else:
+	    for i in range(m):
+		print i
+		self.runISvoi(self,i,self.miscObj.parallel)
+	
+		print i
+		#Otimize a_{n}
+		if self.miscObj.parallel:
+		    self.optAnParal(i,self.opt.numberParallel)
+		else:
+		    self.optAnnoParal(i)
+
+		print i
+	    #Optimize a_{n}
 	    if self.miscObj.parallel:
 		self.optAnParal(i,self.opt.numberParallel)
 	    else:
 		self.optAnnoParal(i)
-            print i
-	#Optimize a_{n}
-	if self.miscObj.parallel:
-	    self.optAnParal(m,self.opt.numberParallel)
-	else:
-	    self.optAnnoParal(i)
 
-    def optimizeVOI(self,start, i,L,temp2,a,B,scratch):
+    def runISvoi(self,i,parallel):
+	optIS=-1
+	optVOI=None
+	optPoint=None
+	if parallel:
+	    for t in range(self.nIS):
+		a,b=self.optVOIParal(i,self.opt.numberParallel,IS=t,corregional=True)
+		if optVOI is None:
+		    optVOI=b
+		    optPoint=a
+		    optIS=t
+		elif b>optVOI:
+		    optVOI=b
+		    optPoint=a
+		    optIS=t
+	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
+	    fl.writeSolution(self,self.optPoint)
+	else:
+	    for t in range(self.nIS):
+		a,b=self.optAnnoParal(i,IS=t,corregional=True)
+		if optVOI is None:
+		    optVOI=b
+		    optPoint=a
+		    optIS=t
+		elif b>optVOI:
+		    optVOI=b
+		    optPoint=a
+		    optIS=t
+	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
+	    fl.writeSolution(self,self.optPoint)
+	    
+	    
+    def optimizeVOI(self,start, i,L,temp2,a,B,scratch,corregional=False,IS=0):
 	"""
         Optimize the value of information using gradient ascent.
 	
@@ -273,12 +324,19 @@ class SBO:
 	    scratch: matrix where scratch[i,:] is the solution of the linear system
                      Ly=B[j,:].transpose() (See above for the definition of B and L)
         """
-	
-        def g(x,grad,onlyGradient=False):
-            return self.opt.functionGradientAscentVn(x,i=i,VOI=self._VOI,L=L,temp2=temp2,a=a,
-						 scratch=scratch,onlyGradient=onlyGradient,
-						 kern=self.stat._k,XW=self.dataObj.Xhist,
-						 Bfunc=self.stat.B,grad=grad)
+	if corregional is False:
+	    def g(x,grad,onlyGradient=False):
+		return self.opt.functionGradientAscentVn(x,i=i,VOI=self._VOI,L=L,temp2=temp2,a=a,
+						     scratch=scratch,onlyGradient=onlyGradient,
+						     kern=self.stat._k,XW=self.dataObj.Xhist,
+						     Bfunc=self.stat.B,grad=grad)
+	else:
+	    def g(x,grad,onlyGradient=False):
+		x2=np.concatenate((x,np.array([[IS]])),1)
+		return self.opt.functionGradientAscentVn(x2,i=i,VOI=self._VOI,L=L,temp2=temp2,a=a,
+						     scratch=scratch,onlyGradient=onlyGradient,
+						     kern=self.stat._k,XW=self.dataObj.Xhist,
+						     Bfunc=self.stat.B,grad=grad)
 
 	if self.opt.MethodVn=="SLSQP":
 	    opt=op.SLSP(start)
@@ -294,7 +352,15 @@ class SBO:
 	    opt=op.OptSteepestDescent(n1=self.opt.dimXsteepestVn,projectGradient=self.opt.projectGradient,
 				      stopFunction=self.opt.functionConditionOpt,xStart=start,
 				      xtol=self.opt.xtol)
-	    opt.run(f=g)
+	    def g1(x,grad,onlyGradient=False):
+		temp=g(x,grad,onlyGradient)
+		if grad==True and onlyGradient==False:
+		    return -1.0*temp[0],-1.0*temp[1]
+		if grad==True and onlyGradient==True:
+		    return -1.0*temp
+		return -1.0*temp
+	  
+	    opt.run(f=g1)
 
 
         self.optRuns.append(opt)
@@ -336,7 +402,7 @@ class SBO:
 	args2['scratch']=scratch
 	return args2
 
-    def optVOInoParal(self,i):
+    def optVOInoParal(self,i,IS=0,corregional=False):
 	"""
 	Runs the single-start gradient ascent method to optimize the VOI.
 	
@@ -350,13 +416,21 @@ class SBO:
 	x1=Xst[0:0+1,:]
 	w1=wSt[0:0+1,:]
 	tempN=self.numberTraining+i
-	st=np.concatenate((x1,w1),1)
+	st=x1
 	args2=self.getParametersOptVoi(i)
-    #    args2['start']=st
+	args2['corregional']=corregional
+	args2['IS']=IS
 	self.optRuns.append(misc.VOIOptWrapper(self,st,**args2))
-	fl.writeNewPointSBO(self,self.optRuns[0])
 
-    def optVOIParal(self,i,nStart,numProcesses=None):
+	if corregional is False:
+	    fl.writeNewPointSBO(self,self.optRuns[0])
+	else:
+	    return self.optRuns[0],self.optRuns[0].fOpt
+    #    args2['start']=st
+	
+	
+
+    def optVOIParal(self,i,nStart,numProcesses=None,IS=0,corregional=False):
 	"""
 	Runs in parallel the multi-start gradient ascent method
 	to optimize the VOI.
@@ -373,8 +447,11 @@ class SBO:
 
             Xst=self.Obj.sampleFromXVn(nStart)
             wSt=self.Obj.simulatorW(nStart)
-	    XWst=np.concatenate((Xst,wSt),1)
+	    #XWst=np.concatenate((Xst,wSt),1)
+	    XWst=Xst
 	    args3=self.getParametersOptVoi(i)
+	    args3['corregional']=corregional
+	    args3['IS']=IS
 	    pool = mp.Pool(processes=numProcesses)
 	    jobs = []
             for j in range(nStart):
@@ -394,9 +471,17 @@ class SBO:
                 print "Error optimizing VOI"
         if len(self.optRuns):
             j = np.argmax([o.fOpt for o in self.optRuns])
-	    fl.writeNewPointSBO(self,self.optRuns[j])
+	    if corregional is False:
+		fl.writeNewPointSBO(self,self.optRuns[0])
+	    else:
+		return self.optRuns[0],self.optRuns[0].fOpt
+	    #fl.writeNewPointSBO(self,self.optRuns[j])
         self.optRuns=[]
         self.optPointsArray=[]
+
+
+
+
 
     def optimizeAn(self,start,i,L,logProduct=None):
 	"""
@@ -524,6 +609,7 @@ class SBO:
 
         self.optRuns=[]
         self.optPointsArray=[]
+
 
     def trainModel(self,numStarts,**kwargs):
 	"""

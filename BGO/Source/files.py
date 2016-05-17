@@ -106,6 +106,7 @@ def writeSolution(ALGObj,optim):
         result,var=ALGObj.Obj.estimationObjective(xTrans[0,:])
         res=np.append(result,var)
         np.savetxt(f,res)
+        np.savetxt(f,optim.fOpt)
     with open(os.path.join(ALGObj.path,'%d'%ALGObj.miscObj.rs+"optAngrad.txt"), "a") as f:
         np.savetxt(f,tempGrad)
     ALGObj.optRuns=[]

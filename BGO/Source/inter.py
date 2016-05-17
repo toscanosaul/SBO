@@ -26,7 +26,7 @@ import multiprocessing as mp
 
 class objective:
     def __init__(self, fobj,dimSeparation,noisyF,numberEstimateF,SampleFromXVn,
-                 simulatorW,estimationObjective,SampleFromXAn=None):
+                 simulatorW,estimationObjective,SampleFromXAn=None,nIS=0,corregional=False):
         """
         Args:
             -fobj: The simulator or objective function.
@@ -59,6 +59,8 @@ class objective:
                                      -Estimator of G.
                                      -Estimator of the variance of the output.
         """
+        self.nIS=nIS
+        self.corregional=corregional
         self.fobj=fobj
         self.dimSeparation=dimSeparation
         self.noisyF=noisyF
@@ -101,7 +103,7 @@ class opt:
                  transformationDomainXVn=None,transformationDomainXAn=None,
                  transformationDomainW=None,projectGradient=None,
                  functionGradientAscentVn=None,functionGradientAscentAn=None,
-                 functionConditionOpt=None,xtol=None,consVn=None,consAn=None,
+                 functionConditionOpt=None,xtol=None,xtolAn=None,consVn=None,consAn=None,
                  MethodVn=None,MethodAn=None):
         """
         Args:
@@ -204,6 +206,7 @@ class opt:
         self.functionGradientAscentAn=functionGradientAscentAn
         self.functionConditionOpt=functionConditionOpt
         self.xtol=xtol
+        self.xtolAn=xtolAn
         self.consVn=consVn
         self.consAn=consAn
         self.MethodVn=MethodVn

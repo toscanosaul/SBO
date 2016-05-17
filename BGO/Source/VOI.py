@@ -58,7 +58,7 @@ class VOI:
 class VOISBO(VOI):
     def __init__(self,dimW,dimX,gradWBfunc,pointsApproximation,
                  gradXBfunc=None,gradXWSigmaOfunc=None,SEK=True,
-                 mat52=False,
+                 mat52=False,corregMat52=False,
                  *args,**kargs):
         """
         Value of Information used for SBO.
@@ -113,6 +113,7 @@ class VOISBO(VOI):
         self._gradXWSigmaOfunc=gradXWSigmaOfunc
         self._points=pointsApproximation
         self.sizeDiscretization=self._points.shape[0]
+        self.corr=False
         
         if SEK:
             self._gradXWSigmaOfunc=gradients.gradXWSigmaOfuncSEK
@@ -121,7 +122,13 @@ class VOISBO(VOI):
         if mat52:
             self._gradXWSigmaOfunc=gradients.gradXWSigmaOfuncMattern52
             self._gradXBfunc=gradients.gradXBMattern52
+        
+        if corregMat52:
+            self._gradXWSigmaOfunc=gradients.gradXWSigmaOCorregMattern52
+            self._gradXBfunc=gradients.gradXBCorregMattern52
+            self.corr=True
             
+           
 
     
     
@@ -232,7 +239,7 @@ class VOISBO(VOI):
         """
         n1=self.n1
         n2=self.n2
-        
+        corr=self.corr
         if grad==False:
             h=hvoi(b,c,keep1) ##Vn
             return h
@@ -260,12 +267,17 @@ class VOISBO(VOI):
                                                        kern,XW[0:tempN,0:n1],
                                                        XW[0:tempN,n1:n1+n2],
                                                        n1,n2,nTraining)
+        
+        if corr is False:
+            gradXB=self._gradXBfunc(pointNew,kern,BN,keep,self._points,n1,n2)
+            gradWB=self._gradWBfunc(pointNew,kern,BN,keep,self._points)
+    
+    
+            gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
+        else:
+            gradXB=self._gradXBfunc(pointNew,kern,BN,keep,self._points,n1,n2)
 
-        gradXB=self._gradXBfunc(pointNew,kern,BN,keep,self._points,n1,n2)
-        gradWB=self._gradWBfunc(pointNew,kern,BN,keep,self._points)
-
-
-        gradientGamma=np.concatenate((gradXSigma0,gradWSigma0),1).transpose()
+            gradientGamma=gradXSigma0.transpose()
 
         inv3=inv
         beta1=(kern.A(pointNew)-aux4)
@@ -282,6 +294,12 @@ class VOISBO(VOI):
                 tmp2=(.5)*(beta1**(-1.5))*beta2*(2.0*aux5)
                 gradient[j]=tmp+tmp2
             result[i]=np.dot(np.diff(gradient),evalC)
+            
+        if corr:
+            if onlyGradient:
+                return result
+            h=hvoi(bPrev,cPrev,keep1) 
+            return h,result
 
         for i in xrange(n2):
             inv2=linalg.solve_triangular(L,gradientGamma[i+n1,0:tempN].transpose(),lower=True)

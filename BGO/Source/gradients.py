@@ -22,6 +22,27 @@ def gradXBforAnSEK(x,n,B,kern,X,n1,nT,W=None,n2=None):
         gradXB[:,i]=B[i]*(-2.0*alpha1*(x-X[i,:]))
     return gradXB
 
+def gradXBforAnCorregMattern52(x,n,B,kern,X,n1,nT,W,n2):
+    gradXB=np.zeros((n1,n+nT))
+    
+
+    alpha1=((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
+    
+    nIS=kern.nIS
+    for i in xrange(n+nT):
+        temp=(np.sum(alpha1*((X[i,:]-x)**2)))
+        sum1=0
+        w2=int(W[i])
+        for j in range(nIS):
+            r=temp
+            w=j
+            aux=kern.matrix[w,w2]*kern.variance
+            sum1=sum1+aux*(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))\
+                 *(alpha1*(x-X[i,:]))
+        
+        gradXB[:,i]=sum1/float(nIS)
+    return gradXB
+
 def gradXBforAnMattern52(x,n,B,kern,X,n1,nT,W,n2):
     """Computes the gradient of B(x,i) for i in {1,...,n+nTraining}
        where nTraining is the number of training points (only for
@@ -75,6 +96,28 @@ def gradXBSEK(new,kern,BN,keep,points,n1,n2=None):
         for j in xrange(M):
             gradXBarray[j,i]=-2.0*alpha1[i]*BN[keep[j],0]*(xNew[0,i]-points[keep[j],i])
     return gradXBarray
+
+def gradXBCorregMattern52(new,kern,BN,keep,points,n1,n2):
+    alpha1=((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
+  #  alpha2=((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha[n1:n1+n2])**2
+    xNew=new[0,0:n1].reshape((1,n1))
+    wNew=new[0,n1:n1+n2].reshape((1,n2))
+    gradXBarray=np.zeros([len(keep),n1])
+    M=len(keep)
+    nIS=kern.nIS
+    w=int(wNew)
+    for i in range(M):
+        temp=(np.sum(alpha1*((points[keep[i],:]-xNew)**2)))
+        sum1=0
+        for j in range(nIS):
+            r=temp
+            aux=kern.matrix[w,j]*kern.variance
+            sum1=sum1+aux*(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))\
+                 *(alpha1*(xNew-points[keep[i],:]))
+        gradXBarray[i,:]=sum1
+
+    return gradXBarray/float(nIS)
+
 
 
 def gradXBMattern52(new,kern,BN,keep,points,n1,n2):
@@ -140,6 +183,27 @@ def gradXWSigmaOfuncSEK(n,new,kern,Xtrain2,Wtrain2,n1,n2,nT):
         gradXSigma0[i,:]=-2.0*gamma[i]*alpha1*(xNew-Xtrain2[i,:])
         gradWSigma0[i,:]=-2.0*gamma[i]*alpha2*(wNew-Wtrain2[i,:])
     return gradXSigma0,gradWSigma0
+
+def gradXWSigmaOCorregMattern52(n,new,kern,Xtrain2,Wtrain2,n1,n2,nT):
+    gradXSigma0=np.zeros([n+nT+1,n1])
+    tempN=n+nT
+    past=np.concatenate((Xtrain2,Wtrain2),1)
+    gamma=np.transpose(kern.A(new,past))
+    alpha1=((kern.alpha[0:n1])**2)/(kern.scaleAlpha[0:n1])**2
+  #  gradWSigma0=np.zeros([n+nT+1,n2])
+
+  #  alpha2=((kern.alpha[n1:n1+n2])**2)/(kern.scaleAlpha[n1:n1+n2])**2
+    xNew=new[0,0:n1]
+    wNew=new[0,n1:n1+n2]
+
+    for i in xrange(n+nT):
+        temp=(np.sum(alpha1*((xNew-Xtrain2[i,:])**2)))
+        r=temp
+        a=(5.0/3.0)*(np.exp(-np.sqrt(5*r)))*(-1.0-np.sqrt(5*r))
+        gradXSigma0[i,:]=kern.matrix[int(wNew),int(Wtrain2[i,:])]*kern.variance*a*alpha1*(xNew-Xtrain2[i,:])
+      #  gradWSigma0[i,:]=kern.variance*a*alpha2*(wNew-Wtrain2[i,:])
+    return gradXSigma0,None
+    
 
 def gradXWSigmaOfuncMattern52(n,new,kern,Xtrain2,Wtrain2,n1,n2,nT):
     """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for

@@ -160,7 +160,7 @@ class MATTERN52:
      #  target[0] += np.sum(dvar*dL_dK)
         
         derivative=np.zeros((N,N))
-        dl = -(self.variance * 5./3 * dist * (1 + np.sqrt(5.)*dist ) * np.exp(-np.sqrt(5.)*dist))[:,:,np.newaxis] * dist2M*invdist[:,:,np.newaxis]
+        dl = -(np.array(self.variance) * 5./3 * dist * (1 + np.sqrt(5.)*dist ) * np.exp(-np.sqrt(5.)*dist))[:,:,np.newaxis] * dist2M*invdist[:,:,np.newaxis]
     
         for i in range(self.dimension):
             derivative=dl[:,:,i]
