@@ -282,7 +282,11 @@ class VOISBO(VOI):
         inv3=inv
         beta1=(kern.A(pointNew)-aux4)
         gradient=np.zeros(M)
-        result=np.zeros(n1+n2)
+        
+        if corr is False:
+            result=np.zeros(n1+n2)
+        else:
+             result=np.zeros(n1)
 
         for i in xrange(n1):
             inv2=linalg.solve_triangular(L,gradientGamma[i,0:tempN].transpose(),lower=True)
