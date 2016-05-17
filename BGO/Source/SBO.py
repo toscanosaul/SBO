@@ -293,7 +293,7 @@ class SBO:
 	    fl.writeSolution(self,self.optPoint)
 	else:
 	    for t in range(self.nIS):
-		a,b=self.optVOIParal(i,IS=t,corregional=True)
+		a,b=self.optVOInoParal(i,IS=t,corregional=True)
 		if optVOI is None:
 		    optVOI=b
 		    optPoint=a
