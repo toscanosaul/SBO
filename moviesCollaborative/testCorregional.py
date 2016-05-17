@@ -254,7 +254,7 @@ def B(x,XW,n1,n2,kernels,logproductExpectations=None):
     X=XW[0:n1]
     inda=n1+n2
     W=XW[n1:inda]
-    kernel=kernels[int(W)]
+   # kernel=kernels[int(W)]
     alpha1=((kernel.alpha[0:n1])**2)/kernel.scaleAlpha[0:n1]**2
     variance0=kernel.variance
     
