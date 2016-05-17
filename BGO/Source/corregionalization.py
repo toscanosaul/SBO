@@ -387,8 +387,8 @@ class CORRE:
             entries=int(self.nIS*(self.nIS+1)/2.0)
             variance=np.random.rand(numStarts,1)
          #   tempZero=np.zeros((numStarts,1))
-            l=np.random.rand((numStarts,entries))
-            st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),l),1)
+            l=np.random.rand(numStarts,entries)
+            st=np.concatenate((np.sqrt(np.exp(alpha)),np.exp(variance),np.exp(l)),1)
             for i in range(numStarts):
                # alpha=np.random.randn(dim)
                # variance=np.random.rand(1)
