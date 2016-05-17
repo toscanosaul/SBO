@@ -203,6 +203,10 @@ XWtrain=np.loadtxt(file1)
 yHist=np.loadtxt(file2)
 yHist=yHist.reshape((len(yHist),1))
 
+index=[]
+for j in range(numberIS):
+    index.append([i+50*j for i in range(trainingPoints)])
+index=np.concatenate((index[0],index[1],index[2],index[3],index[4]))
 trainingPoints*=numberIS
 
 #XWtrain[0:trainingPoints,0]=np.log((1.01/XWtrain[0:trainingPoints,0])-1.0)
@@ -210,7 +214,7 @@ trainingPoints*=numberIS
 
 #trainingPoints+=1
 
-dataObj=inter.data(XWtrain[0:trainingPoints,:],yHist=yHist[0:trainingPoints,0:1],varHist=np.zeros(trainingPoints))
+dataObj=inter.data(XWtrain[index,:],yHist=yHist[index,0:1],varHist=np.zeros(trainingPoints))
 
 
 """
