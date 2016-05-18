@@ -561,6 +561,9 @@ def projectGradient(x,direction,xo,step):
  #       alp=np.min(quotient)
 
   #      st=min(st,alp)
+    temp=xo+direction*st
+    if (any(temp<lowerX) or any(temp>upperX)):
+	return xo
 
     return xo+direction*st
 #1.01,2.1,21,201]
