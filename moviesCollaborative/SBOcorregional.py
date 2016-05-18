@@ -48,8 +48,8 @@ n1=4
 n2=1
 
 ###rate leraning, regularizing parameter, rank, epoch
-lowerX=[0.01,0,1,1]
-upperX=[1.01,1.0,21,201]
+lowerX=[0.001,0,1,1]
+upperX=[1.001,1.0,21,201]
 
 
 
@@ -481,7 +481,7 @@ def projectGradient(x,direction,xo,step):
         alp=np.min(quotient)
         st=min(st,alp)
 	
-    if (any(x[1]<lowerX[1])):
+    if (x[1]<lowerX[1]):
 	ind=1
 	if (direction[ind]>=0):
 	
