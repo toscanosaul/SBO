@@ -110,13 +110,26 @@ def noisyF(XW,n):
 
 
 
-def sampleFromXAn(n):
+def sampleFromXAn(n,Train=False):
     """Chooses n points in the domain of x at random
       
        Args:
           n: Number of points chosen
     """
-    s1=np.random.uniform(lowerX[0:2],upperX[0:2],(n,2))
+    if Train is True:
+	t=np.zeros((4,2))
+	ls=[lowerX[0],upperX[0]]
+	lu=[lowerX[1],upperX[1]]
+	for i in range(2):
+	    for j in range(2):
+		t[i*2+j,0]=ls[i]
+		t[i*2+j,1]=lu[j]
+	    
+	
+	s1=np.random.uniform(lowerX[0:2],upperX[0:2],(n-4,2))
+	s1=np.concatenate((t,s1),0)
+    else:
+	s1=np.random.uniform(lowerX[0:2],upperX[0:2],(n,2))
     a=np.random.randint(lowerX[2],upperX[2],n).reshape((n,1))
     b=np.random.randint(lowerX[3],upperX[3],n).reshape((n,1))
     
@@ -215,7 +228,7 @@ else:
     ###
     numberIS=5
     
-    Xtrain=sampleFromXVn(trainingPoints).reshape((trainingPoints,n1))
+    Xtrain=sampleFromXVn(trainingPoints,Train=True).reshape((trainingPoints,n1))
     Xtrain=np.repeat(Xtrain,5,axis=0)
     
     Wtrain=[]
