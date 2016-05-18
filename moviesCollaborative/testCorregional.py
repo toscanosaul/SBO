@@ -213,6 +213,9 @@ yHist=yHist.reshape((len(yHist),1))
 #XWtrain[index,1]=np.log((2.1/XWtrain[index,1])-1.0)
 
 #trainingPoints+=1
+XWtrain[0:trainingPoints*numberIS,0]=np.log((1.01/XWtrain[0:trainingPoints*numberIS,0])-1.0)
+XWtrain[0:trainingPoints*numberIS,1]=np.log((2.1/XWtrain[0:trainingPoints*numberIS,1])-1.0)
+
 
 dataObj=inter.data(XWtrain[0:trainingPoints*numberIS,:],yHist=yHist[0:trainingPoints*numberIS,0:1],varHist=np.zeros(trainingPoints*numberIS))
 
