@@ -249,7 +249,7 @@ class OptSteepestDescent(Optimization):
         n1=self.n1
 	
 	g1,g2=f(X,grad=True,onlyGradient=False)
-	print "optimize"
+	
 
         while tolMet==False:
 	
@@ -272,7 +272,7 @@ class OptSteepestDescent(Optimization):
 		return z
 
   	    g2=g2.reshape((1,len(X[0,:])))
-	    const=(np.sqrt(np.sum(g2[0,:]**2)))
+	  #  const=(np.sqrt(np.sum(g2[0,:]**2)))
 	    
 	  #  print oldPoint,g2
 	    lineSearch2=line_search(fLine,gradfLine,X[0,:],-(1.0)*g2[0,:])
@@ -286,7 +286,7 @@ class OptSteepestDescent(Optimization):
 	       tolMet=True
                g1,g2=f(X,grad=True,onlyGradient=False)
 	       return X,g1,g2,iter
-	    step=step/const
+	    #step=step/const
 	    
 	    oldPoint=np.array(X)
 	    oldEval=g1

@@ -337,10 +337,7 @@ class SBO:
 			optVOI=sols[t][j].fOpt
 			optPoint=sols[t][j]
 			optIS=t
-	    print "solution"
-	    print optIS
-	    print optVOI
-	    print [[o.fOpt for o in sols[t] ] for t in range(self.nIS)]
+
 	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
 	    fl.writeNewPointSBO(self,optPoint)
 	else:
@@ -381,7 +378,7 @@ class SBO:
 		    sols.append(jobs[t].get())
 		except Exception as e:
 		    print "what"
-	    print [o.fOpt for o in sols]
+	    
 	    if len(sols):
 		i = np.argmax([o.fOpt for o in sols])
 		temp=sols[i]
