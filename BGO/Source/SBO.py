@@ -612,10 +612,18 @@ class SBO:
 	    cons=self.opt.consAn
 	    opt.run(f=g1,df=dg,cons=cons)
 	else:
+
 	    opt=op.OptSteepestDescent(n1=self.opt.dimXsteepestAn,projectGradient=self.opt.projectGradient,
-				  xStart=start,xtol=self.opt.xtol,
+				  xStart=start,xtol=self.opt.xtolAn,
 				  stopFunction=self.opt.functionConditionOpt)
-	    opt.run(f=g)
+	    def g1(x,grad,onlyGradient=False):
+		temp=g(x,grad,onlyGradient)
+		if grad==True and onlyGradient==False:
+		    return -1.0*temp[0],-1.0*temp[1]
+		if grad==True and onlyGradient==True:
+		    return -1.0*temp
+		return -1.0*temp
+	    opt.run(f=g1)
 
         #opt.run(f=g)
         self.optRuns.append(opt)
