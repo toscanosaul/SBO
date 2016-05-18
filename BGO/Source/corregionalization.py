@@ -76,6 +76,17 @@ class CORRE:
         dic['variance']=self.variance
         dic['mu']=self.mu
         return dic
+    
+    def getParamaters2(self):
+        """
+        Returns a dictionary with the hyperparameters and the mean
+        of the GP.
+        """
+        dic={}
+        dic['alphaPaper']=(self.alpha**2)/(self.scaleAlpha**2)
+        dic['variance']=self.variance
+        dic['matrix']=self.matrix
+        return dic
 
     def K(self, X, X2=None,alpha=None,variance=None,covM=None,distances=False):
         """

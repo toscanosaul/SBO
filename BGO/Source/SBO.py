@@ -715,11 +715,21 @@ class SBO:
 	    numStarts: Number of random restarts to optimize
 		       the hyperparameters.
         """
-	if self.miscObj.parallel:
-	    self.stat._k.train(scaledAlpha=self.stat.scaledAlpha,numStarts=numStarts,**kwargs)
+	
+	if self.corregional is False:
+	    if self.miscObj.parallel:
+		self.stat._k.train(scaledAlpha=self.stat.scaledAlpha,numStarts=numStarts,**kwargs)
+	    else:
+		self.stat._k.trainnoParallel(scaledAlpha=self.stat.scaledAlpha,**kwargs)
+	    f=open(os.path.join(self.path,'%d'%self.miscObj.rs+"hyperparameters.txt"),'w')
+	    f.write(str(self.stat._k.getParamaters()))
+	    f.close()
 	else:
-	    self.stat._k.trainnoParallel(scaledAlpha=self.stat.scaledAlpha,**kwargs)
-        f=open(os.path.join(self.path,'%d'%self.miscObj.rs+"hyperparameters.txt"),'w')
-        f.write(str(self.stat._k.getParamaters()))
-        f.close()
+	    if self.miscObj.parallel:
+		self.stat._k.train2(scaledAlpha=self.stat.scaledAlpha,numStarts=numStarts,**kwargs)
+	    else:
+		self.stat._k.trainnoParallel2(scaledAlpha=self.stat.scaledAlpha,**kwargs)
+	    f=open(os.path.join(self.path,'%d'%self.miscObj.rs+"hyperparameters.txt"),'w')
+	    f.write(str(self.stat._k.getParamaters2()))
+	    f.close()
 
