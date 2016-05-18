@@ -305,7 +305,7 @@ class SBO:
 		    for k in range(self.opt.numberParallel):
 			job = pool.apply_async(misc.VOIOptWrapper, args=(self,Xst[(j-1)*(nParal)+k:(j-1)*(nParal)+1+k,:],j,),
 					       kwds=args3)
-		    jobs[j].append(job)
+			jobs[j].append(job)
 		pool.close()  # signal that no more data coming in
 		pool.join()  # wait for all the tasks to complete
 	    except KeyboardInterrupt:
