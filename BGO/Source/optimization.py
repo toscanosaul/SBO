@@ -300,13 +300,7 @@ class OptSteepestDescent(Optimization):
 
             if self.stopFunction((oldPoint-X))<tol or iter > maxit:
 		#print "done"
-		print "Step"
-		print step
-		print oldPoint
-		print X
-		print np.sqrt(np.sum((oldPoint-prev)**2))
-		print np.sqrt(np.sum((oldPoint-X)**2))
-		print np.sqrt(np.sum(g2**2))
+
                 tolMet=True
              #   g1,g2=f(X,grad=True,onlyGradient=False)
                 return X,g1,g2,iter
