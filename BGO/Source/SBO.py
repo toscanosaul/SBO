@@ -298,7 +298,7 @@ class SBO:
 	#	Wtrain=np.arange(self.nIS).reshape((self.nIS,1))
 	#	XWst=np.concatenate((XW,Wtrain),0)
 		
-		pool = mp.Pool(processes=numProcesses)
+		pool = mp.Pool()
 		jobs = [[] for t1 in range(self.nIS)]
 		nParal=self.opt.numberParallel
 		for j in range(self.nIS):
