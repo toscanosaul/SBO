@@ -48,12 +48,12 @@ n1=4
 n2=1
 
 ###rate leraning, regularizing parameter, rank, epoch
-lowerX=[-4.0,-4.0,1,1]
-upperX=[4.0,4.0,21,201]
+lowerX=[0.01,0,1,1]
+upperX=[1.01,1.0,21,201]
 
 
 
-nGrid=[9,9,11,6]
+nGrid=[11,11,11,6]
 
 domainX=[]
 for i in range(n1):
@@ -90,7 +90,7 @@ def logistic(x):
     return 1.0/(1.0+np.exp(x))
 
 def g(x,w1):
-    val=PMF(num_user,num_item,train[w1],validate[w1],1.01*logistic(x[0]),2.1*logistic(x[1]),int(x[3]),int(x[2]))
+    val=PMF(num_user,num_item,train[w1],validate[w1],(x[0]),(x[1]),int(x[3]),int(x[2]))
     return -val*100
     
 
@@ -206,8 +206,8 @@ if os.path.isfile(file1):
     XWtrain=np.loadtxt(file1)
     yHist=np.loadtxt(file2)
     yHist=yHist.reshape((len(yHist),1))
-    XWtrain[0:trainingPoints*numberIS,0]=np.log((1.01/XWtrain[0:trainingPoints*numberIS,0])-1.0)
-    XWtrain[0:trainingPoints*numberIS,1]=np.log((2.1/XWtrain[0:trainingPoints*numberIS,1])-1.0)
+#    XWtrain[0:trainingPoints*numberIS,0]=np.log((1.01/XWtrain[0:trainingPoints*numberIS,0])-1.0)
+ #   XWtrain[0:trainingPoints*numberIS,1]=np.log((2.1/XWtrain[0:trainingPoints*numberIS,1])-1.0)
     dataObj=inter.data(XWtrain[0:trainingPoints*numberIS,:],yHist=yHist[0:trainingPoints*numberIS,0:1],varHist=np.zeros(trainingPoints*numberIS))
 
 else:
@@ -256,7 +256,7 @@ We define the statistical object.
 """
 
 dimensionKernel=n1
-scaleAlpha=np.array([4.0,4.0,20.0,200.0])
+scaleAlpha=np.array([1.0,1.0,20.0,200.0])
 
 #kernel=mattern52.MATTERN52(n1+n2,X=XWtrain,y=yTrain[:,0],noise=NoiseTrain,scaleAlpha=scaleAlpha)
 
@@ -462,27 +462,40 @@ def transformationDomainW(w):
     
     return np.rint(w)
 
+lowerX=[0.01,0,1,1]
+upperX=[1.01,1.0,21,201]
+
 
 
 def projectGradient(x,direction,xo,step):
     alphL=[]
     alphU=[]
     st=step
-    if (any(x[0:2]<-4.0)):
-       	ind=np.where(x[0:2]<-4.0)[0]
-	if (any(direction[ind]>=0)):
+    
+    if (x[0]<lowerX[0]):
+	ind=0
+	if (direction[ind]>=0):
 	
 	    return xo
-	quotient=(-xo[ind].astype(float)-4.0)/direction[ind]
+	quotient=(-xo[ind].astype(float)-lowerX[0])/direction[ind]
         alp=np.min(quotient)
         st=min(st,alp)
 	
-    if (any(x[0:2]>4.0)):
-       	ind=np.where(x[0:2]>4.0)[0]
+    if (any(x[1]<lowerX[1])):
+	ind=1
+	if (direction[ind]>=0):
+	
+	    return xo
+	quotient=(-xo[ind].astype(float)-lowerX[1])/direction[ind]
+        alp=np.min(quotient)
+        st=min(st,alp)
+	
+    if (any(x[0:2]>1.01)):
+       	ind=np.where(x[0:2]>1.01)[0]
 	if (any(direction[ind]<=0)):
 	
 	    return xo
-	quotient=(-xo[ind].astype(float)+4.0)/direction[ind]
+	quotient=(-xo[ind].astype(float)+1.01)/direction[ind]
         alp=np.min(quotient)
         st=min(st,alp)
 	
