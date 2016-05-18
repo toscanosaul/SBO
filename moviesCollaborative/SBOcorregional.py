@@ -48,8 +48,8 @@ n1=4
 n2=1
 
 ###rate leraning, regularizing parameter, rank, epoch
-lowerX=[0.001,0,1,1]
-upperX=[1.001,2.0,21,201]
+lowerX=[0.0001,0,1,1]
+upperX=[1.0001,2.0,21,201]
 
 
 
@@ -116,20 +116,21 @@ def sampleFromXAn(n,Train=False):
        Args:
           n: Number of points chosen
     """
-    if Train is True:
-	t=np.zeros((4,2))
-	ls=[lowerX[0],upperX[0]]
-	lu=[lowerX[1],upperX[1]]
-	for i in range(2):
-	    for j in range(2):
-		t[i*2+j,0]=ls[i]
-		t[i*2+j,1]=lu[j]
-	    
-	
-	s1=np.random.uniform(lowerX[0:2],upperX[0:2],(n-4,2))
-	s1=np.concatenate((t,s1),0)
-    else:
-	s1=np.random.uniform(lowerX[0:2],upperX[0:2],(n,2))
+    s=np.array([lowerX[0]*10,upperX[1]])
+    M=n/4
+    d=np.array([lowerX[0],lowerX[1]])
+    t1=np.random.uniform(d,s,(M,2))
+    d=np.array([lowerX[0]*10,lowerX[1]])
+    s=np.array([lowerX[0]*100,upperX[1]])
+    t2=np.random.uniform(d,s,(M,2))
+    d=np.array([lowerX[0]*100,lowerX[1]])
+    s=np.array([lowerX[0]*1000,upperX[1]])
+    t3=np.random.uniform(d,s,(M,2))
+    d=np.array([lowerX[0]*1000,lowerX[1]])
+    s=np.array([upperX[0],upperX[1]])
+    t4=np.random.uniform(d,s,(n-3*M,2))
+    s1=np.concatenate((t1,t2,t3,t4),0)
+
     a=np.random.randint(lowerX[2],upperX[2],n).reshape((n,1))
     b=np.random.randint(lowerX[3],upperX[3],n).reshape((n,1))
     
