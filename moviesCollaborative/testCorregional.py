@@ -437,7 +437,36 @@ def projectGradient(x,direction,xo,step):
     alphL=[]
     alphU=[]
     st=step
+    if (any(x[0:2]<-5.0)):
+       	ind=np.where(x[0:2]<-5.0)[0]
+	if (any(direction[ind]>=0)):
+	
+	    return xo
+	quotient=(-xo[ind].astype(float)-5.0)/direction[ind]
+        alp=np.min(quotient)
+        st=min(st,alp)
+	
+    if (any(x[0:2]>5.0)):
+       	ind=np.where(x[0:2]>5.0)[0]
+	if (any(direction[ind]<=0)):
+	
+	    return xo
+	quotient=(-xo[ind].astype(float)+5.0)/direction[ind]
+        alp=np.min(quotient)
+        st=min(st,alp)
+	
+	
+#    if (any(x[0:2]>5)):
+ 
+ #     	ind=np.where(x[0:2]>2)[0]
+#	if (any(direction[ind]<=0)):
+#	  
+#	    return xo
 
+#	quotient=(-xo[ind].astype(float)+2.0)/direction[ind]
+ #       alp=np.min(quotient)
+
+  #      st=min(st,alp)
 
 
     if (any(x[2:4]<1)):
