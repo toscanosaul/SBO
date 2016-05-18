@@ -448,8 +448,8 @@ def transformationDomainXAn(x):
        Args:
           x: Point to be transformed.
     """
-    if (x[0]<=0):
-	x[0]=1e-8
+ #   if (x[0]<=0):
+#	x[0]=1e-8
     x[0,2:4]=np.rint(x[0,2:4])
     return x
 
@@ -480,7 +480,7 @@ def projectGradient(x,direction,xo,step):
 	if (direction[ind]>=0):
 	
 	    return xo
-	quotient=(-xo[ind].astype(float)-lowerX[0])/direction[ind]
+	quotient=(-xo[ind].astype(float)+lowerX[0])/direction[ind]
         alp=np.min(quotient)
         st=min(st,alp)
 	
@@ -489,7 +489,7 @@ def projectGradient(x,direction,xo,step):
 	if (direction[ind]>=0):
 	
 	    return xo
-	quotient=(-xo[ind].astype(float)-lowerX[1])/direction[ind]
+	quotient=(-xo[ind].astype(float)+lowerX[1])/direction[ind]
         alp=np.min(quotient)
         st=min(st,alp)
 	
@@ -507,7 +507,7 @@ def projectGradient(x,direction,xo,step):
 	if (any(direction[ind]<=0)):
 	
 	    return xo
-	quotient=(-xo[ind].astype(float)+1.01)/direction[ind]
+	quotient=(-xo[ind].astype(float)+upperX[0])/direction[ind]
         alp=np.min(quotient)
         st=min(st,alp)
 	
