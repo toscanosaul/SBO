@@ -315,7 +315,7 @@ class SBO:
 		
 	    sols=[[] for k in range(self.nIS)]
 	    for t in range(self.nIS):
-		for j in range(self.opt.numberParallel)
+		for j in range(self.opt.numberParallel):
 		    try:
 			sols[t].append(jobs[t][j].get())
 		    except Exception as e:
