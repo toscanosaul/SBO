@@ -299,29 +299,29 @@ class SBO:
 	#	XWst=np.concatenate((XW,Wtrain),0)
 		
 		pool = mp.Pool(processes=numProcesses)
-		jobs = []
+		jobs = [[] for t1 in range(self.nIS)]
 		nParal=self.opt.numberParallel
 		for j in range(self.nIS):
-		    for i in range(self.opt.numberParallel):
-			job = pool.apply_async(misc.VOIOptWrapper, args=(self,Xst[(j-1)*(nParal)+i:(j-1)*(nParal)+1+i,:],j,),
+		    for k in range(self.opt.numberParallel):
+			job = pool.apply_async(misc.VOIOptWrapper, args=(self,Xst[(j-1)*(nParal)+k:(j-1)*(nParal)+1+k,:],j,),
 					       kwds=args3)
-		    jobs.append(job)
+		    jobs[j].append(job)
 		pool.close()  # signal that no more data coming in
 		pool.join()  # wait for all the tasks to complete
 	    except KeyboardInterrupt:
 		print "Ctrl+c received, terminating and joining pool."
 		pool.terminate()
 		pool.join()
+		
+	    sols=[[] for k in range(self.nIS)]
 	    for t in range(self.nIS):
-		a,b=self.optVOIParal(i,self.opt.numberParallel,IS=t,corregional=True)
-		if optVOI is None:
-		    optVOI=b
-		    optPoint=a
-		    optIS=t
-		elif b>optVOI:
-		    optVOI=b
-		    optPoint=a
-		    optIS=t
+		for j in range(self.opt.numberParallel)
+		    try:
+			sols[t].append(jobs[t][j].get())
+		    except Exception as e:
+			print "what"
+	    for t in range(self.nIS):
+		
 	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
 	    fl.writeNewPointSBO(self,optPoint)
 	else:
@@ -364,8 +364,8 @@ class SBO:
 		    print "what"
 	    print [o.fOpt for o in sols]
 	    if len(sols):
-		i = np.argmin([o.fOpt for o in sols])
-		temp=sols[i].xOpt
+		i = np.argmax([o.fOpt for o in sols])
+		temp=sols[i]
     
 		temp.xOpt=np.concatenate((optPoint.xOpt,np.array([[i]])),1)
 		fl.writeNewPointSBO(self,optPoint)
