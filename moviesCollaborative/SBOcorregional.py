@@ -494,7 +494,7 @@ def projectGradient(x,direction,xo,step):
 	
     if (x[1]>1.01):
        	ind=1
-	if (any(direction[ind]<=0)):
+	if (direction[ind]<=0):
 	
 	    return xo
 	quotient=(-xo[ind].astype(float)+1.01)/direction[ind]
@@ -503,7 +503,7 @@ def projectGradient(x,direction,xo,step):
 	
     if (x[0]>upperX[0]):
        	ind=0
-	if (any(direction[ind]<=0)):
+	if (direction[ind]<=0):
 	
 	    return xo
 	quotient=(-xo[ind].astype(float)+upperX[0])/direction[ind]
