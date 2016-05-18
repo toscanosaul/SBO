@@ -447,6 +447,8 @@ def transformationDomainXAn(x):
        Args:
           x: Point to be transformed.
     """
+    if (x[0]<=0):
+	x[0]=1e-8
     x[0,2:4]=np.rint(x[0,2:4])
     return x
 
