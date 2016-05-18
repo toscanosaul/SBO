@@ -317,6 +317,7 @@ class SBO:
 	    for t in range(self.nIS):
 		for j in range(self.opt.numberParallel):
 		    try:
+			print jobs[t][j].get()
 			sols[t].append(jobs[t][j].get())
 		    except Exception as e:
 			print "what"
