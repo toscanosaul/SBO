@@ -320,8 +320,24 @@ class SBO:
 			sols[t].append(jobs[t][j].get())
 		    except Exception as e:
 			print "what"
+			
+	    competite=[]
+	    optIS=-1
+	    optVOI=None
+	    optPoint=None
 	    for t in range(self.nIS):
-		
+		if len(sols[t]):
+		    j = np.argmax([o.fOpt for o in sols[t]])
+		    
+		    if optVOI is None:
+			optVOI=sols[t][j].fOpt
+			optPoint=sols[t][j]
+			optIS=t
+		    elif sols[t][j].fOpt>optVOI:
+			optVOI=sols[t][j].fOpt
+			optPoint=sols[t][j]
+			optIS=t
+
 	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
 	    fl.writeNewPointSBO(self,optPoint)
 	else:
