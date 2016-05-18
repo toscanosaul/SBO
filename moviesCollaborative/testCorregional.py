@@ -34,9 +34,9 @@ elif nTemp5=='T':
 rS=int(1111)
 
 
-file1="trainingpoints/1000numberOfTP250/1000XHist.txt"
+file1="trainingpointsSameIS/1numberOfTP250/1XHist.txt"
 
-file2="trainingpoints/1000numberOfTP250/1000yhist.txt"
+file2="trainingpointsSameIS/1numberOfTP250/1yhist.txt"
 
 #file1="recommendationTestMatternResults5AveragingSamples50TrainingPoints/SBO/999run/999XHist.txt"
 #file2="recommendationTestMatternResults5AveragingSamples50TrainingPoints/SBO/999run/999yhist.txt"
@@ -203,20 +203,20 @@ XWtrain=np.loadtxt(file1)
 yHist=np.loadtxt(file2)
 yHist=yHist.reshape((len(yHist),1))
 
-index=[]
-for j in range(numberIS):
-    index.append([i+50*j for i in range(trainingPoints)])
-index=np.concatenate((index[0],index[1],index[2],index[3],index[4]))
-trainingPoints*=numberIS
+#index=[]
+#for j in range(numberIS):
+#    index.append([i+50*j for i in range(trainingPoints)])
+#index=np.concatenate((index[0],index[1],index[2],index[3],index[4]))
+#trainingPoints*=numberIS
 
-#XWtrain[0:trainingPoints,0]=np.log((1.01/XWtrain[0:trainingPoints,0])-1.0)
-#XWtrain[0:trainingPoints,1]=np.log((2.1/XWtrain[0:trainingPoints,1])-1.0)
+#XWtrain[index,0]=np.log((1.01/XWtrain[index,0])-1.0)
+#XWtrain[index,1]=np.log((2.1/XWtrain[index,1])-1.0)
 
 #trainingPoints+=1
 
-dataObj=inter.data(XWtrain[index,:],yHist=yHist[index,0:1],varHist=np.zeros(trainingPoints))
+dataObj=inter.data(XWtrain[0:trainingPoints*numberIS,:],yHist=yHist[0:trainingPoints*numberIS,0:1],varHist=np.zeros(trainingPoints*numberIS))
 
-
+trainingPoints*=numberIS
 """
 We define the statistical object.
 """
@@ -261,15 +261,19 @@ def B(x,XW,n1,n2,kernel,logproductExpectations=None):
    # kernel=kernels[int(W)]
     alpha1=((kernel.alpha[0:n1])**2)/kernel.scaleAlpha[0:n1]**2
     variance0=kernel.variance
-    
+   # print alpha1
+   # print variance0
+   # print kernel.matrix
     
     for i in xrange(x.shape[0]):
 	r=(np.sum(alpha1*((X-x[i,:])**2)))
 	a=(1.0+np.sqrt(5.0*r)+(5.0/3.0)*r)*np.exp(-np.sqrt(5.0*r))
 	sum1=0
+	
+	#sum2=0
 	for j in range(numberIS):
 	    sum1+=kernel.matrix[int(W),j]
-	
+	   # sum2+=kernel.A(np.concatenate((x[i:i+1,:],np.array([[j]])),1),XW.reshape((1,n1+n2)))
 	results[i]=variance0*a*sum1
 
     return results/float(numberIS)
@@ -335,7 +339,7 @@ def functionGradientAscentVn(x,VOI,i,L,temp2,a,kern,XW,scratch,Bfunc,onlyGradien
                      Ly=B[j,:].transpose() (See above for the definition of B and L)
             onlyGradient: True if we only want to compute the gradient; False otherwise.
     """
-   
+    
     x=np.array(x).reshape([1,n1+n2])
 
     tempX=x[0:1,0:n1]
@@ -402,87 +406,6 @@ def functionGradientAscentAn(x,grad,stat,i,L,dataObj,onlyGradient=False,logprodu
 
 
 
-
-
-def const1(x):
-    return x[0]-lowerX[0]
-
-def jac1(x):
-    return np.array([1,0,0,0])
-
-def const2(x):
-    return x[1]-lowerX[1]
-
-def jac2(x):
-    return np.array([0,1,0,0])
-
-def const3(x):
-    return x[2]-lowerX[2]
-
-def jac3(x):
-    return np.array([0,0,1,0])
-
-def const4(x):
-    return x[3]-lowerX[3]
-
-def jac4(x):
-    return np.array([0,0,0,1])
-
-
-
-
-def const5(x):
-    return upperX[0]-x[0]
-
-def jac5(x):
-    return np.array([-1,0,0,0])
-
-def const6(x):
-    return upperX[1]-x[1]
-
-def jac6(x):
-    return np.array([0,-1,0,0])
-
-def const7(x):
-    return upperX[2]-x[2]
-
-def jac7(x):
-    return np.array([0,0,-1,0])
-
-def const8(x):
-    return upperX[3]-x[3]
-
-def jac8(x):
-    return np.array([0,0,0,-1])
-
-
-
-consA=({'type':'ineq',
-        'fun': const1,
-       'jac': jac1},
-    {'type':'ineq',
-        'fun': const2,
-       'jac': jac2},
-    {'type':'ineq',
-        'fun': const3,
-       'jac': jac3},
-    {'type':'ineq',
-        'fun': const4,
-       'jac': jac4},
-    {'type':'ineq',
-        'fun': const5,
-       'jac': jac5},
-    {'type':'ineq',
-        'fun': const6,
-       'jac': jac6},
-    {'type':'ineq',
-        'fun': const7,
-       'jac': jac7},
-    {'type':'ineq',
-        'fun': const8,
-       'jac': jac8})
-
-
 def transformationDomainXAn(x):
     """ Transforms the point x given by the steepest ascent method to
         the right domain of x.
@@ -506,96 +429,6 @@ def transformationDomainW(w):
     return np.rint(w)
 
 
-
-def const1b(x):
-    return x[0]-lowerX[0]
-
-def jac1b(x):
-    return np.array([1,0,0,0])
-
-def const2b(x):
-    return x[1]-lowerX[1]
-
-def jac2b(x):
-    return np.array([0,1,0,0])
-
-def const3b(x):
-    return x[2]-lowerX[2]
-
-def jac3b(x):
-    return np.array([0,0,1,0])
-
-def const4b(x):
-    return x[3]-lowerX[3]
-
-def jac4b(x):
-    return np.array([0,0,0,1])
-
-
-
-
-def const5b(x):
-    return upperX[0]-x[0]
-
-def jac5b(x):
-    return np.array([-1,0,0,0])
-
-def const6b(x):
-    return upperX[1]-x[1]
-
-def jac6b(x):
-    return np.array([0,-1,0,0])
-
-def const7b(x):
-    return upperX[2]-x[2]
-
-def jac7b(x):
-    return np.array([0,0,-1,0])
-
-def const8b(x):
-    return upperX[3]-x[3]
-
-def jac8b(x):
-    return np.array([0,0,0,-1])
-
-def const9b(x):
-    return 4-x[4]
-
-def jac9b(x):
-    return np.array([0,0,0,0,-1])
-
-def const10b(x):
-    return x[4]
-
-def jac10b(x):
-    return np.array([0,0,0,0,1])
-
-
-
-cons=({'type':'ineq',
-        'fun': const1b,
-       'jac': jac1b},
-    {'type':'ineq',
-        'fun': const2b,
-       'jac': jac2b},
-    {'type':'ineq',
-        'fun': const3b,
-       'jac': jac3b},
-    {'type':'ineq',
-        'fun': const4b,
-       'jac': jac4b},
-    {'type':'ineq',
-        'fun': const5b,
-       'jac': jac5b},
-    {'type':'ineq',
-        'fun': const6b,
-       'jac': jac6b},
-    {'type':'ineq',
-        'fun': const7b,
-       'jac': jac7b},
-    {'type':'ineq',
-        'fun': const8b,
-       'jac': jac8b})
 
 def projectGradient(x,direction,xo,step):
     alphL=[]
@@ -641,7 +474,7 @@ def stopFunction(x):
 
 opt=inter.opt(nTemp6,n1,n1,transformationDomainXVn,transformationDomainXAn,
               transformationDomainW,projectGradient,functionGradientAscentVn,
-              functionGradientAscentAn,stopFunction,1e-2,1e-2,cons,consA,"GRADIENT","GRADIENT")
+              functionGradientAscentAn,stopFunction,3e-2,1e-2,None,None,"GRADIENT","GRADIENT")
 
 
 
@@ -661,12 +494,13 @@ l['dataObj']=dataObj
 sboObj=SBO.SBO(**l)
 
 
-
-#sboObj.optVOIParal(0,1,0)
+#sboObj.stat._k.trainnoParallel2(np.ones(4),numStarts=1)
+sboObj.runISvoi(0,False)
+#sboObj.optVOInoParal(0,1,0)
 #sboObj.trainModel(numStarts=10)
 #sboObj.optAnnoParal(0)
 
-sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
+#sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
 
 def test():
