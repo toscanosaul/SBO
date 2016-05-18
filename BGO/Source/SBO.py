@@ -303,7 +303,7 @@ class SBO:
 		nParal=self.opt.numberParallel
 		for j in range(self.nIS):
 		    for k in range(self.opt.numberParallel):
-			job = pool.apply_async(misc.VOIOptWrapper, args=(self,Xst[(j-1)*(nParal)+k:(j-1)*(nParal)+1+k,:],j,),
+			job = pool.apply_async(misc.VOIOptWrapper, args=(self,Xst[(j)*(nParal)+k:(j)*(nParal)+1+k,:],j,),
 					       kwds=args3)
 			jobs[j].append(job)
 		pool.close()  # signal that no more data coming in
@@ -317,7 +317,7 @@ class SBO:
 	    for t in range(self.nIS):
 		for j in range(self.opt.numberParallel):
 		    try:
-			print jobs[t][j].get()
+    
 			sols[t].append(jobs[t][j].get())
 		    except Exception as e:
 			print "what"
