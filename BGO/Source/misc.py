@@ -25,7 +25,20 @@ def kernOptWrapper(m,start,**kwargs):
     m.optimizeKernel(start=start,**kwargs)
     return m.optRuns[-1]
 
-def VOIOptWrapper(m,start,**kwargs):
+def kernOptWrapper2(m,start,**kwargs):
+    """
+    This function just wraps the optimization procedure of a kernel
+    object so that optimize() pickleable (necessary for multiprocessing).
+    
+    Args:
+        m: kernel object
+    """
+    m.optimizeKernel2(start=start,**kwargs)
+    return m.optRuns[-1]
+
+
+
+def VOIOptWrapper(m,start,IS=0,**kwargs):
     """
     This function just wraps the optimization procedure of a kernel
     object so that optimize() pickleable (necessary for multiprocessing).
@@ -33,7 +46,8 @@ def VOIOptWrapper(m,start,**kwargs):
     Args:
         m: global optimization object.
     """
-    m.optimizeVOI(start=start,**kwargs)
+    
+    m.optimizeVOI(start=start,IS=IS,**kwargs)
     return m.optRuns[-1]
 
 def AnOptWrapper(m,start,**kwargs):

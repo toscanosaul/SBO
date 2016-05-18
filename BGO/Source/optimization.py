@@ -112,9 +112,10 @@ class OptBFGS(Optimization):
         self.status=statuses[optResult[2]['warnflag']]
 	self.gradOpt=optResult[2]['grad']
 	self.nIterations=optResult[2]['nit']
+	print "status"
 	print self.status
 	print self.nIterations
-	print self.gradOpt
+	print np.sqrt(np.sum(self.gradOpt**2))
 #	print optResult[2]['funcalls']
 
         
@@ -248,6 +249,7 @@ class OptSteepestDescent(Optimization):
         n1=self.n1
 	
 	g1,g2=f(X,grad=True,onlyGradient=False)
+	print "optimize"
 
         while tolMet==False:
 	
@@ -268,35 +270,47 @@ class OptSteepestDescent(Optimization):
                 df=df.reshape((1,x.shape[1]))
 		z=1.0*df[0,:]
 		return z
-	
-  	    g2=g2.reshape((1,len(X[0,:])))
 
+  	    g2=g2.reshape((1,len(X[0,:])))
+	    const=(np.sqrt(np.sum(g2[0,:]**2)))
+	    
 	  #  print oldPoint,g2
-	    lineSearch2=line_search(fLine,gradfLine,X[0,:],-1.0*g2[0,:])
+	    lineSearch2=line_search(fLine,gradfLine,X[0,:],-(1.0)*g2[0,:])
 
             step=lineSearch2[0]
+	    
+	    
 	    
             if step is None:
 	       print "step is none"
 	       tolMet=True
                g1,g2=f(X,grad=True,onlyGradient=False)
 	       return X,g1,g2,iter
-	    oldPoint=X
+	    step=step/const
+	    
+	    oldPoint=np.array(X)
 	    oldEval=g1
-            X=X-lineSearch2[0]*g2
-
+            X=X-step*g2
+	    prev=np.array(X)
             X[0,:]=self.projectGradient(X[0,:],-g2[0,:],oldPoint[0,:],step)
-	
+
 	    
           #  oldPoint=X
 	    g1,g2=f(X,grad=True,onlyGradient=False)
 
-
             if self.stopFunction((oldPoint-X))<tol or iter > maxit:
+		#print "done"
+		print "Step"
+		print step
+		print oldPoint
+		print X
+		print np.sqrt(np.sum((oldPoint-prev)**2))
+		print np.sqrt(np.sum((oldPoint-X)**2))
+		print np.sqrt(np.sum(g2**2))
                 tolMet=True
              #   g1,g2=f(X,grad=True,onlyGradient=False)
                 return X,g1,g2,iter
-                
+        
     def opt(self,f=None,df=None):
 	"""
 	Runs the steepest ascent method.

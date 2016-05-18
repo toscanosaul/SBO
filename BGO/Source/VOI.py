@@ -170,13 +170,23 @@ class VOISBO(VOI):
         tempN=self._numberTraining+n
         BN=np.zeros([m,1])
         n2=self.n2
+       # print "BN"
         BN[:,0]=B(x,np.concatenate((xNew,wNew)),self.n1,n2,kernel) #B(x,n+1)
+        
+       # print BN[:,0]
+       # if np.all(BN[:,0]==0):
+           # print "aaaaaa"
+            #print np.concatenate((xNew,wNew))
+            #print x
+            #B(x,np.concatenate((xNew,wNew)),self.n1,n2,kernel)
+            #asdf
+       
         n1=self.n1
         n2=self.n2
         new=np.concatenate((xNew,wNew)).reshape((1,n1+n2))
 
         gamma=np.transpose(kernel.A(new,past))
-        
+
         
         temp1=linalg.solve_triangular(L,gamma,lower=True)
 
@@ -240,6 +250,7 @@ class VOISBO(VOI):
         n1=self.n1
         n2=self.n2
         corr=self.corr
+        
         if grad==False:
             h=hvoi(b,c,keep1) ##Vn
             return h
@@ -362,7 +373,8 @@ class VOISBO(VOI):
 
         b,gamma,BN,temp1,aux4=self.aANDb(n,self._points,pointNew[0,0:n1],pointNew[0,n1:n1+self.n2],L,
                                     temp2=temp2,past=XW,kernel=kern,B=B)
-
+     #   print "primer"
+      #  print a,b,BN
         a,b,keep=AffineBreakPointsPrep(a,b)
         keep1,c=AffineBreakPoints(a,b)
         keep1=keep1.astype(np.int64)

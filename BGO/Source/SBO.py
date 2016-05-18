@@ -196,6 +196,7 @@ class SBO:
         if Train is True:
             self.trainModel(numStarts=nRepeat,**kwargs) #Train model
         points=self._VOI._points
+	
 	if self.corregional is False:
 	    for i in range(m):
 		print i
@@ -279,6 +280,38 @@ class SBO:
 	optVOI=None
 	optPoint=None
 	if parallel:
+	    try:
+		n1=self._n1
+		n2=self._dimW
+		Xst=self.Obj.sampleFromXVn(self.nIS*self.opt.numberParallel)
+		#wSt=self.Obj.simulatorW(1)
+		#x1=Xst[0:0+1,:]
+		tempN=self.numberTraining+i
+		#st=x1
+		
+		args3=self.getParametersOptVoi(i)
+		args3['corregional']=True
+		#args2['IS']=IS
+	#	solts=[]
+	#	solts.append(misc.VOIOptWrapper(self,st,**args2))
+	#	XW=np.repeat(st,self.nIS)
+	#	Wtrain=np.arange(self.nIS).reshape((self.nIS,1))
+	#	XWst=np.concatenate((XW,Wtrain),0)
+		
+		pool = mp.Pool(processes=numProcesses)
+		jobs = []
+		nParal=self.opt.numberParallel
+		for j in range(self.nIS):
+		    for i in range(self.opt.numberParallel):
+			job = pool.apply_async(misc.VOIOptWrapper, args=(self,Xst[(j-1)*(nParal)+i:(j-1)*(nParal)+1+i,:],j,),
+					       kwds=args3)
+		    jobs.append(job)
+		pool.close()  # signal that no more data coming in
+		pool.join()  # wait for all the tasks to complete
+	    except KeyboardInterrupt:
+		print "Ctrl+c received, terminating and joining pool."
+		pool.terminate()
+		pool.join()
 	    for t in range(self.nIS):
 		a,b=self.optVOIParal(i,self.opt.numberParallel,IS=t,corregional=True)
 		if optVOI is None:
@@ -292,18 +325,50 @@ class SBO:
 	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
 	    fl.writeNewPointSBO(self,optPoint)
 	else:
+	    try:
+		n1=self._n1
+		n2=self._dimW
+		Xst=self.Obj.sampleFromXVn(self.nIS)
+		#wSt=self.Obj.simulatorW(1)
+		#x1=Xst[0:0+1,:]
+		tempN=self.numberTraining+i
+		#st=x1
+		
+		args2=self.getParametersOptVoi(i)
+		args2['corregional']=True
+		#args2['IS']=IS
+		#solts=[]
+		#solts.append(misc.VOIOptWrapper(self,st,**args2))
+		#XW=np.repeat(st,self.nIS)
+		#Wtrain=np.arange(self.nIS).reshape((self.nIS,1))
+		#XWst=np.concatenate((XW,Wtrain),0)
+		
+		pool = mp.Pool()
+		jobs = []
+		for j in range(self.nIS):
+		    job = pool.apply_async(misc.VOIOptWrapper, args=(self,Xst[j:j+1,:],j,),
+					   kwds=args2)
+		    jobs.append(job)
+		pool.close()  # signal that no more data coming in
+		pool.join()  # wait for all the tasks to complete
+	    except KeyboardInterrupt:
+		print "Ctrl+c received, terminating and joining pool."
+		pool.terminate()
+		pool.join()
+		
+	    sols=[]
 	    for t in range(self.nIS):
-		a,b=self.optVOInoParal(i,IS=t,corregional=True)
-		if optVOI is None:
-		    optVOI=b
-		    optPoint=a
-		    optIS=t
-		elif b>optVOI:
-		    optVOI=b
-		    optPoint=a
-		    optIS=t
-	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
-	    fl.writeNewPointSBO(self,optPoint)
+		try:
+		    sols.append(jobs[i].get())
+		except Exception as e:
+		    print "what"
+	    print [o.fOpt for o in sols]
+	    if len(sols):
+		i = np.argmin([o.fOpt for o in sols])
+		temp=sols[i].xOpt
+    
+		temp.xOpt=np.concatenate((optPoint.xOpt,np.array([[i]])),1)
+		fl.writeNewPointSBO(self,optPoint)
 	    
 	    
     def optimizeVOI(self,start, i,L,temp2,a,B,scratch,corregional=False,IS=0):
@@ -324,6 +389,7 @@ class SBO:
 	    scratch: matrix where scratch[i,:] is the solution of the linear system
                      Ly=B[j,:].transpose() (See above for the definition of B and L)
         """
+
 	if corregional is False:
 	    def g(x,grad,onlyGradient=False):
 		return self.opt.functionGradientAscentVn(x,i=i,VOI=self._VOI,L=L,temp2=temp2,a=a,
@@ -332,7 +398,9 @@ class SBO:
 						     Bfunc=self.stat.B,grad=grad)
 	else:
 	    def g(x,grad,onlyGradient=False):
+		
 		x2=np.concatenate((x,np.array([[IS]])),1)
+
 		return self.opt.functionGradientAscentVn(x2,i=i,VOI=self._VOI,L=L,temp2=temp2,a=a,
 						     scratch=scratch,onlyGradient=onlyGradient,
 						     kern=self.stat._k,XW=self.dataObj.Xhist,
@@ -349,15 +417,22 @@ class SBO:
 	    cons=self.opt.consVn
 	    opt.run(f=g1,df=dg,cons=cons)
 	else:
+	
 	    opt=op.OptSteepestDescent(n1=self.opt.dimXsteepestVn,projectGradient=self.opt.projectGradient,
 				      stopFunction=self.opt.functionConditionOpt,xStart=start,
 				      xtol=self.opt.xtol)
 	    def g1(x,grad,onlyGradient=False):
+		#print IS
+		
+		#print x
 		temp=g(x,grad,onlyGradient)
+		#print temp
 		if grad==True and onlyGradient==False:
 		    return -1.0*temp[0],-1.0*temp[1]
 		if grad==True and onlyGradient==True:
+	
 		    return -1.0*temp
+
 		return -1.0*temp
 	  
 	    opt.run(f=g1)
@@ -387,6 +462,7 @@ class SBO:
 	muStart=self.stat._k.mu
 	y=self.dataObj.yHist
 	temp2=linalg.solve_triangular(L,(self.Bhist).T,lower=True)
+
 	temp1=linalg.solve_triangular(L,np.array(y)-muStart,lower=True)
 	a=muStart+np.dot(temp2.T,temp1)
 	
@@ -421,12 +497,14 @@ class SBO:
 	args2=self.getParametersOptVoi(i)
 	args2['corregional']=corregional
 	args2['IS']=IS
-	self.optRuns.append(misc.VOIOptWrapper(self,st,**args2))
+	solts=[]
+	solts.append(misc.VOIOptWrapper(self,st,**args2))
 
 	if corregional is False:
-	    fl.writeNewPointSBO(self,self.optRuns[0])
+	    fl.writeNewPointSBO(self,solts[0])
 	else:
-	    return self.optRuns[0],self.optRuns[0].fOpt
+	    self.optRuns=[]
+	    return solts[0],solts[0].fOpt
     #    args2['start']=st
 	
 	
@@ -465,17 +543,18 @@ class SBO:
             print "Ctrl+c received, terminating and joining pool."
             pool.terminate()
             pool.join()
+	solts=[]
         for j in range(nStart):
             try:
-                self.optRuns.append(jobs[j].get())
+                solts.append(jobs[j].get())
             except Exception as e:
                 print "Error optimizing VOI"
-        if len(self.optRuns):
-            j = np.argmax([o.fOpt for o in self.optRuns])
+        if len(solts):
+            j = np.argmax([o.fOpt for o in solts])
 	    if corregional is False:
-		fl.writeNewPointSBO(self,self.optRuns[0])
+		fl.writeNewPointSBO(self,solts[j])
 	    else:
-		return self.optRuns[0],self.optRuns[0].fOpt
+		return solts[j],solts[j].fOpt
 	    #fl.writeNewPointSBO(self,self.optRuns[j])
         self.optRuns=[]
         self.optPointsArray=[]
