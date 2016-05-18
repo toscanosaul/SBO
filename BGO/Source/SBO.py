@@ -338,7 +338,7 @@ class SBO:
 			optPoint=sols[t][j]
 			optIS=t
 	    print "solution"
-	    print [[o.fOp] for o in sols[t] for t in range(self.nIS)]
+	    print [[o.fOpt] for o in sols[t] for t in range(self.nIS)]
 	    optPoint.xOpt=np.concatenate((optPoint.xOpt,np.array([[optIS]])),1)
 	    fl.writeNewPointSBO(self,optPoint)
 	else:
