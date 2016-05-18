@@ -49,7 +49,7 @@ n2=1
 
 ###rate leraning, regularizing parameter, rank, epoch
 lowerX=[0.0001,0,1,1]
-upperX=[1.0001,2.0,21,201]
+upperX=[2.0001,2.0,21,201]
 
 
 
