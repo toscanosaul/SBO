@@ -188,7 +188,7 @@ parallel=nTemp5
 trainingPoints=nTemp2
 
 
-misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints,
+misc=inter.Miscellaneous(randomSeed,parallel,nF=numberSamplesForF,tP=trainingPoints*numberIS,
                          prefix="recommendationTestCorregionalMattern")
 
 """
@@ -499,7 +499,7 @@ sboObj=SBO.SBO(**l)
 #sboObj.optVOInoParal(0,1,0)
 #sboObj.trainModel(numStarts=10)
 #sboObj.optAnnoParal(0)
-
+#print "ok"
 sboObj.SBOAlg(nTemp4,nRepeat=10,Train=True,plots=False)
 
 
