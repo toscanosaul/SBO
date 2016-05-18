@@ -375,7 +375,7 @@ class SBO:
 	    sols=[]
 	    for t in range(self.nIS):
 		try:
-		    sols.append(jobs[i].get())
+		    sols.append(jobs[t].get())
 		except Exception as e:
 		    print "what"
 	    print [o.fOpt for o in sols]
