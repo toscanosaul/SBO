@@ -34,7 +34,7 @@ elif nTemp5=='T':
 rS=int(1111)
 
 file1="recommendationTestCorregionalMatternResults5AveragingSamples50TrainingPoints/SBO/1000run/1000XHist.txt"
-fil2="recommendationTestCorregionalMatternResults5AveragingSamples50TrainingPoints/SBO/1000run/1000yhist.txt"
+file2="recommendationTestCorregionalMatternResults5AveragingSamples50TrainingPoints/SBO/1000run/1000yhist.txt"
 #file1="trainingpointsSameIS/%dnumberOfTP250/%dXHist.txt"%(nTemp,nTemp)
 
 #file2="trainingpointsSameIS/%dnumberOfTP250/%dyhist.txt"%(nTemp,nTemp)
