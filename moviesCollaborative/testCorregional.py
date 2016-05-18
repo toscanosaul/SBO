@@ -495,7 +495,7 @@ sboObj=SBO.SBO(**l)
 
 
 sboObj.stat._k.trainnoParallel2(np.ones(4),numStarts=1)
-sboObj.runISvoi(0,False)
+sboObj.runISvoi(0,True)
 #sboObj.optVOInoParal(0,1,0)
 #sboObj.trainModel(numStarts=10)
 #sboObj.optAnnoParal(0)
