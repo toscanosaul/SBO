@@ -383,8 +383,8 @@ class SBO:
 		i = np.argmax([o.fOpt for o in sols])
 		temp=sols[i]
     
-		temp.xOpt=np.concatenate((optPoint.xOpt,np.array([[i]])),1)
-		fl.writeNewPointSBO(self,optPoint)
+		temp.xOpt=np.concatenate((temp.xOpt,np.array([[i]])),1)
+		fl.writeNewPointSBO(self,temp)
 	    
 	    
     def optimizeVOI(self,start, i,L,temp2,a,B,scratch,corregional=False,IS=0):
