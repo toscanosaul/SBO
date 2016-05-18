@@ -211,19 +211,27 @@ if os.path.isfile(file1):
     dataObj=inter.data(XWtrain[0:trainingPoints*numberIS,:],yHist=yHist[0:trainingPoints*numberIS,0:1],varHist=np.zeros(trainingPoints*numberIS))
 
 else:
-    Xtrain=sampleFromXVn(trainingPoints*numberIS).reshape((trainingPoints*numberIS,n1))
+
+    ###
+    numberIS=5
+    
+    Xtrain=sampleFromXVn(trainingPoints).reshape((trainingPoints,n1))
+    Xtrain=np.repeat(Xtrain,5,axis=0)
     
     Wtrain=[]
-    for i in range(numberIS):
-	Wtrain+=[i]*trainingPoints
+    #for i in range(numberIS):
+    Wtrain=[0,1,2,3,4]*trainingPoints
     Wtrain=np.array(Wtrain).reshape((trainingPoints*numberIS,1))
     
     XWtrain=np.concatenate((Xtrain,Wtrain),1)
     
+  
     dataObj=inter.data(XWtrain,yHist=None,varHist=None)
-    dataObj.getTrainingDataSBO(trainingPoints*numberIS,noisyF,numberSamplesForF,True)
     
-
+    numberSamplesForF=1
+    
+    dataObj.getTrainingDataSBO(trainingPoints*numberIS,noisyF,numberSamplesForF,True)
+   # trainingPoints*=numberIS
     
 
 #index=[]
@@ -240,7 +248,7 @@ else:
 #XWtrain[0:trainingPoints*numberIS,1]=np.log((2.1/XWtrain[0:trainingPoints*numberIS,1])-1.0)
 
 
-
+trainingPoints*=numberIS
 
 #trainingPoints*=numberIS
 """
