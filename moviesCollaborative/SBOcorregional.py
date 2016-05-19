@@ -120,27 +120,52 @@ def sampleFromXAn(n,Train=False):
        Args:
           n: Number of points chosen
     """
-    s=np.array([lowerX[0]*10,upperX[1]])
-
-    M=10
-    d=np.array([lowerX[0],lowerX[1]])
-    t1=np.random.uniform(d,s,(M,2))
+    if Train:
+	s=np.array([lowerX[0]*10,upperX[1]])
     
-    low=upperX[0]-0.01
-    d=np.array([low,lowerX[1]])
-    s=np.array([upperX[0],upperX[1]])
-    t6=np.random.uniform(d,s,(M,2))
+	M=10
+	d=np.array([lowerX[0],lowerX[1]])
+	t1=np.random.uniform(d,s,(M,2))
+	
+	low=upperX[0]-0.01
+	d=np.array([low,lowerX[1]])
+	s=np.array([upperX[0],upperX[1]])
+	t6=np.random.uniform(d,s,(M,2))
+	
+	d=np.array([lowerX[0]*10,lowerX[1]])
+	s=np.array([low,upperX[1]])
+	t7=np.random.uniform(d,s,(n-2*M,2))
+	s1=np.concatenate((t1,t6,t7),0)
     
-    d=np.array([lowerX[0]*10,lowerX[1]])
-    s=np.array([low,upperX[1]])
-    t7=np.random.uniform(d,s,(n-2*M,2))
-    s1=np.concatenate((t1,t6,t7),0)
-
-    a=np.random.randint(lowerX[2],upperX[2],n).reshape((n,1))
-    b=np.random.randint(lowerX[3],upperX[3],n).reshape((n,1))
+	a=np.random.randint(lowerX[2],upperX[2],n).reshape((n,1))
+	b=np.random.randint(lowerX[3],upperX[3],n).reshape((n,1))
+	
+	
+	return np.concatenate((s1,a,b),1)
+    else:
+	if n>2:
+	    s=np.array([lowerX[0]*10,upperX[1]])
+	
+	    M=1
+	    d=np.array([lowerX[0],lowerX[1]])
+	    t1=np.random.uniform(d,s,(M,2))
+	    
+	    low=upperX[0]-0.01
+	    d=np.array([low,lowerX[1]])
+	    s=np.array([upperX[0],upperX[1]])
+	    t6=np.random.uniform(d,s,(M,2))
+	    
+	    d=np.array([lowerX[0]*10,lowerX[1]])
+	    s=np.array([low,upperX[1]])
+	    t7=np.random.uniform(d,s,(n-2*M,2))
+	    s1=np.concatenate((t1,t6,t7),0)
     
-    
-    return np.concatenate((s1,a,b),1)
+	a=np.random.randint(lowerX[2],upperX[2],n).reshape((n,1))
+	b=np.random.randint(lowerX[3],upperX[3],n).reshape((n,1))
+	
+	
+	return np.concatenate((s1,a,b),1)
+	
 
 sampleFromXVn=sampleFromXAn
 
@@ -248,7 +273,7 @@ else:
     dataObj=inter.data(XWtrain,yHist=None,varHist=None)
     
     numberSamplesForF=1
-    
+
     dataObj.getTrainingDataSBO(trainingPoints*numberIS,noisyF,numberSamplesForF,True)
    # trainingPoints*=numberIS
     
