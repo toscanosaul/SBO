@@ -49,7 +49,7 @@ n2=1
 
 ###rate leraning, regularizing parameter, rank, epoch
 lowerX=[0.0001,0,1,1]
-upperX=[5.0001,2.0,21,201]
+upperX=[6.3,2.0,21,201]
 
 
 
@@ -117,15 +117,16 @@ def sampleFromXAn(n,Train=False):
           n: Number of points chosen
     """
     s=np.array([lowerX[0]*10,upperX[1]])
-    M=n/3
+    M=10
     d=np.array([lowerX[0],lowerX[1]])
     t1=np.random.uniform(d,s,(M,2))
-    d=np.array([4.999,lowerX[1]])
+    low=upperX[0]-0.01
+    d=np.array([low,lowerX[1]])
     s=np.array([upperX[0],upperX[1]])
     t6=np.random.uniform(d,s,(M,2))
     
     d=np.array([lowerX[0]*10,lowerX[1]])
-    s=np.array([4.999,upperX[1]])
+    s=np.array([low,upperX[1]])
     t7=np.random.uniform(d,s,(n-2*M,2))
     s1=np.concatenate((t1,t6,t7),0)
 
