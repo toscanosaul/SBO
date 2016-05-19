@@ -34,9 +34,9 @@ elif nTemp5=='T':
 rS=int(1111)
 
 
-file1="recommendationTestCorregionalMatternResults5AveragingSamples250TrainingPoints/SBO/2000run/2000XHist.txt"
+#file1="recommendationTestCorregionalMatternResults5AveragingSamples250TrainingPoints/SBO/2000run/2000XHist.txt"
 
-file2="recommendationTestCorregionalMatternResults5AveragingSamples250TrainingPoints/SBO/2000run/2000yhist.txt"
+#file2="recommendationTestCorregionalMatternResults5AveragingSamples250TrainingPoints/SBO/2000run/2000yhist.txt"
 
 
 
