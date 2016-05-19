@@ -159,6 +159,10 @@ def sampleFromXAn(n,Train=False):
 	    s=np.array([low,upperX[1]])
 	    t7=np.random.uniform(d,s,(n-2*M,2))
 	    s1=np.concatenate((t1,t6,t7),0)
+	else:
+	    e=np.random.randint(lowerX[0],upperX[0],n).reshape((n,1))
+	    f=np.random.randint(lowerX[1],upperX[1],n).reshape((n,1))
+	    s1=np.concatenate((e,f),1)
     
 	a=np.random.randint(lowerX[2],upperX[2],n).reshape((n,1))
 	b=np.random.randint(lowerX[3],upperX[3],n).reshape((n,1))
