@@ -34,9 +34,9 @@ elif nTemp5=='T':
 rS=int(1111)
 
 
-file1="trainingpointsSameIS/%dnumberOfTP250/%dXHist.txt"%(nTemp,nTemp)
+file1="recommendationTestCorregionalMatternResults5AveragingSamples250TrainingPoints/SBO/2000run/2000XHist.txt"
 
-file2="trainingpointsSameIS/%dnumberOfTP250/%dyhist.txt"%(nTemp,nTemp)
+file2="recommendationTestCorregionalMatternResults5AveragingSamples250TrainingPoints/SBO/2000run/2000yhist.txt"
 
 
 
@@ -250,7 +250,8 @@ We define the data object.
 Generate the training data
 """
 
-if os.path.isfile(file1): 
+if os.path.isfile(file1):
+    print "bien"
     XWtrain=np.loadtxt(file1)
     yHist=np.loadtxt(file2)
     yHist=yHist.reshape((len(yHist),1))
