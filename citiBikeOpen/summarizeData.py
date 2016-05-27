@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 directory="Results"
-repetitions=100
+repetitions=500
 
 a=[[] for i in range(3)]
 for i in range(1,repetitions+1):
@@ -21,3 +21,4 @@ print "results"
 for i in range(3):
     print np.mean(a[i])
     print np.std(a[i])
+    print 1.96*np.std(a[i])//np.sqrt(len(a[i]))
