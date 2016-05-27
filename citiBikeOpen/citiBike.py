@@ -14,6 +14,9 @@ import json
 #from BGO.Source import *
 import time
 from AffineBreakPoints import *
+import random
+from sklearn import datasets, linear_model
+import itertools
 
 nTemp=int(sys.argv[1])
 randomSeed=nTemp
@@ -22,21 +25,64 @@ np.random.seed(randomSeed)
 ###regression
 
 beta=np.loadtxt("coefficients.txt")
-sigma=0.8737
+sigma= 53.7
 K=58 #number of covariates
 
 z=np.loadtxt("mymatrix.txt")
 r=np.ones((z.shape[0],1))
 
-nRoutes=10
-a=z[0:nRoutes,1:] #values of covariates
+nRoutes=8
+
+
+
+
+
+nTraining=10
+
+t2= np.random.choice(z.shape[0], size=nTraining, replace=False)
+
+possibleIndexes=[i for i in range(z.shape[0]) if i not in t2]
+t1= np.random.choice(z.shape[0]-nTraining, size=nRoutes, replace=False)
+
+
+t1=[possibleIndexes[i] for i in t1]
+
+
+a=z[t1,1:] #values of covariates
 a=np.append(r[0:nRoutes,0:1],a,axis=1)
+
 nRoutes=a.shape[0]
 
 def f(i):
+    
     mu=np.dot(a[i,:],beta)
     res=np.random.normal(mu, sigma, 1)
     return res
+
+
+
+
+###prior
+alpha0=beta+0.001
+beta0=np.identity(len(beta))
+
+
+
+
+Xdata=z[t2,1:]
+yData=z[t2,0]
+
+regr = linear_model.LinearRegression()
+
+regr.fit(Xdata, yData)
+
+
+sigmaEst=np.sqrt(np.mean((regr.predict(Xdata) - yData) ** 2))
+
+alpha0=np.array(regr.coef_)
+alpha0=np.append(np.array([regr.intercept_]),regr.coef_)
+
+beta0=np.identity(len(beta))*(sigmaEst**2)
 
 def newY(x):
     N=len(x)
@@ -46,13 +92,21 @@ def newY(x):
         if x[i]==1:
             count+=1
             res+=f(i)
-            
-    return res,count*(sigma**2)
+    
+    return res,count*(sigmaEst**2)
 
+###weekly period-a unit observations, iid, throw weeks with big holyday.
+###you have several observations  (ignore geostatics), fit variance with MLE
+###non-informtive prior on this common variance
+##nyc: may-august. 4 iid on the course of month
 
-###prior
-alpha0=beta+0.001
-beta0=np.identity(len(beta))
+###choose 10 bike routes. fit the prior.
+###new transportation that and we're only using data from citibike
+###who is my tarjet market from point to point transportation? towards ride bikes
+
+###1 
+
+###2 
 
 #####
 
@@ -86,7 +140,7 @@ def sigma_0(x,z):
                 
     return res
 
-import itertools
+
 totalOpenings=6
 
 possiblePoints2 = list(itertools.product([0, 1], repeat=nRoutes))
@@ -148,9 +202,9 @@ def hvoi (b,c,keep):
     
 
 
-def VOI(x,a=aVec,grad=False):
+def VOI(x,a2=aVec,grad=False):
     bVec=bfunc(x)
-    a,b,keep=AffineBreakPointsPrep(a,bVec)
+    a,b,keep=AffineBreakPointsPrep(a2,bVec)
     keep1,c=AffineBreakPoints(a,b)
     keep1=keep1.astype(np.int64)
     M=len(keep1)
@@ -167,7 +221,7 @@ for i in range(Npoint):
     VOIval[i]=VOI(possiblePoints[i])
 
 print "first"
-print possiblePoints[np.argmax(VOIval)]
+#print possiblePoints[np.argmax(VOIval)]
 oldPoint=possiblePoints[np.argmax(VOIval)]
 
 newEval,varP=newY(oldPoint)
@@ -209,7 +263,16 @@ newSol=possiblePoints[np.argmax(Aval)]
 print "final"
 print newSol
 print np.max(Aval)+oldA0
+print "real value"
 
+val=0
+for i in range(len(newSol)):
+    if newSol[i]==1:
+        val+=np.dot(a[i,:],beta)
+    if oldPoint[i]==1:
+        val+=np.dot(a[i,:],beta)
+print val
+valSol=val
 
 
 
@@ -218,3 +281,30 @@ print np.max(Aval)+oldA0
 print "finalOneStep"
 classSol=possiblePoints[np.argmax(A0val)]
 print 2.0*np.max(A0val)
+print "real Value"
+
+val=0
+for i in range(len(newSol)):
+    if classSol[i]==1:
+        val+=np.dot(a[i,:],beta)
+
+
+path="Results"
+
+if not os.path.exists(path):
+    os.makedirs(path)
+
+f=open(os.path.join(path,'%d'%randomSeed+"results.txt"),'w')
+f.close()
+
+with open(os.path.join(path,'%d'%randomSeed+"results.txt"), "a") as f:
+   # var=np.array(var).reshape(1)
+    aux=np.array(2.0*val).reshape(1)
+    np.savetxt(f,aux)
+    aux=np.array(valSol).reshape(1)
+    np.savetxt(f,aux)
+    
+    quot=(valSol-2.0*val)/(2.0*np.abs(val))
+
+    aux=np.array(quot).reshape(1)
+    np.savetxt(f,aux)
