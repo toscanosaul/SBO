@@ -272,7 +272,13 @@ Npoint=len(possiblePointsAn)
 A0val=np.zeros(len(possiblePointsAn))
 for i in range(Npoint):
     Aval[i]=a_1(possiblePointsAn[i][1])
-    A0val[i]=a_0(possiblePointsAn[i][1])
+    
+
+possiblePointsAn2=[(i,j) for (i,j) in possiblePoints3 if np.sum(j)==totalOpenings]
+A0val=np.zeros(len(possiblePointsAn2))
+Npoint2=len(possiblePointsAn2)
+for i in range(Npoint2):
+    A0val[i]=a_0(possiblePointsAn2[i][1])
 
 newSol=possiblePointsAn[np.argmax(Aval)][1]
 
@@ -296,7 +302,7 @@ valSol=val
 
 ###one step
 print "finalOneStep"
-classSol=possiblePoints[np.argmax(A0val)][1]
+classSol=possiblePointsAn2[np.argmax(A0val)][1]
 print 2.0*np.max(A0val)
 print "real Value"
 
