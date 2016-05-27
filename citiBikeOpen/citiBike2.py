@@ -144,15 +144,20 @@ def sigma_0(x,z):
 totalOpenings=5
 
 possiblePoints2 = list(itertools.product([0, 1], repeat=nRoutes))
+indexesPoints=range(len(possiblePoints2))
 
-possiblePoints=[i for i in possiblePoints2 if np.sum(i)<=totalOpenings]
-
+possiblePoints3=[(i,possiblePoints2[i]) for i in indexesPoints if np.sum(possiblePoints2[i])<=totalOpenings]
+possiblePoints=[(i,j) for (i,j) in possiblePoints3 if 0<np.sum(j)<totalOpenings]
+indexesPoints=range(len(possiblePoints))
+possiblePoints=[(i,possiblePoints[i][1]) for i in indexesPoints  ]
 aVec=np.zeros(len(possiblePoints))
 
 i=0
-for x in possiblePoints:
-    aVec[i]=a_0(x)
-    i+=1
+
+for i in range(len(possiblePoints)):
+    aVec[i]=a_0(possiblePoints[i][1])
+       # i+=1
+
     
 
 def previous():
@@ -179,14 +184,14 @@ def previous():
         A0val[i]=a_0(possiblePoints[i])
 
 
-def bfunc(x):
-    z=np.zeros(len(possiblePoints))
+def bfunc(x,possiblePoints3):
+    z=np.zeros(len(possiblePoints3))
     ind=0
-    for j in possiblePoints:
+    for j in possiblePoints3:
         z[ind]=sigma_0(x,j)
         ind+=1
-
-    div=np.sqrt(sigma**2+(sigma_0(x,x)))
+    
+    div=np.sqrt((sigma_0(x,x)))
     z=z/div
     return z
 
@@ -203,8 +208,19 @@ def hvoi (b,c,keep):
 
 
 def VOI(x,a2=aVec,grad=False):
-    bVec=bfunc(x)
+    lsum=np.sum(x)
+    
+
+    newIndexes=[(i,j) for (i,j) in possiblePoints if np.sum(j)==totalOpenings-lsum]
+    bVec=bfunc(x,[j for (i,j) in newIndexes])
+
+    bVec=bVec+np.sqrt(sigma_0(x,x))
+  
+    a2=np.array([a2[i] for (i,j) in newIndexes])
+    a2=a2+a_0(x)
+
     a,b,keep=AffineBreakPointsPrep(a2,bVec)
+    
     keep1,c=AffineBreakPoints(a,b)
     keep1=keep1.astype(np.int64)
     M=len(keep1)
@@ -218,11 +234,12 @@ VOIval=np.zeros(len(possiblePoints))
 
 Npoint=len(possiblePoints)
 for i in range(Npoint):
-    VOIval[i]=VOI(possiblePoints[i])
+    VOIval[i]=VOI(possiblePoints[i][1])
 
 print "first"
-#print possiblePoints[np.argmax(VOIval)]
-oldPoint=possiblePoints[np.argmax(VOIval)]
+#print possiblePoints[np.argmax(VOIval)
+oldPoint=possiblePoints[np.argmax(VOIval)][1]
+
 
 newEval,varP=newY(oldPoint)
 oldA0=a_0(oldPoint)
@@ -246,19 +263,25 @@ def a_1(x):
             
     return z
 
-
-possiblePoints=[i for i in possiblePoints2 if np.sum(i)==totalOpenings]
-Aval=np.zeros(len(possiblePoints))
-
+possiblePointsAn=[(i,j) for (i,j) in possiblePoints3 if np.sum(j)==totalOpenings-np.sum(oldPoint)]
+Aval=np.zeros(len(possiblePointsAn))
 
 
-Npoint=len(possiblePoints)
-A0val=np.zeros(len(possiblePoints))
+
+Npoint=len(possiblePointsAn)
+A0val=np.zeros(len(possiblePointsAn))
 for i in range(Npoint):
-    Aval[i]=a_1(possiblePoints[i])
-    A0val[i]=a_0(possiblePoints[i])
+    Aval[i]=a_1(possiblePointsAn[i][1])
+    
 
-newSol=possiblePoints[np.argmax(Aval)]
+possiblePointsAn2=[(i,j) for (i,j) in possiblePoints3 if np.sum(j)==totalOpenings]
+A0val=np.zeros(len(possiblePointsAn2))
+Npoint2=len(possiblePointsAn2)
+for i in range(Npoint2):
+    A0val[i]=a_0(possiblePointsAn2[i][1])
+
+newSol=possiblePointsAn[np.argmax(Aval)][1]
+
 
 print "final"
 print newSol
@@ -270,7 +293,7 @@ for i in range(len(newSol)):
     if newSol[i]==1:
         val+=np.dot(a[i,:],beta)
     if oldPoint[i]==1:
-        val+=np.dot(a[i,:],beta)
+        val+=2.0*np.dot(a[i,:],beta)
 print val
 valSol=val
 
@@ -279,17 +302,18 @@ valSol=val
 
 ###one step
 print "finalOneStep"
-classSol=possiblePoints[np.argmax(A0val)]
+classSol=possiblePointsAn2[np.argmax(A0val)][1]
 print 2.0*np.max(A0val)
 print "real Value"
 
 val=0
 for i in range(len(newSol)):
+
     if classSol[i]==1:
         val+=np.dot(a[i,:],beta)
 
 
-path="Results"
+path="ResultsOpening10"
 
 if not os.path.exists(path):
     os.makedirs(path)
