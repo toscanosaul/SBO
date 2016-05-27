@@ -7,7 +7,7 @@ import random
 # order and removing elements with duplicate slope.
 def AffineBreakPointsPrep(a,b):
     #a,b are numpy vectors
-    
+
     #PF: Experimental preprocessing step, which I hope will remove
     # a large number of the entries.
     b1, i1=min(b), np.argmin(b) # [a1,b1] is best at z=-infinity
