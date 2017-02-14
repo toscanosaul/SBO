@@ -83,6 +83,21 @@ def noisyF(XW,n):
         
     return np.mean(result), np.std(result)
 
+def sampleFromXAn(n):
+    """Chooses n points in the domain of x at random
+      
+       Args:
+          n: Number of points chosen
+    """
+    s1=np.random.uniform(lowerX[0:2],upperX[0:2],(n,2))
+    a=np.random.randint(lowerX[2],upperX[2],n).reshape((n,1))
+    b=np.random.randint(lowerX[3],upperX[3],n).reshape((n,1))
+    
+    
+    return np.concatenate((s1,a,b),1)
+
+sampleFromXVn=sampleFromXAn
+
 n_folds=5
 
 trainingPoints=60
