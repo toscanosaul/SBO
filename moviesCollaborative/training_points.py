@@ -17,6 +17,11 @@ import time
 from pmf import cross_validation,PMF
 import multiprocessing as mp
 
+from joblib import(
+    Parallel,
+    delayed,
+)
+
 
 n1=4
 n2=1
