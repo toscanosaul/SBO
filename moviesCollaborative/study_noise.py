@@ -95,7 +95,7 @@ def noisyF(XW,n):
     result_ = Parallel(n_jobs=nCores)(
         delayed(g)(
             x=x,
-            w=w,
+            w1=w,
             random_seed=i
         )for i in range(n))
     
