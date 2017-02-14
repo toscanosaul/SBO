@@ -49,11 +49,14 @@ num_item=1682
 train=[]
 validate=[]
 
+data_all=[]
+
 for i in range(1,6):
     data=np.loadtxt("ml-100k/u%d.base"%i)
     test=np.loadtxt("ml-100k/u%d.test"%i)
     train.append(data)
     validate.append(test)
+    data_all.append(np.concatenate((data,test),axis=0))
 
 
 def g(x,w1):
