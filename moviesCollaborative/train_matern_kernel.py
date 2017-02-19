@@ -432,7 +432,7 @@ for i in range(N):
     training_data_sets[i] = [XWtrain_tmp,yTrain_tmp]
     test_points[i] = XWtrain[i:i+1,:]
     
-opt=optimizeKernel(minus_log_likelihood,XWtrain_tmp,yTrain_tmp,gradient_minus_log_likelihood)
+
 try:
     pool = mp.Pool(processes=numProcesses)
     for i in range(N):
