@@ -430,7 +430,7 @@ for i in range(N):
     XWtrain_tmp = XWtrain[selector,:]
     yTrain_tmp = yTrain[selector,0:1]
     training_data_sets[i] = [XWtrain_tmp,yTrain_tmp]
-    test_point[i] = XWtrain[i:i+1,:]
+    test_points[i] = XWtrain[i:i+1,:]
     
 opt=optimizeKernel(minus_log_likelihood,XWtrain_tmp,yTrain_tmp,gradient_minus_log_likelihood)
 try:
