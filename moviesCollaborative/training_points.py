@@ -27,8 +27,8 @@ n1=4
 n2=1
 
 ###rate leraning, regularizing parameter, rank, epoch
-lowerX=[0.01,0.1,1,1]
-upperX=[1.01,2.1,21,201]
+lowerX=[1.0,0.01,1,1]
+upperX=[51,1.01,21,201]
 
 
 
@@ -66,8 +66,6 @@ def g(x,w1):
     indexes = np.delete(indexes,indexes[0])
     for i in indexes:
         train_data = np.concatenate((train_data,data_all[i]),axis=0)
-    
-        
     val=PMF(num_user,num_item,train_data,data_all[w1],x[0],x[1],int(x[3]),int(x[2]))
     return -val*100.0
     
