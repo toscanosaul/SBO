@@ -78,12 +78,15 @@ for i in range(1,6):
     validate.append(test)
     data_all.append(np.concatenate((data,test),axis=0))
     
-XWtrain = np.loadtxt("XWdata.txt")
-yTrain = np.loadtxt("ydata.txt").reshape((XWtrain.shape[0],1))
-XWtrain_2 = np.loadtxt("XWdata_2.txt")
-yTrain2 = np.loadtxt("ydata_2.txt").reshape((XWtrain_2.shape[0],1))
-XWtrain = np.concatenate((XWtrain,XWtrain_2))
-yTrain = np.concatenate((yTrain,yTrain2))
+XWtrain=np.loadtxt("XWtrain_600_points.txt")
+yTrain = np.loadtxt("yTrain_600.txt").reshape((XWtrain.shape[0],1))
+    
+#XWtrain = np.loadtxt("XWdata.txt")
+#yTrain = np.loadtxt("ydata.txt").reshape((XWtrain.shape[0],1))
+#XWtrain_2 = np.loadtxt("XWdata_2.txt")
+#yTrain2 = np.loadtxt("ydata_2.txt").reshape((XWtrain_2.shape[0],1))
+#XWtrain = np.concatenate((XWtrain,XWtrain_2))
+#yTrain = np.concatenate((yTrain,yTrain2))
 
 dim = 4
 scaleAlpha = np.zeros(dim)
@@ -472,7 +475,7 @@ for i in range(N):
         solutions[i] = temp
         
 import pickle
-with open('optimal_solutions_mu', 'wb') as handle:
+with open('optimal_solutions_mu_600', 'wb') as handle:
     pickle.dump(solutions, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
