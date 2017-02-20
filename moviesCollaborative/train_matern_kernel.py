@@ -200,7 +200,7 @@ def A_function_2(X,X2=None,alpha=None,var_obs=None,covM=None,nFolds=5, n1=n1, no
         K_,cov_K=Kfunction_2(X,X2,alpha=alpha,variance=variance_squared,covM=covM,var_obs=var_obs)+np.diag(noise)
     return K_, L,cov_K
     
-def logLikelihood_function_2(X,y,var_obs=None,covM=None,nFolds=5, n1=n1, alpha=None, gradient=False):
+def logLikelihood_function_2(X,y,mu=0,var_obs=None,covM=None,nFolds=5, n1=n1, alpha=None, gradient=False):
     
     """
          
@@ -217,7 +217,7 @@ def logLikelihood_function_2(X,y,var_obs=None,covM=None,nFolds=5, n1=n1, alpha=N
     N=X.shape[0]
 
     L=np.linalg.cholesky(K)
-    Y=y
+    Y=y-mu
     alp= linalg.solve_triangular(L,Y,lower=True)
     DET=np.sum(np.log(np.diag(L)))
     product_alpha=np.dot(alp.transpose(),alp)
@@ -249,7 +249,7 @@ def logLikelihood_function_2(X,y,var_obs=None,covM=None,nFolds=5, n1=n1, alpha=N
     
 
 
-    gradient=np.zeros(n1+1+np.sum(range(nFolds+1)))
+    gradient=np.zeros(n1+1+np.sum(range(nFolds+1))+1)
     
     alp_2 = linalg.solve_triangular(L.transpose(),alp,lower=False)
     
@@ -317,8 +317,10 @@ def logLikelihood_function_2(X,y,var_obs=None,covM=None,nFolds=5, n1=n1, alpha=N
         tmp_2 = linalg.solve_triangular(L.transpose(),tmp_1,lower=False)
         gradient[n1+k+1] = 0.5 * np.trace(product_1 - tmp_2)
         
-
     
+    tmp_1 = linalg.solve_triangular(L,np.ones((L.shape[0],1)),lower=True)
+    tmp_2 = linalg.solve_triangular(L.transpose(),tmp_1,lower=False)
+    gradient[-1] = np.dot(Y.transpose(), tmp_2)
     return logLike,gradient
     
     
@@ -335,17 +337,19 @@ from scipy.optimize import fmin_l_bfgs_b
 def minus_log_likelihood(params,X=XWtrain,y=yTrain, nFolds=5,n1=n1,gradient=True):
     alpha = params[0:n1]
     var_obs = params[n1]
-    covM = params[n1+1:]
-    return -1.0 *logLikelihood_function_2(X,y,var_obs=var_obs,covM=covM,nFolds=5, n1=n1, alpha=alpha)
+    covM = params[n1+1:-1]
+    mu=params[-1]
+    return -1.0 *logLikelihood_function_2(X,y,mu=mu,var_obs=var_obs,covM=covM,nFolds=5, n1=n1, alpha=alpha)
 
 def gradient_minus_log_likelihood(params,X=XWtrain,y=yTrain,nFolds=5, n1=n1):
     alpha = params[0:n1]
     var_obs = params[n1]
-    covM = params[n1+1:] 
+    covM = params[n1+1:-1]
+    mu=params[-1]
 
-    return -1.0 * logLikelihood_function_2(X,y,var_obs=var_obs,covM=covM,nFolds=nFolds, n1=n1, alpha=alpha, gradient=True)[1]
+    return -1.0 * logLikelihood_function_2(X,y,mu=mu,var_obs=var_obs,covM=covM,nFolds=nFolds, n1=n1, alpha=alpha, gradient=True)[1]
 
-def optimizeKernel(minus_likelihood, X, y ,gradient, scaleAlpha=scaleAlpha,std=std,nFolds=5,start=None):
+def optimizeKernel(minus_likelihood, X, y ,gradient, mu=0,scaleAlpha=scaleAlpha,std=std,nFolds=5,start=None):
     """
     Optimize the minus log-likelihood using the optimizer method and starting in start.
 
@@ -365,8 +369,8 @@ def optimizeKernel(minus_likelihood, X, y ,gradient, scaleAlpha=scaleAlpha,std=s
         
         variance=np.log(np.abs(np.random.rand(1,np.sum(range(nFolds+1)))))[0]
         
-        
-        start=np.concatenate((log_alpha,var_obs,variance))
+        mu = 0.0
+        start=np.concatenate((log_alpha,var_obs,variance,mu))
     
     
     opt = fmin_l_bfgs_b(minus_likelihood, start, gradient,args=[X,y,])
@@ -409,7 +413,7 @@ import multiprocessing as mp
 numProcesses=78
 jobs={}
 
-numStarts=30
+numStarts=5
 dim=4
 
 starting_points=[]
@@ -420,7 +424,8 @@ for j in range(numStarts*N):
     log_alpha = np.log(alpha)
     var_obs=np.array([np.log(np.random.rand()/10.0)])
     variance=np.random.normal(0,1,np.sum(range(nFolds+1)))
-    start=np.concatenate((log_alpha,var_obs,variance))
+    mu=np.array([0.0])
+    start=np.concatenate((log_alpha,var_obs,variance,mu))
     starting_points.append(start)
     
 training_data_sets ={}
@@ -467,7 +472,7 @@ for i in range(N):
         solutions[i] = temp
         
 import pickle
-with open('optimal_solutions', 'wb') as handle:
+with open('optimal_solutions_mu', 'wb') as handle:
     pickle.dump(solutions, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
