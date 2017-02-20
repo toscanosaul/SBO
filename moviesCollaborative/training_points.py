@@ -27,12 +27,12 @@ n1=4
 n2=1
 
 ###rate leraning, regularizing parameter, rank, epoch
-lowerX=[1.0,0.01,1,1]
+lowerX=[0.1,0.01,1,1]
 upperX=[51,1.01,21,201]
 
 
 
-nGrid=[6,6,11,6]
+nGrid=[7,6,11,6]
 
 domainX=[]
 for i in range(n1):
