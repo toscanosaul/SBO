@@ -17,6 +17,7 @@ def PMF(num_user,num_item,train,val,epsilon=50,lamb=0.01,maxepoch=50,num_feat=10
     pairs_va = val.shape[0] #validation data
     
     num_batches=9
+    batch_size = pairs_tr/num_batches
     
     w1_M1=0.1*np.random.randn(num_item, num_feat) #movie feature vectors
     w1_P1= 0.1*np.random.rand(num_user,num_feat) #User feature vectors
