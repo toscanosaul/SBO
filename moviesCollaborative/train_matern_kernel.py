@@ -349,7 +349,7 @@ def gradient_minus_log_likelihood(params,X=XWtrain,y=yTrain,nFolds=5, n1=n1):
 
     return -1.0 * logLikelihood_function_2(X,y,mu=mu,var_obs=var_obs,covM=covM,nFolds=nFolds, n1=n1, alpha=alpha, gradient=True)[1]
 
-def optimizeKernel(minus_likelihood, X, y ,gradient, mu=0,scaleAlpha=scaleAlpha,std=std,nFolds=5,start=None):
+def optimizeKernel(minus_likelihood, X, y ,gradient,scaleAlpha=scaleAlpha,std=std,nFolds=5,start=None):
     """
     Optimize the minus log-likelihood using the optimizer method and starting in start.
 
