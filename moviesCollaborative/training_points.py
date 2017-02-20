@@ -72,7 +72,7 @@ def g(x,w1):
     return -val*100.0
     
 
-def noisyF(XW,n):
+def noisyF(XW,n=1):
     """Estimate F(x,w)=E(f(x,w,z)|w)
       
        Args:
@@ -84,12 +84,10 @@ def noisyF(XW,n):
     w=XW[0,n1:n1+n2]
 
     w=int(w)
-    result = np.zeros(n)
-    for j in range(n):
-        np.random.seed(j)
-        result[j] = g(x,w)
-        
-    return np.mean(result), np.std(result)
+
+    result = g(x,w)
+
+    return result
 
 def sampleFromXAn(n):
     """Chooses n points in the domain of x at random
@@ -108,8 +106,9 @@ sampleFromXVn=sampleFromXAn
 
 n_folds=5
 
-trainingPoints=60
+trainingPoints=600
 
+np.random.seed(429496729)
 Xtrain=sampleFromXVn(trainingPoints).reshape((trainingPoints,n1))
 
 dt=int(ceil(trainingPoints/n_folds))
@@ -120,23 +119,22 @@ Wtrain=np.array(Wtrain).reshape((trainingPoints,1))
 
 XWtrain=np.concatenate((Xtrain,Wtrain),1)
 
-np.savetxt("XWtrain_cluster.txt",XWtrain)
+np.savetxt("XWtrain_600_points.txt",XWtrain)
 
 nCores = mp.cpu_count()
 
 yTrain_2 = Parallel(n_jobs=nCores)(
     delayed(noisyF)(
         XW=XWtrain[i:i+1,:],
-        n=10,
+        n=1,
     )for i in range(trainingPoints))
 
-yTrain_2_2 = np.zeros((trainingPoints,2))
+yTrain_2_2 = np.zeros((trainingPoints,1))
 for i in range(trainingPoints):
-    yTrain_2_2[i,0] = yTrain_2[i][0]
-    yTrain_2_2[i,1] = yTrain_2[i][1]
+    yTrain_2_2[i,0] = yTrain_2[i]
     
 
-np.savetxt("yTrain_cluster.txt",yTrain_2_2)
+np.savetxt("yTrain_600.txt",yTrain_2_2)
 
 
 

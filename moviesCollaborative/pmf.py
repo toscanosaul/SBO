@@ -2,7 +2,6 @@ from numpy import linalg as LA
 import numpy as np
 from math import *
 
-
 def PMF(num_user,num_item,train,val,epsilon=50,lamb=0.01,maxepoch=50,num_feat=10):
     """
     epsilon: learning rate
@@ -10,20 +9,17 @@ def PMF(num_user,num_item,train,val,epsilon=50,lamb=0.01,maxepoch=50,num_feat=10
     num_feat : the matrix rank
     maxepoch: number of epochs
     """
+    momentum = 0.8
+    epoch=1
+    mean_rating=np.mean(train[:,2])
     
-    num_batches= 80 # Number of batches
-    momentum=0.95
-    
-
     pairs_tr = train.shape[0] #training data
     pairs_va = val.shape[0] #validation data
     
-    batch_size=pairs_tr/num_batches ###this is particular to this problem.
-    mean_rating=np.mean(train[:,2])
+    num_batches=9
     
     w1_M1=0.1*np.random.randn(num_item, num_feat) #movie feature vectors
     w1_P1= 0.1*np.random.rand(num_user,num_feat) #User feature vectors
-    
     w1_M1_inc= np.zeros((num_item,num_feat))
     w1_P1_inc= np.zeros((num_user,num_feat))
     
@@ -43,15 +39,13 @@ def PMF(num_user,num_item,train,val,epsilon=50,lamb=0.01,maxepoch=50,num_feat=10
             
             ###compute predictions
 
-  
-	    
             pred=np.sum(np.multiply(w1_M1[batch_itID,:],w1_P1[batch_uID,:]),1)
             rawErr=pred-ratings
             
             ######compute gradients
-            IX_m=2*np.multiply(rawErr[:,np.newaxis],w1_P1[batch_uID,:])\
+            IX_m=2.0*np.multiply(rawErr[:,np.newaxis],w1_P1[batch_uID,:])\
                     +lamb*w1_M1[batch_itID,:]
-            IX_p=2*np.multiply(rawErr[:,np.newaxis],w1_M1[batch_itID,:])\
+            IX_p=2.0*np.multiply(rawErr[:,np.newaxis],w1_M1[batch_itID,:])\
                     +lamb*w1_P1[batch_uID,:]
             
             dw_m=np.zeros((num_item,num_feat))
@@ -63,16 +57,24 @@ def PMF(num_user,num_item,train,val,epsilon=50,lamb=0.01,maxepoch=50,num_feat=10
             
             ##update with momentum
             
-            w1_M1_inc=momentum*w1_M1_inc +epsilon*dw_m/batch_size
+            w1_M1_inc=momentum*w1_M1_inc +epsilon*dw_m/float(batch_size)
             w1_M1=w1_M1-w1_M1_inc
             
-            w1_P1_inc=momentum*w1_P1_inc+epsilon*dw_p/batch_size
+            w1_P1_inc=momentum*w1_P1_inc+epsilon*dw_p/float(batch_size)
             w1_P1=w1_P1-w1_P1_inc
     ###compute validation error
+    
+    
     pred_out=np.sum(np.multiply(w1_P1[np.array(val[:,0]-1,dtype='int32')],
                                 w1_M1[np.array(val[:,1]-1,dtype='int32')]),axis=1)
-    rawErr=pred_out+mean_rating-val[:,2]
-    return np.sum(rawErr**2)/pairs_va
+    pred_out = pred_out + mean_rating
+    pred_out[pred_out>5] = 5
+    pred_out[pred_out<1] = 1
+    
+    rawErr=pred_out-val[:,2]
+    return np.sum(rawErr**2)/float(pairs_va)
+    
+    
 
 def cross_validation(num_user,num_item,train,val,epsilon=1,lamb=0.01,maxepoch=50,num_Feat=10):
     """
