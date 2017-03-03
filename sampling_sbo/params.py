@@ -81,9 +81,9 @@ class Param(object):
         return self.prior.logprob(self.value)
 
     # For MCMC diagnostics -- or maybe will be used for initialization at some point
-    def sample_from_prior(self):
+    def sample_from_prior(self, nSamples):
         if hasattr(self.prior, 'sample'):
-            self.value = self.prior.sample(self.size())
+            return self.prior.sample(nSamples)
         else:
             raise Exception(
                 "Param %s has prior %s, which does not allow sampling" % (

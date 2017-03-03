@@ -34,8 +34,8 @@ class Tophat(AbstractPrior):
         else:
             return 0.  # More correct is -np.log(self.xmax-self.xmin), but constants don't matter
 
-    def sample(self, n_samples):
-        return self.xmin + npr.rand(n_samples) * (self.xmax - self.xmin)
+    def sample(self, n_samples, dim):
+        return self.xmin + npr.rand(n_samples, dim) * (self.xmax - self.xmin)
 
 
 # This is the Horseshoe prior for a scalar entity
@@ -191,15 +191,15 @@ class NonNegative(AbstractPrior):
 # This class allows you to compose a list priors
 # (meaning, take the product of their PDFs)
 # The resulting distribution is "improper" -- i.e. not normalized
-class ProductOfPriors(AbstractPrior):
-    def __init__(self, priors):
-        self.priors = priors
+#class ProductOfPriors(AbstractPrior):
+ #   def __init__(self, priors):
+  #      self.priors = priors
 
-    def logprob(self, x):
-        lp = 0.0
-        for prior in self.priors:
-            lp += prior.logprob(x)
-        return lp
+   # def logprob(self, x):
+    #    lp = 0.0
+     #   for prior in self.priors:
+      #      lp += prior.logprob(x)
+       # return lp
 
 
 # class Binomial(AbstractPrior):
@@ -239,3 +239,26 @@ def ParseFromOptions(options):
             raise Exception("Prior parameters must be list or dict type")
 
     return parsed
+
+
+class ProductOfPriors():
+    def __init__(self,n1, priors):
+        self.priors = priors
+        self.n1=n1
+
+    def logprob(self, x):
+        lp = 0.0
+        lp += self.priors[0].logprob(x[0:self.n1])
+        lp += self.priors[1].logprob(x[self.n1:])
+        return lp
+
+    def sample(self, n_samples):
+        part_1 = self.priors[0].sample(n_samples, 15)
+        part_2 = self.priors[1].sample(n_samples, 4)
+
+        result = np.concatenate([part_1,part_2], 1)
+
+        return result
+
+
+

@@ -1,135 +1,99 @@
 import numpy as np
 import numpy.random as npr
+from abc import ABCMeta, abstractmethod
+
+from params import Param as Hyperparameter
+from params import set_params_from_array
+from params import params_to_array
+from slice_sampling_versions import slice_sample
 
 
-def slice_sample(init_x, logprob, sampler, *logprob_args, **slice_sample_args):
-    """generate a new sample from a probability density using slice sampling
 
-    Parameters
-    ----------
-    init_x : array
-    logprob : callable, `lprob = logprob(x, *logprob_args)`
-        A functions which returns the log probability at a given
-        location
-    *logprob_args :
-        additional arguments are passed to logprob
+class AbstractSampler(object):
+    __metaclass__ = ABCMeta
 
-    TODO: this function has too many levels and is hard to read.  It would be clearer
-    as a class or just moving the sub-functions to another location
+    def __init__(self, *params_to_sample, **sampler_options):
+        self.params          = params_to_sample
+        self.sampler_options = sampler_options
+        self.current_ll      = None
 
-    Returns
-    -------
-    new_x : float
-        the sampled position
-    new_llh : float
-        the log likelihood at the new position (I'm not sure about this?)
+        # Note: thinning is currently implemented such that each sampler does its thinning
+        # We could also do a different type of thinning, implemented in SamplerCollection,
+        # where all samplers produce a sample, and then you thin (ABABAB rather than AAABBB)
+     #   self.thinning_overrideable = not sampler_options.has_key('thinning') # Thinning can be overrided if True
+        self.thinning              = sampler_options.get('thinning', 0)
 
-    Notes
-    -----
-    http://en.wikipedia.org/wiki/Slice_sampling
-    """
-    sigma = slice_sample_args.get('sigma', 1.0)
-    step_out = slice_sample_args.get('step_out', True)
-    max_steps_out = slice_sample_args.get('max_steps_out', 1000)
-    compwise = slice_sample_args.get('compwise', True)
-    doubling_step = slice_sample_args.get('doubling_step', True)
-    verbose = slice_sample_args.get('verbose', False)
+    @abstractmethod
+    def logprob(self, x, model):
+        pass
 
-    def direction_slice(direction, init_x):
-        def dir_logprob(z):
-            return logprob(sampler, direction * z + init_x, *logprob_args)
+    @abstractmethod
+    def sample(self, model):
+        pass
 
-        def acceptable(z, llh_s, L, U):
-            while (U - L) > 1.1 * sigma:
-                middle = 0.5 * (L + U)
-                splits = (middle > 0 and z >= middle) or (
-                middle <= 0 and z < middle)
-                if z < middle:
-                    U = middle
-                else:
-                    L = middle
-                # Probably these could be cached from the stepping out.
-                if splits and llh_s >= dir_logprob(U) and llh_s >= dir_logprob(
-                        L):
-                    return False
-            return True
+class Standard_Slice_Sample(AbstractSampler):
 
-        upper = sigma * npr.rand()
-        lower = upper - sigma
-        llh_s = np.log(npr.rand()) + dir_logprob(0.0)
+    def logprob(self, x, model):
+        """compute the log probability of observations x
 
-        l_steps_out = 0
-        u_steps_out = 0
-        if step_out:
-            if doubling_step:
-                while (dir_logprob(lower) > llh_s or dir_logprob(
-                        upper) > llh_s) and (l_steps_out + u_steps_out) < max_steps_out:
-                    if npr.rand() < 0.5:
-                        l_steps_out += 1
-                        lower -= (upper - lower)
-                    else:
-                        u_steps_out += 1
-                        upper += (upper - lower)
-            else:
-                while dir_logprob(
-                        lower) > llh_s and l_steps_out < max_steps_out:
-                    l_steps_out += 1
-                    lower -= sigma
-                while dir_logprob(
-                        upper) > llh_s and u_steps_out < max_steps_out:
-                    u_steps_out += 1
-                    upper += sigma
+        This includes the model likelihood as well as any prior
+        probability of the parameters
 
-        start_upper = upper
-        start_lower = lower
+        Returns
+        -------
+        lp : float
+            the log probability
+        """
+        # set values of the parameers in self.params to be x
+        set_params_from_array(self.params, x)
 
-        steps_in = 0
-        while True:
-            steps_in += 1
-            new_z = (upper - lower) * npr.rand() + lower
-            new_llh = dir_logprob(new_z)
-            if np.isnan(new_llh):
-                print new_z, direction * new_z + init_x, new_llh, llh_s, init_x, logprob(
-                    init_x, *logprob_args)
-                raise Exception("Slice sampler got a NaN")
-                #  if new_llh > llh_s and acceptable(new_z, llh_s, start_lower, start_upper):
-            if new_llh > llh_s:
-                break
-            elif new_z < 0:
-                lower = new_z
-            elif new_z > 0:
-                upper = new_z
-            else:
-                raise Exception("Slice sampler shrank to zero!")
+        lp = 0.0
+        # sum the log probabilities of the parameter priors
+        for param in self.params:
+            lp += param.prior_logprob()
 
-        if verbose:
-            print "Steps Out:", l_steps_out, u_steps_out, " Steps In:", steps_in
+            if np.isnan(lp):  # Positive infinity should be ok, right?
+                print 'Param diagnostics:'
+               # param.print_diagnostics()
+                print 'Prior logprob: %f' % param.prior_logprob()
+                raise Exception("Prior returned %f logprob" % lp)
 
-        return new_z * direction + init_x, new_llh
+        if not np.isfinite(lp):
+            return lp
 
-    if type(init_x) == float or isinstance(init_x, np.number):
-        init_x = np.array([init_x])
-        scalar = True
-    else:
-        scalar = False
+        # include the log probability from the model
+        lp += model.log_likelihood()
 
-    dims = init_x.shape[0]
-    if compwise:
-        ordering = range(dims)
-        npr.shuffle(ordering)
-        new_x = init_x.copy()
-        for d in ordering:
-            direction = np.zeros((dims))
-            direction[d] = 1.0
-            new_x, new_llh = direction_slice(direction, new_x)
+        if np.isnan(lp):
+            raise Exception("Likelihood returned %f logprob" % lp)
 
-    else:
-        direction = npr.randn(dims)
-        direction = direction / np.sqrt(np.sum(direction ** 2))
-        new_x, new_llh = direction_slice(direction, init_x)
+        return lp
 
-    if scalar:
-        return float(new_x[0]), new_llh
-    else:
-        return new_x, new_llh
+    def sample(self, model):
+        """generate a new sample of parameters for the model
 
+        Notes
+        -----
+        The parameters are stored as self.params which is a list of Params objects.
+        The values of the parameters are updated on each call.  Pesumably the value of
+        the parameter affects the model (this is not required, but it would be a bit
+        pointless othewise)
+
+        """
+        # turn self.params into a 1d numpy array
+        params_array = params_to_array(self.params)
+        for i in xrange(self.thinning + 1):
+            # get a new value for the parameter array via slice sampling
+            params_array, current_ll = slice_sample(
+                params_array,
+                self.logprob,
+                model,
+                **self.sampler_options
+            )
+
+            set_params_from_array(
+                self.params,
+                params_array
+            )  # Can this be untabbed safely?
+
+        self.current_ll = current_ll  # for diagnostics
