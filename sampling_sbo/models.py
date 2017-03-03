@@ -220,17 +220,25 @@ class K_Folds(AbstractModel):
             opt = fmin_l_bfgs_b(self.minus_likelihood, starting_points[0,:], self.gradient)
         else:
             n_jobs = mp.cpu_count()
+            jobs = []
+            pool = mp.Pool(processes=n_jobs)
 
-            results = Parallel(n_jobs=n_jobs)(
-                delayed(kernOptWrapper)(
-                    self,
-                    starting_points[i, :]
-                ) for i in range(n_restarts))
-
+            for i in range(n_restarts):
+                job = pool.apply_async(
+                    kernOptWrapper, args=(self, starting_points[i, :],)
+                )
+                jobs.append(job)
+       #     results = Parallel(n_jobs=n_jobs)(
+       #         delayed(kernOptWrapper)(
+       #             self,
+       #             starting_points[i, :]
+       #         ) for i in range(n_restarts))
+            pool.close()
+            pool.join()
             opt_values = []
             for i in range(n_restarts):
                 try:
-                    opt_values.append(results[i])
+                    opt_values.append(jobs[i].get())
                 except Exception as e:
                     print "opt failed"
 
