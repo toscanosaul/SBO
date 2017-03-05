@@ -409,6 +409,8 @@ class K_Folds(AbstractModel):
                 [default_point, starting_points], 0
             )
 
+        np.savetxt("starting_ponts.txt", starting_points)
+
         try:
             pool = mp.Pool(processes=n_jobs)
             for i in range(N):
