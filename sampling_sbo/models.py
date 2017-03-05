@@ -469,11 +469,13 @@ class K_Folds(AbstractModel):
             else:
                 "it failed for %d"%i
 
+        print means
+        print standard_dev
         plt.errorbar(np.arange(N), means, yerr=2.0 * standard_dev, fmt='o')
         plt.scatter(np.arange(N), y, color='r')
         plt.savefig("diagnostic_kernel.png")
 
-        return number_correct, len(y)
+        return number_correct, len(y), means, standard_dev
 
     def params_posterior_gp(self, x, X, y, noise):
         if noise is None:
