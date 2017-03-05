@@ -61,7 +61,7 @@ if __name__ == '__main__':
     #data['noise'] = 1e-50*np.ones(len(yTrain[:,0]))
     data['matern'] = mu
     data['log_multiKernel'] = log_multi
-    data['nEvals'] = 3
+    data['nEvals'] = 30
     data['dim_x'] = 4
     data['dim_w'] = 1
     data['evaluation_f'] = g
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     model = K_Folds(num_dims, **data)
 
     #print model.evaluate_function([10,    1.0,    10        ,  166.        ,    1        ])
-    model.get_training_data(2)
+    model.get_training_data(100)
 
 
 
