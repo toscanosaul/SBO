@@ -55,8 +55,8 @@
       <file leaf-file-name="run_slice_sampling_movies.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/run_slice_sampling_movies.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="643">
-              <caret line="96" column="9" lean-forward="false" selection-start-line="96" selection-start-column="9" selection-end-line="96" selection-end-column="9" />
+            <state relative-caret-position="223">
+              <caret line="99" column="5" lean-forward="true" selection-start-line="99" selection-start-column="5" selection-end-line="99" selection-end-column="5" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -191,8 +191,8 @@
         <option value="$PROJECT_DIR$/objective_function.py" />
         <option value="$PROJECT_DIR$/kernels.py" />
         <option value="$PROJECT_DIR$/utilities.py" />
-        <option value="$PROJECT_DIR$/run_slice_sampling_movies.py" />
         <option value="$PROJECT_DIR$/models.py" />
+        <option value="$PROJECT_DIR$/run_slice_sampling_movies.py" />
       </list>
     </option>
   </component>
@@ -437,12 +437,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/run_slice_sampling_movies.py</url>
-          <line>98</line>
-        </line-breakpoint>
-      </breakpoints>
       <option name="time" value="2" />
     </breakpoint-manager>
     <watches-manager />
@@ -726,8 +720,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/run_slice_sampling_movies.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="643">
-          <caret line="96" column="9" lean-forward="false" selection-start-line="96" selection-start-column="9" selection-end-line="96" selection-end-column="9" />
+        <state relative-caret-position="223">
+          <caret line="99" column="5" lean-forward="true" selection-start-line="99" selection-start-column="5" selection-end-line="99" selection-end-column="5" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

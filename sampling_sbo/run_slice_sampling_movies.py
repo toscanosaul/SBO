@@ -61,9 +61,9 @@ if __name__ == '__main__':
     noise = np.loadtxt("noise1.txt")
     noise = (noise**2)/30.0
     #print XWtrain
-    XWtrain = XWtrain[0:11,:]
-    yTrain = yTrain[0:11]
-    noise = noise[0:11]
+    #XWtrain = XWtrain[0:11,:]
+    #yTrain = yTrain[0:11]
+    #noise = noise[0:11]
     data = {}
     data['X_data'] = XWtrain
     data['y'] = yTrain
