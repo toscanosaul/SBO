@@ -93,12 +93,16 @@ if __name__ == '__main__':
    # model.get_training_data(100)
 
 
-    print model.cross_validation_mle_parameters(
+    r= model.cross_validation_mle_parameters(
       XWtrain,
       yTrain,
       noise,
       n_restarts=30
     )
+
+    np.savetxt("means_diag.txt",r[2])
+    np.savetxt("std_diag.txt",r[3])
+
 
    # print (f2-f1)/dh - model._kernel.gradient(XWtrain)[17]
   #  print "grad"
