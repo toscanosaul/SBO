@@ -42,7 +42,7 @@ class Matern52(AbstractKernel):
 
         default_ls = Hyperparameter(
             initial_value = np.ones(self.num_dims),
-            prior = priors.Tophat(0.0001,10000),
+            prior = priors.Tophat(0.0001, 8e11),
             name = 'ls'
         )
 
@@ -125,7 +125,7 @@ class multi_task(AbstractKernel):
 
         default_ls = Hyperparameter(
             initial_value=np.ones(self.num_dims),
-            prior=priors.Tophat(-3, 3),
+            prior=priors.Tophat(-100, 100),
             name='ls'
         )
 

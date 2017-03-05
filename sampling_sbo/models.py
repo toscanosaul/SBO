@@ -3,11 +3,12 @@ import logging
 import numpy        as np
 import numpy.random as npr
 import scipy.linalg as spla
+import scipy
 import scipy.stats  as sps
 
 from params import Param as Hyperparameter
 from kernels import Matern52, multi_task, ProductKernel
-from sampling import Standard_Slice_Sample
+from sampling import Standard_Slice_Sample, Slice_Sample_Surrogate
 import priors
 from scipy import linalg
 from scipy.optimize import fmin_l_bfgs_b
@@ -16,6 +17,7 @@ from abc import ABCMeta, abstractmethod
 from joblib import Parallel, delayed
 import multiprocessing as mp
 from utilities import kernOptWrapper
+from objective_function import Objective
 
 
 try:
@@ -71,6 +73,14 @@ class K_Folds(AbstractModel):
         self.noise = options.get('noise', None)
         self.noiseless = options.get('noiseless', True)
 
+        self.evaluation_f = options.get('evaluation_f', None)
+        self.nEvals = int(options.get('nEvals', 1))
+        self.dim_x = int(options.get('dim_x'))
+        self.dim_w = int(options.get('dim_w', 0))
+        self.domain = options.get('domain')
+        self.type_domain = options.get('type_domain', None)
+
+
 
         self.log_values_multikernel = options.get('log_multiKernel', np.ones(15))
         self.values_matern = options.get('matern', np.ones(4))
@@ -96,6 +106,15 @@ class K_Folds(AbstractModel):
 
     def _build(self):
 
+        self.objective_function = Objective(
+            f=self.evaluation_f,
+            nEvals=self.nEvals,
+            dim_x=self.dim_x,
+            dim_w=self.dim_w,
+            domain=self.domain,
+            type_domain=self.type_domain
+        )
+
         multi = multi_task(15, self.num_dims )
         matern = Matern52(self.num_dims)
 
@@ -108,8 +127,13 @@ class K_Folds(AbstractModel):
 
 
         # Build the mean function (just a constant mean for now)
+        if self.observed_values:
+            initial_value_mean = np.mean(self.observed_values)
+        else:
+            initial_value_mean = 0
+
         self.mean = Hyperparameter(
-            initial_value = np.mean(self.observed_values),
+            initial_value = initial_value_mean,
             prior         = priors.Tophat(-1000, 1000),
             name          = 'mean'
         )
@@ -128,11 +152,39 @@ class K_Folds(AbstractModel):
             thinning=self.thinning
         )
 
-        self._samplers['ls'] = Standard_Slice_Sample(
+     #   self._samplers['ls'] = Standard_Slice_Sample(
+     #       self.params['ls'],
+     #       compwise=True,
+     #       thinning=self.thinning
+     #   )
+
+        self._samplers['ls'] = Slice_Sample_Surrogate(
             self.params['ls'],
             compwise=True,
             thinning=self.thinning
         )
+
+        self.params_mle ={
+            'mean': None,
+            'ls': None,
+        }
+
+    def get_training_data(self, n, signature='1'):
+        XW, evaluations = self.objective_function.generate_training_points(n)
+
+        self.observed_inputs = XW
+        self.observed_values = evaluations[:,0]
+        self.noise = evaluations[:,1]
+
+        self.params['mean'] = np.mean(self.observed_values)
+
+        np.savetxt("observed_inputs"+signature+".txt", self.observed_inputs)
+        np.savetxt("observed_values" + signature + ".txt", self.observed_values)
+        np.savetxt("noise" + signature + ".txt", self.noise)
+
+    def evaluate_function(self, x):
+        eval = self.objective_function.evaluate_function(x)
+        return eval
 
     def log_likelihood(self):
         """
@@ -154,9 +206,32 @@ class K_Folds(AbstractModel):
             solve
         )
 
+    def log_likelihood_data_given_latent(self, f):
+
+        return - 0.5 * np.sum((self.observed_values - self.mean.value - f)**2 / self.noise) \
+               - 0.5 * np.sum(np.log(self.noise))
+
+    def log_likelihood_g_given_latent(self, f, g, aux_var=None):
+        if aux_var is None:
+            aux_var = np.diag(self.noise)
+
+        return -0.5 * np.sum((g-f)**2 / aux_var.diagonal()) - \
+               0.5 * np.sum(np.log(aux_var.diagonal()))
+
+    def log_likelihood_latent_given_params(self, f):
+        cov = self._kernel.cov(self.observed_inputs)
+        chol = spla.cholesky(cov, lower=True)
+        solve = spla.cho_solve((chol, True), f)
+
+        return -0.5 * np.dot(f, solve) - np.sum(np.log(np.diag(chol)))
+
+    def jacobian_likelihood(self):
+        L_r_theta_prime = self.compute_chol_r()
+
+        return -np.sum(np.log(np.diag(L_r_theta_prime)))
+
     def grad_log_likelihood(self):
         grad = np.zeros(self.num_params)
-
         grad_cov = self._kernel.gradient(self.observed_inputs)
 
         for i in range(self.num_params-1):
@@ -164,6 +239,52 @@ class K_Folds(AbstractModel):
 
         grad[self.num_params-1] = self._compute_gradient_mean()
         return grad
+
+    def sample_f_given_g_theta(self, eta):
+        L_r_theta = self.compute_chol_r()
+        m_theta = self.compute_m_theta(L_r_theta, g)
+        return np.dot(L_r_theta, eta) + m_theta
+
+    def sample_f_given_theta(self):
+        cov = self._kernel.cov(self.observed_inputs)
+        chol = spla.cholesky(cov, lower=True)
+        z = np.random.normal(0, 1, cov.shape[0])
+        return np.dot(chol, z)
+
+    def sample_g_given_theta_f(self, f, aux_std=None):
+        if aux_std is None:
+            aux_std = np.sqrt(self.noise)
+        g = f + np.random.normal(0, 1 , len(aux_std)) * aux_std
+        return g
+
+    def compute_m_theta(self, L_r_theta, g, aux_var=None):
+        if aux_var is None:
+            aux_var = self.noise
+        part_1 = g / aux_var
+
+        return np.dot(np.dot(L_r_theta, L_r_theta.transpose()), part_1)
+
+    def compute_chol_r(self):
+        cov = self._kernel.cov(self.observed_inputs)
+        cov_inv = np.linalg.inv(cov)
+
+        R = np.linalg.inv(cov_inv + np.diag(1.0 / self.noise))
+        print "aver"
+        print cov
+      #  print np.linalg.inv(cov)
+        print np.linalg.inv(cov + np.diag(self.noise))
+        #print R
+        chol = spla.cholesky(R, lower=True)
+
+        return chol
+
+    def get_eta(self, f, g):
+        L_r = self.compute_chol_r()
+        y = f - self.compute_m_theta(L_r, g)
+
+        eta = scipy.linalg.solve_triangular(L_r, y, lower=True)
+
+        return eta
 
     def _compute_gradient_mean(self):
         cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise)
@@ -248,6 +369,9 @@ class K_Folds(AbstractModel):
         self.params['ls'].value = opt[0][0:self.num_params-1]
         self.params['mean'].value = opt[0][self.num_params-1]
 
+        self.params_mle['ls'].value = opt[0][0:self.num_params-1]
+        self.params_mle['mean'].value = opt[0][self.num_params-1]
+
         return opt
 
     def _get_starting_points(self, n):
@@ -278,7 +402,6 @@ class K_Folds(AbstractModel):
         hypers_list = []
         for i in xrange(num_samples):
             for sampler in self._samplers:
-                print sampler
                 self._samplers[sampler].sample(self)
             hypers_list.append(self.to_dict()['hypers'])
             self.chain_length += 1

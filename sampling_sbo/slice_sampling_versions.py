@@ -81,6 +81,48 @@ def slice_sample(init_x, logprob, *logprob_args, **slice_sample_args):
         return new_x, new_llh
 
 
+def slice_sample_surrogate(init_x, logprob, *logprob_args, **slice_sample_args):
+
+    sigma = slice_sample_args.get('sigma', 1.0)
+    step_out = slice_sample_args.get('step_out', True)
+    max_steps_out = slice_sample_args.get('max_steps_out', 1000)
+    compwise = slice_sample_args.get('compwise', True)
+    doubling_step = slice_sample_args.get('doubling_step', True)
+    verbose = slice_sample_args.get('verbose', False)
+
+    if type(init_x) == float or isinstance(init_x, np.number):
+        init_x = np.array([init_x])
+        scalar = True
+    else:
+        scalar = False
+
+    ###TO DO: version that's not compwise
+    dims = init_x.shape[0]
+
+    ordering = range(dims)
+    npr.shuffle(ordering)
+    new_x = init_x.copy()
+    for d in ordering:
+        direction = np.zeros((dims))
+        direction[d] = 1.0
+        new_x, new_llh = direction_slice(
+            direction,
+            new_x,
+            logprob,
+            sigma,
+            step_out,
+            doubling_step,
+            max_steps_out,
+            verbose,
+            *logprob_args
+        )
+
+    if scalar:
+        return float(new_x[0]), new_llh
+    else:
+        return new_x, new_llh
+
+
 def acceptable(z, llh_s, L, U, sigma, dir_logprob):
     while (U - L) > 1.1 * sigma:
         middle = 0.5 * (L + U)
@@ -146,10 +188,14 @@ def find_sample(
     upper = start_upper
     lower = start_lower
     steps_in =0
+  #  print "prob"
+   # print llh_s
     while True:
+
         steps_in += 1
         new_z = (upper - lower) * npr.rand() + lower
         new_llh = dir_logprob(new_z)
+       # print new_llh
         if np.isnan(new_llh):
             print new_z, direction * new_z + init_x, new_llh, llh_s, init_x, logprob(
                 init_x, *logprob_args)
@@ -185,6 +231,7 @@ def direction_slice(
 
     upper = sigma * npr.rand()
     lower = upper - sigma
+
     llh_s = np.log(npr.rand()) + dir_logprob(0.0)
 
     l_steps_out = 0
