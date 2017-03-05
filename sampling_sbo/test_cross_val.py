@@ -149,9 +149,10 @@ starting_points =np.loadtxt("starting_ponts.txt")
 
 pool = mp.Pool(processes=n_jobs)
 jobs={}
+i=95
 jobs[i]=[]
 
-i=95
+
 
 for j in range(30):
     job = pool.apply_async(
