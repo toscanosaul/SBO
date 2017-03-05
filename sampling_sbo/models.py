@@ -444,27 +444,30 @@ class K_Folds(AbstractModel):
         means = np.zeros(N)
         standard_dev = np.zeros(N)
         for i in range(N):
-            j = np.argmin([o[1] for o in opt_values[i]])
-            opt_solutions[i] = opt_values[i][j]
-            self.params['ls'].value = opt_solutions[i][0][0:self.num_params - 1]
-            self.params['mean'].value = opt_solutions[i][0][self.num_params - 1]
-            mean, var = self.params_posterior_gp(
-                x=XW[i:i+1,:],
-                X=training_data_sets[i][0],
-                y=training_data_sets[i][1],
-                noise=training_data_sets[i][2]
-            )
-            if noise is None:
-                var = var
+            if len(opt_values[i]):
+                j = np.argmin([o[1] for o in opt_values[i]])
+                opt_solutions[i] = opt_values[i][j]
+                self.params['ls'].value = opt_solutions[i][0][0:self.num_params - 1]
+                self.params['mean'].value = opt_solutions[i][0][self.num_params - 1]
+                mean, var = self.params_posterior_gp(
+                    x=XW[i:i+1,:],
+                    X=training_data_sets[i][0],
+                    y=training_data_sets[i][1],
+                    noise=training_data_sets[i][2]
+                )
+                if noise is None:
+                    var = var
+                else:
+                    var = var + noise[i]
+                means[i] = mean
+                standard_dev[i] = np.sqrt(var)
+                in_interval_1 = y[i] <= mean + 2.0*np.sqrt(var)
+                in_interval_2 = y[i] >= mean - 2.0*np.sqrt(var)
+                in_interval = in_interval_1 and in_interval_2
+                if in_interval:
+                    number_correct += 1
             else:
-                var = var + noise[i]
-            means[i] = mean
-            standard_dev[i] = np.sqrt(var)
-            in_interval_1 = y[i] <= mean + 2.0*np.sqrt(var)
-            in_interval_2 = y[i] >= mean - 2.0*np.sqrt(var)
-            in_interval = in_interval_1 and in_interval_2
-            if in_interval:
-                number_correct += 1
+                "it failed for %d"%i
 
         plt.errorbar(np.arange(N), means, yerr=2.0 * standard_dev, fmt='o')
         plt.scatter(np.arange(N), y, color='r')
