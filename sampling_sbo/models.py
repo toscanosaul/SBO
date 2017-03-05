@@ -469,8 +469,7 @@ class K_Folds(AbstractModel):
             else:
                 "it failed for %d"%i
 
-        print means
-        print standard_dev
+
         plt.errorbar(np.arange(N), means, yerr=2.0 * standard_dev, fmt='o')
         plt.scatter(np.arange(N), y, color='r')
         plt.savefig("diagnostic_kernel.png")
