@@ -64,7 +64,7 @@ class Objective(object):
 
         for i in range(n_points):
             samples_results = np.zeros(self.nEvals)
-            for j in range(self.self.nEvals):
+            for j in range(self.nEvals):
                 samples_results[j] = samples[i*self.nEvals + j]
             evaluations[i, 0] = np.mean(samples_results)
             evaluations[i, 1] = np.std(samples_results)
@@ -108,10 +108,6 @@ class Objective(object):
         evaluations = self.evaluate_function_several_points(XW)
 
         return XW, evaluations
-
-
-
-
 
 
 
