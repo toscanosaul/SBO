@@ -167,8 +167,8 @@ pool.close()
 pool.join()
 
 opt_values = {}
+opt_values[i] = []
 for j in range(30):
-    opt_values[i] = []
     try:
         opt_values[i].append(jobs[i][j].get())
     except Exception as e:
