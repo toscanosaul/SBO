@@ -18,6 +18,7 @@ from joblib import Parallel, delayed
 import multiprocessing as mp
 from utilities import kernOptWrapper
 from objective_function import Objective
+import matplotlib.pyplot as plt
 
 
 try:
@@ -127,7 +128,7 @@ class K_Folds(AbstractModel):
 
 
         # Build the mean function (just a constant mean for now)
-        if self.observed_values:
+        if self.observed_values is not None:
             initial_value_mean = np.mean(self.observed_values)
         else:
             initial_value_mean = 0
@@ -152,6 +153,12 @@ class K_Folds(AbstractModel):
             thinning=self.thinning
         )
 
+        self.params_mle ={
+            'mean': None,
+            'ls': None,
+        }
+
+
      #   self._samplers['ls'] = Standard_Slice_Sample(
      #       self.params['ls'],
      #       compwise=True,
@@ -164,10 +171,7 @@ class K_Folds(AbstractModel):
             thinning=self.thinning
         )
 
-        self.params_mle ={
-            'mean': None,
-            'ls': None,
-        }
+
 
     def get_training_data(self, n, signature='1'):
         XW, evaluations = self.objective_function.generate_training_points(n)
@@ -269,11 +273,7 @@ class K_Folds(AbstractModel):
         cov_inv = np.linalg.inv(cov)
 
         R = np.linalg.inv(cov_inv + np.diag(1.0 / self.noise))
-        print "aver"
-        print cov
-      #  print np.linalg.inv(cov)
-        print np.linalg.inv(cov + np.diag(self.noise))
-        #print R
+
         chol = spla.cholesky(R, lower=True)
 
         return chol
@@ -369,10 +369,125 @@ class K_Folds(AbstractModel):
         self.params['ls'].value = opt[0][0:self.num_params-1]
         self.params['mean'].value = opt[0][self.num_params-1]
 
-        self.params_mle['ls'].value = opt[0][0:self.num_params-1]
-        self.params_mle['mean'].value = opt[0][self.num_params-1]
+        self.params_mle['ls'] = opt[0][0:self.num_params-1]
+        self.params_mle['mean'] = opt[0][self.num_params-1]
 
         return opt
+
+    def cross_validation_mle_parameters(self, XW, y, noise=None, n_restarts=1):
+        training_data_sets = {}
+        test_points = {}
+        N = len(y)
+        for i in range(N):
+            selector = [x for x in range(N) if x != i]
+            XW_tmp = XW[selector, :]
+            y_tmp = y[selector]
+            noise_tmp = None
+            if noise is not None:
+                noise_tmp = noise[selector]
+            training_data_sets[i] = [XW_tmp, y_tmp, noise_tmp]
+            test_points[i] = XW[i:i + 1, :]
+
+        n_jobs = mp.cpu_count()
+
+        jobs = {}
+
+        ls = self.params['ls'].value
+        mean = self.params['mean'].value
+
+        ls = ls.reshape([1, len(ls)])
+        mean = np.array([mean]).reshape([1, 1])
+
+        default_point = np.concatenate([ls, mean], 1)
+
+
+        if n_restarts == 1:
+            starting_points = default_point
+        else:
+            starting_points = self._get_starting_points(n_restarts-1)
+            starting_points = np.concatenate(
+                [default_point, starting_points], 0
+            )
+
+        try:
+            pool = mp.Pool(processes=n_jobs)
+            for i in range(N):
+                jobs[i] = []
+
+                for j in range(n_restarts):
+                    job = pool.apply_async(
+                        kernOptWrapper, args=(
+                            self,
+                            starting_points[j, :],
+                            training_data_sets[i],
+                        )
+                    )
+                    jobs[i].append(job)
+            pool.close()
+            pool.join()
+        except KeyboardInterrupt:
+            print "Ctrl+c received, terminating and joining pool."
+            pool.terminate()
+            pool.join()
+
+        opt_values = {}
+        for i in range(N):
+            opt_values[i] = []
+            for j in range(n_restarts):
+                try:
+                    opt_values[i].append(jobs[i][j].get())
+                except Exception as e:
+                    print "opt failed"
+
+        opt_solutions = {}
+        number_correct = 0
+        means = np.zeros(N)
+        standard_dev = np.zeros(N)
+        for i in range(N):
+            j = np.argmin([o[1] for o in opt_values[i]])
+            opt_solutions[i] = opt_values[i][j]
+            self.params['ls'].value = opt_solutions[i][0][0:self.num_params - 1]
+            self.params['mean'].value = opt_solutions[i][0][self.num_params - 1]
+            mean, var = self.params_posterior_gp(
+                x=XW[i:i+1,:],
+                X=training_data_sets[i][0],
+                y=training_data_sets[i][1],
+                noise=training_data_sets[i][2]
+            )
+            if noise is None:
+                var = var
+            else:
+                var = var + noise[i]
+            means[i] = mean
+            standard_dev[i] = np.sqrt(var)
+            in_interval_1 = y[i] <= mean + 2.0*np.sqrt(var)
+            in_interval_2 = y[i] >= mean - 2.0*np.sqrt(var)
+            in_interval = in_interval_1 and in_interval_2
+            if in_interval:
+                number_correct += 1
+
+        plt.errorbar(np.arange(N), means, yerr=2.0 * standard_dev, fmt='o')
+        plt.scatter(np.arange(N), y, color='r')
+        plt.savefig("diagnostic_kernel.png")
+
+        return number_correct, len(y)
+
+    def params_posterior_gp(self, x, X, y, noise):
+        if noise is None:
+            noise = np.zeros(len(y))
+
+        cov = self._kernel.cov(X) + np.diag(noise)
+        chol = spla.cholesky(cov, lower=True)
+        solve = spla.cho_solve((chol, True), y - self.mean.value)
+
+        vec_cov = self._kernel.cross_cov(x, X)
+
+        mu_n = self.params['mean'].value + np.dot(vec_cov, solve)
+
+        solve_2 = spla.cho_solve((chol, True), vec_cov.transpose())
+        cov_n = self._kernel.cov(x) - np.dot(vec_cov, solve_2)
+
+        return mu_n, cov_n
 
     def _get_starting_points(self, n):
 
@@ -383,7 +498,6 @@ class K_Folds(AbstractModel):
         new_sampled = np.concatenate([new_sampled, mu*np.ones((n,1))],1)
 
         return new_sampled
-
 
     def _update_params_kernel(self, param):
         self.params['mean'].value = param[self.num_params-1]

@@ -55,7 +55,6 @@ class Matern52(AbstractKernel):
         return self.ls
 
     def cov(self, inputs):
-        inputs = inputs[:,0:4]
         return self.cross_cov(inputs, inputs)
 
     def diag_cov(self, inputs):
@@ -63,6 +62,8 @@ class Matern52(AbstractKernel):
         return np.ones(inputs.shape[0])
 
     def cross_cov(self, inputs_1, inputs_2):
+        inputs_1 = inputs_1[:, 0:4]
+        inputs_2 = inputs_2[:, 0:4]
         r2  = np.abs(kernel_utils.dist2(self.ls.value, inputs_1, inputs_2))
         r   = np.sqrt(r2)
         cov = (1.0 + SQRT_5*r + (5.0/3.0)*r2) * np.exp(-SQRT_5*r)
@@ -136,7 +137,6 @@ class multi_task(AbstractKernel):
         return self.ls
 
     def cov(self, inputs):
-        inputs = inputs[:, self.nFolds-1]
         return self.cross_cov(inputs, inputs)
 
     def diag_cov(self, inputs):
@@ -144,6 +144,8 @@ class multi_task(AbstractKernel):
         return np.ones(inputs.shape[0])
 
     def cross_cov(self, inputs_1, inputs_2):
+        inputs_1 = inputs_1[:, self.nFolds - 1]
+        inputs_2 = inputs_2[:, self.nFolds - 1]
         nP = len(inputs_1)
         C = np.zeros((nP, nP))
         s, t = np.meshgrid(inputs_1, inputs_2)
@@ -245,6 +247,9 @@ class ProductKernel(AbstractKernel):
                       [kernel.diag_cov(inputs) for kernel in self.kernels])
 
     def cross_cov(self, inputs_1, inputs_2):
+        values = self.ls.value
+        self.kernels[0].hypers.set_value(values[0:self.n1])
+        self.kernels[1].hypers.set_value(values[self.n1:])
         return reduce(lambda K1, K2: K1 * K2,
                       [kernel.cross_cov(inputs_1, inputs_2) for kernel in
                        self.kernels])

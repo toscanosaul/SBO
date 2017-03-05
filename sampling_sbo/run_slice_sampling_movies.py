@@ -55,13 +55,22 @@ if __name__ == '__main__':
     #yTrain = np.loadtxt("training_data/yTrain_100.txt")
     #yTrain = yTrain.reshape((XWtrain.shape[0], 1))
     #noise = np.loadtxt()
+
+    yTrain = np.loadtxt("observed_values1.txt")
+    XWtrain = np.loadtxt("observed_inputs1.txt")
+    noise = np.loadtxt("noise1.txt")
+    noise = (noise**2)/30.0
+    #print XWtrain
+    XWtrain = XWtrain[0:11,:]
+    yTrain = yTrain[0:11]
+    noise = noise[0:11]
     data = {}
-  #  data['X_data'] = XWtrain
-   # data['y'] = yTrain[:,0]
-    #data['noise'] = 1e-50*np.ones(len(yTrain[:,0]))
+    data['X_data'] = XWtrain
+    data['y'] = yTrain
+    data['noise'] = noise
     data['matern'] = mu
     data['log_multiKernel'] = log_multi
-    data['nEvals'] = 30
+    data['nEvals'] = 1
     data['dim_x'] = 4
     data['dim_w'] = 1
     data['evaluation_f'] = g
@@ -81,10 +90,14 @@ if __name__ == '__main__':
     model = K_Folds(num_dims, **data)
 
     #print model.evaluate_function([10,    1.0,    10        ,  166.        ,    1        ])
-    model.get_training_data(100)
+   # model.get_training_data(100)
 
 
-
+    print model.cross_validation_mle_parameters(
+      XWtrain,
+      yTrain,
+      noise
+    )
 
    # print (f2-f1)/dh - model._kernel.gradient(XWtrain)[17]
   #  print "grad"
