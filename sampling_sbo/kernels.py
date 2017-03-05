@@ -126,7 +126,7 @@ class multi_task(AbstractKernel):
 
         default_ls = Hyperparameter(
             initial_value=np.ones(self.num_dims),
-            prior=priors.Tophat(-50, 50),
+            prior=priors.Tophat(-10, 10),
             name='ls'
         )
 
