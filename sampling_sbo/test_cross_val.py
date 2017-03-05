@@ -151,6 +151,7 @@ pool = mp.Pool(processes=n_jobs)
 jobs={}
 jobs[i]=[]
 
+i=95
 
 for j in range(30):
     job = pool.apply_async(
@@ -164,6 +165,15 @@ for j in range(30):
 pool.close()
 pool.join()
 
+opt_values = {}
+for j in range(30):
+    opt_values[i] = []
+    try:
+        opt_values[i].append(jobs[i][j].get())
+    except Exception as e:
+        print "opt failed"
+
+
 
 with open('optimization.pickle', 'wb') as handle:
-    pickle.dump(jobs, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(opt_values, handle, protocol=pickle.HIGHEST_PROTOCOL)
