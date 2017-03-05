@@ -96,7 +96,8 @@ if __name__ == '__main__':
     print model.cross_validation_mle_parameters(
       XWtrain,
       yTrain,
-      noise
+      noise,
+      n_restarts=30
     )
 
    # print (f2-f1)/dh - model._kernel.gradient(XWtrain)[17]
