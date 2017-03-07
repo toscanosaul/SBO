@@ -138,10 +138,10 @@ if __name__ == '__main__':
 
     dhs=[1000.0,1.0,0.1,0.01,0.001, 0.0001, 1e-5,1e-6,1e-7,1e-8,1e-9,1e-10, 1e-11, 1e-12, 1e-13, 1e-15]
 
-    for dh in dhs:
-      new_point_2 = np.copy(new_point)
+   # for dh in dhs:
+   #   new_point_2 = np.copy(new_point)
      # print new_point_2
-      new_point_2[0,3] += dh
+    #  new_point_2[0,3] += dh
      # print new_point_2
 
 
