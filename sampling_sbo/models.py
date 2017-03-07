@@ -19,6 +19,7 @@ import multiprocessing as mp
 from utilities import kernOptWrapper
 from objective_function import Objective
 import matplotlib.pyplot as plt
+from acquisition import SBO
 
 
 try:
@@ -58,9 +59,10 @@ DEFAULT_BURNIN = 100
 
 class K_Folds(AbstractModel):
 
-    def __init__(self, num_dims, **options):
+    def __init__(self, num_dims, num_folds, **options):
         self.num_dims = num_dims
-        self.num_params = num_dims-1 + np.cumsum(np.arange(6))[-1] + 1
+        self.num_folds = num_folds
+        self.num_params = num_dims-1 + np.cumsum(np.arange(self.num_folds+1))[-1] + 1
        # self._set_likelihood(options)
 
         log.debug('GP received initialization options: %s' % (options))
@@ -74,6 +76,8 @@ class K_Folds(AbstractModel):
         self.noise = options.get('noise', None)
         self.noiseless = options.get('noiseless', True)
 
+        self.candidate_points = options.get('candidate_points', None)
+
         self.evaluation_f = options.get('evaluation_f', None)
         self.nEvals = int(options.get('nEvals', 1))
         self.dim_x = int(options.get('dim_x'))
@@ -83,8 +87,8 @@ class K_Folds(AbstractModel):
 
 
 
-        self.log_values_multikernel = options.get('log_multiKernel', np.ones(15))
-        self.values_matern = options.get('matern', np.ones(4))
+        self.log_values_multikernel = options.get('log_multiKernel', np.ones(np.cumsum(np.arange(self.num_folds+1))[-1]))
+        self.values_matern = options.get('matern', np.ones(self.dim_x))
 
         self.params = None
 
@@ -116,16 +120,14 @@ class K_Folds(AbstractModel):
             type_domain=self.type_domain
         )
 
-        multi = multi_task(15, self.num_dims )
+        multi = multi_task(np.cumsum(np.arange(self.num_folds+1))[-1], self.num_dims )
         matern = Matern52(self.num_dims)
 
         multi.ls.value = self.log_values_multikernel
         matern.hypers.value = self.values_matern
 
         params = [multi, matern]
-        self._kernel = ProductKernel(15, *params)
-
-
+        self._kernel = ProductKernel(np.cumsum(np.arange(self.num_folds+1))[-1], *params)
 
         # Build the mean function (just a constant mean for now)
         if self.observed_values is not None:
@@ -169,6 +171,21 @@ class K_Folds(AbstractModel):
             self.params['ls'],
             compwise=True,
             thinning=self.thinning
+        )
+
+        self.VOI = SBO(
+            n1=self.dim_x,
+            n2=self.dim_w,
+            kernel=self._kernel,
+            candidate_points=self.candidate_points,
+            mu=self.mean,
+            possible_values_w=np.arange(self.num_folds)
+        )
+
+        self.VOI.setup(
+            XW=self.observed_inputs,
+            y=self.observed_values,
+            noise=self.noise
         )
 
 
@@ -409,7 +426,7 @@ class K_Folds(AbstractModel):
                 [default_point, starting_points], 0
             )
 
-        np.savetxt("starting_ponts.txt", starting_points)
+        #np.savetxt("starting_ponts.txt", starting_points)
 
         try:
             pool = mp.Pool(processes=n_jobs)

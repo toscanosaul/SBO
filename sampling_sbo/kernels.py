@@ -39,6 +39,9 @@ class Matern52(AbstractKernel):
     def __init__(self, num_dims, length_scale=None, name='Matern52'):
         self.name = name
         self.num_dims = num_dims
+        #TO DO: ADD DIVISION_INPUT IN THE CONSTRUCTOR
+        self.n1 = 4
+        self.division_input = [0, 4]
 
         default_ls = Hyperparameter(
             initial_value = np.ones(self.num_dims),
@@ -58,12 +61,12 @@ class Matern52(AbstractKernel):
         return self.cross_cov(inputs, inputs)
 
     def diag_cov(self, inputs):
-        inputs = inputs[:,0:4]
+        inputs = inputs[:,self.division_input[0]:self.division_input[1]]
         return np.ones(inputs.shape[0])
 
     def cross_cov(self, inputs_1, inputs_2):
-        inputs_1 = inputs_1[:, 0:4]
-        inputs_2 = inputs_2[:, 0:4]
+        inputs_1 = inputs_1[:, self.division_input[0]:self.division_input[1]]
+        inputs_2 = inputs_2[:, self.division_input[0]:self.division_input[1]]
         r2  = np.abs(kernel_utils.dist2(self.ls.value, inputs_1, inputs_2))
         r   = np.sqrt(r2)
         cov = (1.0 + SQRT_5*r + (5.0/3.0)*r2) * np.exp(-SQRT_5*r)
@@ -76,7 +79,7 @@ class Matern52(AbstractKernel):
         return r2
 
     def gradient(self, inputs):
-        inputs = inputs[:, 0:4]
+        inputs = inputs[:, self.division_input[0]:self.division_input[1]]
         n1 = self.num_dims-1
         X = inputs
         derivate_respect_to_r = self.gradient_respect_distance(inputs)
@@ -98,7 +101,6 @@ class Matern52(AbstractKernel):
             grad.append(derivative_K_respect_to_alpha_i)
         return grad
 
-
     def gradient_respect_distance(self, inputs):
         r2 = self.compute_distance(inputs, inputs)
         r = np.sqrt(r2)
@@ -107,6 +109,39 @@ class Matern52(AbstractKernel):
         part_2 = (np.exp (-SQRT_5* r) * (SQRT_5 + (10.0/3.0) * r))
         derivate_respect_to_r = part_1 + part_2
         return derivate_respect_to_r
+
+    def gradient_respect_distance_cross(self, inputs_1, inputs_2):
+        r2 = self.compute_distance(inputs_1, inputs_2)
+        r = np.sqrt(r2)
+
+        part_1 = ((1.0 + SQRT_5*r + (5.0/3.0)*r2) * np.exp (-SQRT_5* r) * (-SQRT_5))
+        part_2 = (np.exp (-SQRT_5* r) * (SQRT_5 + (10.0/3.0) * r))
+        derivate_respect_to_r = part_1 + part_2
+        return derivate_respect_to_r
+
+
+    def grad_new_point(self, new, inputs):
+        """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
+                all the past observations XW[i,]. Sigma_{0} is the covariance of
+                the GP on F.
+        """
+        ##TO DO: GENERALIZE FOR THE CASE WHEN W isn't discrete and does depend on x?
+        inputs = inputs[:,self.division_input[0]:self.division_input[1]]
+        new = new[0:1,self.division_input[0]:self.division_input[1]]
+
+        N_points = inputs.shape[0]
+        gradXSigma0 = np.zeros([N_points + 1, self.n1])
+        gradWSigma0 = np.zeros([N_points + 1, 1])
+
+        derivate_respect_to_r = self.gradient_respect_distance_cross(new, inputs)
+        r2 = self.compute_distance(new, inputs)
+        r = np.sqrt(r2)
+
+        for i in range(self.n1):
+            factor = (self.ls.value[i] ** 2) * (new[0:1,i] - inputs[:,i]) / (r)
+            gradXSigma0[0:N_points,i] = derivate_respect_to_r * factor
+
+        return gradXSigma0, gradWSigma0
 
     def cross_cov_grad_data(self, inputs_1, inputs_2):
         # NOTE: This is the gradient wrt the inputs of inputs_2
@@ -123,6 +158,9 @@ class multi_task(AbstractKernel):
         self.name = name
         self.num_dims = num_dims
         self.nFolds = nFolds
+        #TO DO: ADD DIVISION_INPUT IN THE CONSTRUCTOR
+        self.division_input = 4
+        self.n1 = 4
 
         default_ls = Hyperparameter(
             initial_value=np.ones(self.num_dims),
@@ -140,12 +178,14 @@ class multi_task(AbstractKernel):
         return self.cross_cov(inputs, inputs)
 
     def diag_cov(self, inputs):
-        inputs = inputs[:, self.nFolds-1]
+        inputs = inputs[:, self.division_input]
         return np.ones(inputs.shape[0])
 
     def cross_cov(self, inputs_1, inputs_2):
-        inputs_1 = inputs_1[:, self.nFolds - 1]
-        inputs_2 = inputs_2[:, self.nFolds - 1]
+       # print inputs_2
+       # print self.division_input
+        inputs_1 = inputs_1[:, self.division_input]
+        inputs_2 = inputs_2[:, self.division_input]
         nP = len(inputs_1)
         C = np.zeros((nP, nP))
         s, t = np.meshgrid(inputs_1, inputs_2)
@@ -163,7 +203,7 @@ class multi_task(AbstractKernel):
         return T
 
     def gradient(self, inputs):
-        folds = inputs[:, self.nFolds-1]
+        folds = inputs[:,  self.division_input]
 
         derivative_cov_folds = {}
         count = 0
@@ -198,6 +238,20 @@ class multi_task(AbstractKernel):
             grad.append(der_K_respect_to_l)
         return grad
 
+    def grad_new_point(self, new, inputs):
+        """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
+                all the past observations XW[i,]. Sigma_{0} is the covariance of
+                the GP on F.
+        """
+        ##TO DO: GENERALIZE FOR THE CASE WHEN W isn't discrete and does depend on x?
+
+        N_points = inputs.shape[0]
+        gradXSigma0 = np.zeros([N_points + 1, self.n1])
+        gradWSigma0 = np.zeros([N_points + 1, 1])
+
+        return gradXSigma0, gradWSigma0
+
+
 
 
     def cross_cov_grad_data(self, inputs_1, inputs_2):
@@ -227,6 +281,7 @@ class ProductKernel(AbstractKernel):
 
         self.ls = default_ls
         self.n1 = n1
+        self.dim_x = 4
 
     @property
     def hypers(self):
@@ -282,3 +337,71 @@ class ProductKernel(AbstractKernel):
         return (((vprod[:, :, np.newaxis] * grads) / (vals + V)[:, :, :,
                                                      np.newaxis]) + (
                 V[:, :, :, np.newaxis] * grads)).sum(0)
+
+    def B_function(self, x, XW, discrete_uniform=True, possible_values_w=None):
+        """
+        -B: Computes B(x,XW)=\int\Sigma_{0}(x,w,XW[0:n1],XW[n1:n1+n2])dp(w).
+            Its arguments are:
+                -x: Vector of points where B is evaluated
+                -XW: Point (x,w)
+                -n1: Dimension of x
+                -n2: Dimension of w
+        """
+
+        cov = 0.0
+        N = 1.0
+
+        if discrete_uniform:
+            N = len(possible_values_w)
+            for value_w in possible_values_w:
+                w_Values = value_w * np.ones([x.shape[0],1])
+                x_values = np.concatenate([x, w_Values], 1)
+                cov += self.cross_cov(x_values,XW)
+
+        return cov / float(N)
+
+    def grad_new_point(self, new, inputs):
+        """Computes the vector of the gradients of Sigma_{0}(new,XW[i,:]) for
+                all the past observations XW[i,]. Sigma_{0} is the covariance of
+                the GP on F.
+        """
+        ##to do: generalize to the general case of x,w
+        N_points = inputs.shape[0]
+        gradXSigma0 = np.zeros([N_points + 1, self.n1])
+        gradWSigma0 = np.zeros([N_points + 1, 1])
+
+        first_grad = self.kernels[1].grad_new_point(new, inputs)
+        first_grad = (first_grad[0][0:N_points, :], first_grad[1][0:N_points, :])
+
+        kern_1 = self.kernels[0].cross_cov(new, inputs)[0,:]
+        kern_2 = self.kernels[1].cross_cov(new, inputs)[0,:]
+
+        second_grad = self.kernels[0].grad_new_point(new, inputs)
+        second_grad = (second_grad[0][0:N_points, :], second_grad[1][0:N_points, :])
+
+        for i in range(self.dim_x):
+
+            prod_1 = (kern_1 *first_grad[0][:,i], kern_1 * first_grad[1][:,0])
+
+            prod_2 = (kern_2 * second_grad[0][:,i], kern_2 * second_grad[1][:,0])
+            gradXSigma0[0:N_points, i] = prod_1[0] + prod_2[0]
+            gradWSigma0[0:N_points, 0] = prod_1[1] + prod_2[1]
+
+        return gradXSigma0, gradWSigma0
+
+    def grad_x_b_function(self, x, XW, discrete_uniform=True, possible_values_w=None):
+        """Computes the vector of gradients with respect to x_{n+1} of
+            B(x_{p},n+1)=\int\Sigma_{0}(x_{p},w,x_{n+1},w_{n+1})dp(w),
+            where x_{p} is a point in the discretization of the domain of x.
+        """
+
+        cov = 0.0
+        N = 1.0
+        if discrete_uniform:
+            N = len(possible_values_w)
+            for value_w in possible_values_w:
+                w_Values = value_w * np.ones([x.shape[0],1])
+                x_values = np.concatenate([x, w_Values], 1)
+                cov += self.grad_new_point(XW, x_values)[0]
+
+        return cov / float(N)
