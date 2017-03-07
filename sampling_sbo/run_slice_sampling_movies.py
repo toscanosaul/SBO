@@ -60,6 +60,11 @@ if __name__ == '__main__':
     XWtrain = np.loadtxt("observed_inputs1.txt")
     noise = np.loadtxt("noise1.txt")
     noise = (noise**2)/30.0
+    XWtrain = XWtrain.astype(float)
+    new_point = XWtrain[99:100,:]
+    XWtrain = XWtrain[0:99, :]
+    yTrain = yTrain[0:99]
+    noise = noise[0:99]
     #print XWtrain
     #XWtrain = XWtrain[0:11,:]
     #yTrain = yTrain[0:11]
@@ -78,6 +83,18 @@ if __name__ == '__main__':
     lower = [0.1, 0.01, 1, 1, 0]
     upper = [51, 1.01, 21, 201, 5]
 
+    nGrid = [7, 6, 11, 6]
+
+    domainX = []
+    for i in range(4):
+      domainX.append(np.linspace(lower[i], upper[i], nGrid[i]))
+
+    points = [[a, b, c, d] for a in domainX[0] for b in domainX[1] for c in
+              domainX[2] for d in domainX[3]]
+
+    points = np.array(points)
+
+
     domain = []
     for i in range(5):
       dict={}
@@ -87,21 +104,54 @@ if __name__ == '__main__':
 
     data['domain'] = domain
     data['type_domain'] = ['real', 'real', 'integer', 'integer', 'integer']
-    model = K_Folds(num_dims, **data)
+    data['candidate_points'] = points
 
+    model = K_Folds(num_dims, 5, **data)
+
+    model.get_training_data(900, signature='2')
+
+
+#    z= model.VOI.VOIfunc(
+ #     pointNew=new_point,
+  #    grad=True,
+   #   XW=XWtrain
+   # )
+
+    #print z
+
+    dhs=[1000.0,1.0,0.1,0.01,0.001, 0.0001, 1e-5,1e-6,1e-7,1e-8,1e-9,1e-10, 1e-11, 1e-12, 1e-13, 1e-15]
+
+    for dh in dhs:
+      new_point_2 = np.copy(new_point)
+     # print new_point_2
+      new_point_2[0,3] += dh
+     # print new_point_2
+
+
+  #    z_ = model.VOI.VOIfunc(
+   #     pointNew=new_point_2,
+    #    grad=False,
+     #   XW=XWtrain
+     # )
+    #  print z_
+     # print "grad"
+     # print (z_-z[0])/dh
+      ####Check gradients. Why voi is zero in 0,2
     #print model.evaluate_function([10,    1.0,    10        ,  166.        ,    1        ])
    # model.get_training_data(100)
 
+    # model.mle_parameters(n_restarts=2)
 
-    r= model.cross_validation_mle_parameters(
-      XWtrain,
-      yTrain,
-      noise,
-      n_restarts=30
-    )
 
-    np.savetxt("means_diag.txt",r[2])
-    np.savetxt("std_diag.txt",r[3])
+#    r= model.cross_validation_mle_parameters(
+#      XWtrain,
+#      yTrain,
+#      noise,
+#      n_restarts=30
+ #   )
+
+  #  np.savetxt("means_diag.txt",r[2])
+   # np.savetxt("std_diag.txt",r[3])
 
 
    # print (f2-f1)/dh - model._kernel.gradient(XWtrain)[17]
