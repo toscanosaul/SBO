@@ -74,7 +74,7 @@ class K_Folds(AbstractModel):
         self.observed_inputs = options.get('X_data', None)
         self.observed_values = options.get('y', None)
         self.noise = options.get('noise', None)
-        self.noiseless = options.get('noiseless', True)
+        self.noiseless = options.get('noiseless', False)
 
         self.candidate_points = options.get('candidate_points', None)
 
@@ -119,6 +119,11 @@ class K_Folds(AbstractModel):
             domain=self.domain,
             type_domain=self.type_domain
         )
+
+        if self.noiseless:
+            self.noise = 0.0
+        elif self.noise is None:
+            self.noise = np.zeros(self.observed_inputs.shape[0])
 
         multi = multi_task(np.cumsum(np.arange(self.num_folds+1))[-1], self.num_dims )
         matern = Matern52(self.num_dims)
@@ -182,11 +187,11 @@ class K_Folds(AbstractModel):
             possible_values_w=np.arange(self.num_folds)
         )
 
-        self.VOI.setup(
-            XW=self.observed_inputs,
-            y=self.observed_values,
-            noise=self.noise
-        )
+      #  self.VOI.setup(
+      #      XW=self.observed_inputs,
+      #      y=self.observed_values,
+      #      noise=self.noise
+      #  )
 
 
 
@@ -215,7 +220,11 @@ class K_Folds(AbstractModel):
         -----
         This is called by the samplers when fitting the hyperparameters.
         """
-        cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise)
+        N = self.observed_inputs.shape[0]
+        if self.noiseless:
+            cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise * np.ones(N))
+        else:
+            cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise)
 
         chol = spla.cholesky(cov, lower=True)
         solve = spla.cho_solve((chol, True),
@@ -252,14 +261,29 @@ class K_Folds(AbstractModel):
         return -np.sum(np.log(np.diag(L_r_theta_prime)))
 
     def grad_log_likelihood(self):
-        grad = np.zeros(self.num_params)
+        if self.noiseless:
+            grad = np.zeros(self.num_params + 1)
+
+        else:
+            grad = np.zeros(self.num_params)
         grad_cov = self._kernel.gradient(self.observed_inputs)
 
         for i in range(self.num_params-1):
             grad[i] = self._compute_gradient_llh(grad_cov[i])
 
         grad[self.num_params-1] = self._compute_gradient_mean()
+
+        if self.noiseless:
+            grad_noise = self.compute_gradient_noise_kernel()
+            grad[self.num_params] = self._compute_gradient_llh(grad_noise)
+
         return grad
+
+    def compute_gradient_noise_kernel(self):
+        N = self.observed_inputs.shape[0]
+        derivative_K_respect_to_noise = self.noise * np.identity(N)
+        return derivative_K_respect_to_noise
+
 
     def sample_f_given_g_theta(self, eta):
         L_r_theta = self.compute_chol_r()
@@ -304,15 +328,22 @@ class K_Folds(AbstractModel):
         return eta
 
     def _compute_gradient_mean(self):
-        cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise)
+        N = self.observed_inputs.shape[0]
+        if self.noiseless:
+            cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise * np.ones(N))
+        else:
+            cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise)
         chol = spla.cholesky(cov, lower=True)
         solve = spla.cho_solve((chol, True),
-                               -1.0 * np.ones(len(self.noise)))
+                               -1.0 * np.ones(N))
         return -1.0 * np.dot((self.observed_values - self.mean.value), solve)
 
     def _compute_gradient_llh(self, gradK):
-
-        cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise)
+        if self.noiseless:
+            N = self.observed_inputs.shape[0]
+            cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise * np.ones(N))
+        else:
+            cov = self._kernel.cov(self.observed_inputs) + np.diag(self.noise)
 
         chol = spla.cholesky(cov, lower=True)
         solve = spla.cho_solve((chol, True),
@@ -346,7 +377,12 @@ class K_Folds(AbstractModel):
             ls = ls.reshape([1, len(ls)])
             mean = np.array([mean]).reshape([1, 1])
 
-            default_point = np.concatenate([ls, mean], 1)
+            if self.noiseless:
+                noise = np.array([[self.noise]])
+                default_point = np.concatenate([ls, mean, noise], 1)
+            else:
+                default_point = np.concatenate([ls, mean], 1)
+
             if n_restarts == 1:
                 starting_points = default_point
             else:
@@ -385,6 +421,8 @@ class K_Folds(AbstractModel):
 
         self.params['ls'].value = opt[0][0:self.num_params-1]
         self.params['mean'].value = opt[0][self.num_params-1]
+        if self.noiseless:
+            self.noise = np.exp(opt[0][self.num_params])
 
         self.params_mle['ls'] = opt[0][0:self.num_params-1]
         self.params_mle['mean'] = opt[0][self.num_params-1]
@@ -415,8 +453,13 @@ class K_Folds(AbstractModel):
         ls = ls.reshape([1, len(ls)])
         mean = np.array([mean]).reshape([1, 1])
 
-        default_point = np.concatenate([ls, mean], 1)
 
+
+        if self.noiseless:
+            noise = np.array([[self.noise]])
+            default_point = np.concatenate([ls, mean, noise], 1)
+        else:
+            default_point = np.concatenate([ls, mean], 1)
 
         if n_restarts == 1:
             starting_points = default_point
@@ -468,16 +511,19 @@ class K_Folds(AbstractModel):
                 opt_solutions[i] = opt_values[i][j]
                 self.params['ls'].value = opt_solutions[i][0][0:self.num_params - 1]
                 self.params['mean'].value = opt_solutions[i][0][self.num_params - 1]
+                if self.noiseless:
+                    self.noise = np.exp(opt_solutions[i][0][self.num_params])
                 mean, var = self.params_posterior_gp(
                     x=XW[i:i+1,:],
                     X=training_data_sets[i][0],
                     y=training_data_sets[i][1],
                     noise=training_data_sets[i][2]
                 )
-                if noise is None:
-                    var = var
+                if self.noiseless:
+                    var = var + self.noise
                 else:
                     var = var + noise[i]
+
                 means[i] = mean
                 standard_dev[i] = np.sqrt(var)
                 in_interval_1 = y[i] <= mean + 2.0*np.sqrt(var)
@@ -499,7 +545,10 @@ class K_Folds(AbstractModel):
         if noise is None:
             noise = np.zeros(len(y))
 
-        cov = self._kernel.cov(X) + np.diag(noise)
+        if self.noiseless:
+            cov = self._kernel.cov(X) + np.diag(self.noise * np.ones(len(y)))
+        else:
+            cov = self._kernel.cov(X) + np.diag(noise)
         chol = spla.cholesky(cov, lower=True)
         solve = spla.cho_solve((chol, True), y - self.mean.value)
 
@@ -518,7 +567,12 @@ class K_Folds(AbstractModel):
 
         new_sampled = self._kernel.ls.sample_from_prior(n)
 
-        new_sampled = np.concatenate([new_sampled, mu*np.ones((n,1))],1)
+
+        if self.noiseless:
+            noise = np.random.uniform(-100, 100, (n,1))
+            new_sampled = np.concatenate([new_sampled, mu * np.ones((n, 1)), noise], 1)
+        else:
+            new_sampled = np.concatenate([new_sampled, mu*np.ones((n,1))],1)
 
         return new_sampled
 
@@ -527,6 +581,9 @@ class K_Folds(AbstractModel):
 
         for i in range(self.num_params-1):
             self.params['ls'].value[i] = param[i]
+
+        if self.noiseless:
+            self.noise = np.exp(param[self.num_params])
 
     def _burn_samples(self, num_samples):
         for i in xrange(num_samples):

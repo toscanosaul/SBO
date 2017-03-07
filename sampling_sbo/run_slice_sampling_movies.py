@@ -60,11 +60,12 @@ if __name__ == '__main__':
     XWtrain = np.loadtxt("observed_inputs1.txt")
     noise = np.loadtxt("noise1.txt")
     noise = (noise**2)/30.0
-    XWtrain = XWtrain.astype(float)
-    new_point = XWtrain[99:100,:]
-    XWtrain = XWtrain[0:99, :]
-    yTrain = yTrain[0:99]
-    noise = noise[0:99]
+    noise = np.zeros(len(noise))
+   # XWtrain = XWtrain.astype(float)
+   # new_point = XWtrain[99:100,:]
+   # XWtrain = XWtrain[0:99, :]
+   # yTrain = yTrain[0:99]
+   # noise = noise[0:99]
     #print XWtrain
     #XWtrain = XWtrain[0:11,:]
     #yTrain = yTrain[0:11]
@@ -72,7 +73,8 @@ if __name__ == '__main__':
     data = {}
     data['X_data'] = XWtrain
     data['y'] = yTrain
-    data['noise'] = noise
+  #  data['noise'] = noise
+    data['noiseless'] = True
     data['matern'] = mu
     data['log_multiKernel'] = log_multi
     data['nEvals'] = 1
@@ -106,9 +108,24 @@ if __name__ == '__main__':
     data['type_domain'] = ['real', 'real', 'integer', 'integer', 'integer']
     data['candidate_points'] = points
 
+  #  noise = 2.0
     model = K_Folds(num_dims, 5, **data)
 
-    model.get_training_data(900, signature='2')
+   # print model.mle_parameters()
+ #   model.noise = np.exp(noise)
+ #   model_2 = K_Folds(num_dims, 5, **data)
+ #   print model.log_likelihood()
+ #   print model.grad_log_likelihood()
+ #   dh = 0.0001
+ #   model_2.noise += np.exp(noise+dh)
+ #   print model_2.log_likelihood()
+ #   print (model_2.log_likelihood() - model.log_likelihood())/dh
+
+
+#    print model.log_likelihood()
+
+
+    #model.get_training_data(900, signature='2')
 
 
 #    z= model.VOI.VOIfunc(
@@ -143,15 +160,15 @@ if __name__ == '__main__':
     # model.mle_parameters(n_restarts=2)
 
 
-#    r= model.cross_validation_mle_parameters(
-#      XWtrain,
-#      yTrain,
-#      noise,
-#      n_restarts=30
- #   )
+    r= model.cross_validation_mle_parameters(
+        XWtrain,
+        yTrain,
+        noise,
+        n_restarts=30
+      )
 
-  #  np.savetxt("means_diag.txt",r[2])
-   # np.savetxt("std_diag.txt",r[3])
+    np.savetxt("means_diag.txt",r[2])
+    np.savetxt("std_diag.txt",r[3])
 
 
    # print (f2-f1)/dh - model._kernel.gradient(XWtrain)[17]
