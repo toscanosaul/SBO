@@ -18,9 +18,11 @@ from joblib import Parallel, delayed
 import multiprocessing as mp
 from utilities import kernOptWrapper
 from utilities import voi_opt_wrapper
+from utilities import voi_an_wrapper
 from objective_function import Objective
 import matplotlib.pyplot as plt
 from acquisition import SBO
+from statistics import SBO_stats
 
 
 try:
@@ -87,6 +89,7 @@ class K_Folds(AbstractModel):
         self.type_domain = options.get('type_domain', None)
 
         self.number_restarts_voi = options.get('n_restarts_voi', 1)
+        self.number_restarts_an = options.get('n_restarts_an', 1)
 
 
 
@@ -126,6 +129,7 @@ class K_Folds(AbstractModel):
 
         if self.noiseless and self.noise is None:
             self.noise=0.0
+
         elif self.noise is None and not self.noiseless:
             self.noise = np.zeros(self.observed_inputs.shape[0])
 
@@ -191,8 +195,21 @@ class K_Folds(AbstractModel):
             possible_values_w=np.arange(self.num_folds)
         )
 
+        self.SBO_stats = SBO_stats(
+            kernel=self._kernel,
+            n1=self.dim_x,
+            n2=self.dim_w,
+            mean=self.mean,
+            possible_values_w=np.arange(self.num_folds)
+        )
+
+
+
     def run_sbo(self, iterations=1):
         for iteration in range(iterations):
+
+            optimal_solution, optimal_value = self.get_optimal_point(self.number_restarts_an)
+
             point_to_sample, value_point = self.get_next_point_af(
                 self.number_restarts_voi
             )
@@ -202,9 +219,78 @@ class K_Folds(AbstractModel):
             if not self.noiseless:
                 self.noise = np.concatenate((self.observed_values, [value_point[1]]))
 
+            print optimal_solution, optimal_value
 
-    def get_optimal_point(self, starting_point):
-        return
+    def minus_expectation(self, x, XW, y):
+        x = x.reshape((1, len(x)))
+        result = self.SBO_stats.aN_grad(
+              x,
+              XW,
+              y,
+              gradient=False
+        )
+
+        return -1.0 * result
+
+    def minus_gradient_expectation(self, x, XW, y):
+        x = x.reshape((1, len(x)))
+        result = self.SBO_stats.aN_grad(
+              x,
+              XW,
+              y,
+              gradient=True,
+              onlyGradient=True
+        )
+
+        return -1.0 * result
+
+
+
+    def get_optimal_point(self, n_restarts=1):
+        if self.noiseless:
+            noise_an = self.noise * np.ones(self.observed_inputs.shape[0])
+
+        self.SBO_stats.setup(
+            XW=self.observed_inputs,
+            noise=noise_an
+        )
+
+        starting_points = self.objective_function.generate_random_points_in_domain(
+            n_restarts,
+            only_x=True
+        )
+
+        if n_restarts == 1:
+            result = fmin_l_bfgs_b(self.minus_expectation,
+                                   starting_points[0,:],
+                                   self.minus_gradient_expectation,
+                                   args=(self.observed_inputs,self.observed_values,)
+                                   )
+        else:
+            n_jobs = mp.cpu_count()
+            jobs = []
+            pool = mp.Pool(processes=n_jobs)
+
+            for i in range(n_restarts):
+                job = pool.apply_async(
+                    voi_an_wrapper, args=(self, starting_points[i, :], )
+                )
+                jobs.append(job)
+
+            pool.close()
+            pool.join()
+
+            opt_values = []
+
+            for i in range(n_restarts):
+                try:
+                    opt_values.append(jobs[i].get())
+                except Exception as e:
+                    print "opt_an failed"
+            j = np.argmin([o[1] for o in opt_values])
+            result = opt_values[j]
+
+        return result[0], result[1]
 
     def minus_voi(self, x, w, XW):
         w = np.array([[w]])

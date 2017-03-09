@@ -14,7 +14,7 @@ class SBO(object):
         self.possible_values_w = possible_values_w
         self.kernel = kernel
         self._points = candidate_points
-        self.mean = mu.value
+        self.mean = mu
 
     def setup(self, XW, y, noise=None):
         if noise is None:
@@ -45,7 +45,7 @@ class SBO(object):
 
         self.scratch = scratch
 
-        muStartt = self.mean
+        muStartt = self.mean.value
 
         temp2t = linalg.solve_triangular(chol, (Bhist).T, lower=True)
         temp1t = linalg.solve_triangular(chol, y - muStartt, lower=True)

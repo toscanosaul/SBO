@@ -84,6 +84,7 @@ if __name__ == '__main__':
     data['nEvals'] = 1
     data['dim_x'] = 4
     data['dim_w'] = 1
+    data['n_restarts_an'] = 10
     data['evaluation_f'] = g
 
     lower = [0.1, 0.01, 1, 1, 0]
@@ -114,10 +115,51 @@ if __name__ == '__main__':
 
   #  noise = 2.0
     model = K_Folds(num_dims, 5, **data)
-    print model.observed_inputs.shape
-    model.run_sbo(1)
-    print model.observed_values
-    print model.observed_inputs.shape
+    model.run_sbo()
+    dfg
+    self=model
+
+    noise_an = self.noise * np.ones(self.observed_inputs.shape[0])
+
+    self.get_optimal_point()
+
+    self.SBO_stats.setup(
+      XW=self.observed_inputs,
+      noise=noise_an
+    )
+    print new_point[0:1,0:4]
+
+
+#x, Xhist, yHist, gradient = True, onlyGradient = False,
+
+    z,grad =model.SBO_stats.aN_grad(
+      new_point[0:1, 0:4],
+      self.observed_inputs,
+      self.observed_values,
+      gradient=True
+    )
+
+    dh = 0.00000001
+    new_point_2 = np.copy(new_point[0:1, 0:4])
+    # print new_point_2
+    new_point_2[0, 3] += dh
+
+    z_= model.SBO_stats.aN_grad(
+      new_point_2,
+      self.observed_inputs,
+      self.observed_values,
+      gradient=False)
+
+    print "Grad"
+    print (z_ -z)/dh
+
+    print grad
+
+
+
+    #print model.observed_inputs.shape
+   # model.run_sbo(1)
+
     ddf
     #model.mle_parameters(n_restarts=50)
 

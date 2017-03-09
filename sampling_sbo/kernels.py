@@ -405,3 +405,19 @@ class ProductKernel(AbstractKernel):
                 cov += self.grad_new_point(XW, x_values)[0]
 
         return cov / float(N)
+
+    def grad_x_b_function_an(self, x, XW, discrete_uniform=True, possible_values_w=None):
+        """Computes the gradient of B(x,i) for i in {1,...,n+nTraining}
+           where nTraining is the number of training points
+        """
+
+        cov = 0.0
+        N = 1.0
+        if discrete_uniform:
+            N = len(possible_values_w)
+            for value_w in possible_values_w:
+                w_Values = value_w * np.ones([x.shape[0],1])
+                x_values = np.concatenate([x, w_Values], 1)
+                cov += self.grad_new_point(x_values, XW)[0]
+        cov = cov[0:cov.shape[0]-1,:]
+        return cov / float(N)

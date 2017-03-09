@@ -28,3 +28,13 @@ def voi_opt_wrapper(m, start, *args):
 
     return result
 
+def voi_an_wrapper(m, start):
+    result = fmin_l_bfgs_b(m.minus_expectation,
+                           start,
+                           m.minus_gradient_expectation,
+                           args=(m.observed_inputs,m.observed_values, )
+                           )
+
+    return result
+
+
