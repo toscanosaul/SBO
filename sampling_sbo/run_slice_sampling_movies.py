@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
   #  noise = 2.0
     model = K_Folds(num_dims, 5, **data)
-    model.run_sbo(iterations=2)
+    model.run_sbo(iterations=1000)
     dfg
     self=model
 
