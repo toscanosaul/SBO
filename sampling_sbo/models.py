@@ -278,9 +278,11 @@ class K_Folds(AbstractModel):
         point_to_sample = self.move_point_to_domain(point_to_sample)
 
         point_to_sample = np.concatenate((point_to_sample, [j]))
-        point_to_sample = point_to_sample.reshape((1 , len(point_to_sample)))
+
 
         value_point = self.objective_function.evaluate_function(point_to_sample)
+
+        point_to_sample = point_to_sample.reshape((1, len(point_to_sample)))
 
         return point_to_sample, value_point
 
