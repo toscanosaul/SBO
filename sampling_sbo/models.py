@@ -191,6 +191,21 @@ class K_Folds(AbstractModel):
             possible_values_w=np.arange(self.num_folds)
         )
 
+    def run_sbo(self, iterations=1):
+        for iteration in range(iterations):
+            point_to_sample, value_point = self.get_next_point_af(
+                self.number_restarts_voi
+            )
+            self.observed_inputs = np.concatenate((self.observed_inputs, point_to_sample),0)
+            self.observed_values = np.concatenate((self.observed_values, [value_point[0]]))
+
+            if not self.noiseless:
+                self.noise = np.concatenate((self.observed_values, [value_point[1]]))
+
+
+    def get_optimal_point(self, starting_point):
+        return
+
     def minus_voi(self, x, w, XW):
         w = np.array([[w]])
         x = x.reshape((1, len(x)))
@@ -262,15 +277,12 @@ class K_Folds(AbstractModel):
         point_to_sample = opt[0]
         point_to_sample = self.move_point_to_domain(point_to_sample)
 
+        point_to_sample = np.concatenate((point_to_sample, [j]))
+        point_to_sample = point_to_sample.reshape((1 , len(point_to_sample)))
 
+        value_point = self.objective_function.evaluate_function(point_to_sample)
 
-
-      #  print ([o[1] for o in results])
-      #  print j
-      #  print opt
-
-        print "end"
-        return opt, j
+        return point_to_sample, value_point
 
 
     def move_point_to_domain(self, x):
