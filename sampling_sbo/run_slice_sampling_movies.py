@@ -49,6 +49,7 @@ if __name__ == '__main__':
           -1.79366753e+01 , -1.65765782e+01 , -1.79260710e+01])
 
     mu = [1.72004110e+00, 1.01494883e+00 ,  5.52864499e+11 ,  9.34277539e+02]
+   # mu = [1.72004110e+00, 1.01494883e+00, 5.52864499e+02, 9.34277539e+02]
     num_dims = 5
 
    # XWtrain = np.loadtxt("training_data/XWtrain_100_points.txt")
@@ -62,14 +63,16 @@ if __name__ == '__main__':
     noise = (noise**2)/30.0
     noise = np.zeros(len(noise))
    # XWtrain = XWtrain.astype(float)
-   # new_point = XWtrain[99:100,:]
-   # XWtrain = XWtrain[0:99, :]
-   # yTrain = yTrain[0:99]
+    new_point = XWtrain[99:100,:]
+    XWtrain = XWtrain[0:99, :]
+    yTrain = yTrain[0:99]
    # noise = noise[0:99]
     #print XWtrain
     #XWtrain = XWtrain[0:11,:]
     #yTrain = yTrain[0:11]
     #noise = noise[0:11]
+    noise = 30.339
+    noise = 0.0
     data = {}
     data['X_data'] = XWtrain
     data['y'] = yTrain
@@ -111,7 +114,21 @@ if __name__ == '__main__':
 
   #  noise = 2.0
     model = K_Folds(num_dims, 5, **data)
-    print model.mle_parameters(n_restarts=50)
+
+    print model.get_next_point_af(n_restarts =1)
+    ddf
+    #model.mle_parameters(n_restarts=50)
+
+    sbo = model.VOI
+
+    self=model
+    noise_voi = self.noise * np.ones(self.observed_inputs.shape[0])
+    sbo.setup(
+          XW=self.observed_inputs,
+          y=self.observed_values,
+          noise=noise_voi
+    )
+
 
    # print model.mle_parameters()
  #   model.noise = np.exp(noise)
@@ -130,31 +147,31 @@ if __name__ == '__main__':
     #model.get_training_data(900, signature='2')
 
 
-#    z= model.VOI.VOIfunc(
- #     pointNew=new_point,
-  #    grad=True,
-   #   XW=XWtrain
-   # )
+    z= model.VOI.VOIfunc(
+      pointNew=new_point,
+      grad=True,
+      XW=XWtrain
+    )
+    print "this gradient is"
+    print z
 
-    #print z
+    dhs=[10e16,10e14,10e13,10e12,10e11,10e10,10e9,10e8,10e7,10e6,10e5,10e4,1000.0,1.0,0.1,0.01,0.001, 0.0001, 1e-5,1e-6,1e-7,1e-8,1e-9,1e-10, 1e-11, 1e-12, 1e-13, 1e-15]
 
-    dhs=[1000.0,1.0,0.1,0.01,0.001, 0.0001, 1e-5,1e-6,1e-7,1e-8,1e-9,1e-10, 1e-11, 1e-12, 1e-13, 1e-15]
-
-   # for dh in dhs:
-   #   new_point_2 = np.copy(new_point)
+    for dh in dhs:
+      new_point_2 = np.copy(new_point)
      # print new_point_2
-    #  new_point_2[0,3] += dh
+      new_point_2[0,2] += dh
      # print new_point_2
 
 
-  #    z_ = model.VOI.VOIfunc(
-   #     pointNew=new_point_2,
-    #    grad=False,
-     #   XW=XWtrain
-     # )
-    #  print z_
-     # print "grad"
-     # print (z_-z[0])/dh
+      z_ = model.VOI.VOIfunc(
+        pointNew=new_point_2,
+        grad=False,
+        XW=XWtrain
+      )
+     # print z_
+      print "grad"
+      print (z_-z[0])/dh
       ####Check gradients. Why voi is zero in 0,2
     #print model.evaluate_function([10,    1.0,    10        ,  166.        ,    1        ])
    # model.get_training_data(100)

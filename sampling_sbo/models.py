@@ -17,6 +17,7 @@ from abc import ABCMeta, abstractmethod
 from joblib import Parallel, delayed
 import multiprocessing as mp
 from utilities import kernOptWrapper
+from utilities import voi_opt_wrapper
 from objective_function import Objective
 import matplotlib.pyplot as plt
 from acquisition import SBO
@@ -85,6 +86,8 @@ class K_Folds(AbstractModel):
         self.domain = options.get('domain')
         self.type_domain = options.get('type_domain', None)
 
+        self.number_restarts_voi = options.get('n_restarts_voi', 1)
+
 
 
         self.log_values_multikernel = options.get('log_multiKernel', np.ones(np.cumsum(np.arange(self.num_folds+1))[-1]))
@@ -120,9 +123,10 @@ class K_Folds(AbstractModel):
             type_domain=self.type_domain
         )
 
-        if self.noiseless:
-            self.noise = 0.0
-        elif self.noise is None:
+
+        if self.noiseless and self.noise is None:
+            self.noise=0.0
+        elif self.noise is None and not self.noiseless:
             self.noise = np.zeros(self.observed_inputs.shape[0])
 
         multi = multi_task(np.cumsum(np.arange(self.num_folds+1))[-1], self.num_dims )
@@ -187,12 +191,93 @@ class K_Folds(AbstractModel):
             possible_values_w=np.arange(self.num_folds)
         )
 
-      #  self.VOI.setup(
-      #      XW=self.observed_inputs,
-      #      y=self.observed_values,
-      #      noise=self.noise
-      #  )
+    def minus_voi(self, x, w, XW):
+        w = np.array([[w]])
+        x = x.reshape((1, len(x)))
+        x_point = np.concatenate([x, w], 1)
+        result = self.VOI.VOIfunc(
+            pointNew=x_point,
+            grad=False,
+            XW=XW
+        )
 
+        return -1.0 * result
+
+    def minus_grad_voi(self, x, w, XW):
+        w = np.array([[w]])
+        x = x.reshape((1, len(x)))
+        x_point = np.concatenate([x, w], 1)
+        result = self.VOI.VOIfunc(
+            pointNew=x_point,
+            grad=True,
+            onlyGradient=True,
+            XW=XW
+        )
+
+        return -1.0 * result
+
+    def get_next_point_af(self, n_restarts=1):
+        if self.noiseless:
+            noise_voi = self.noise * np.ones(self.observed_inputs.shape[0])
+
+        self.VOI.setup(
+            XW=self.observed_inputs,
+            y=self.observed_values,
+            noise=noise_voi
+        )
+
+        starting_points = self.objective_function.generate_random_points_in_domain(
+            n_restarts,
+            only_x=True
+        )
+
+        n_jobs = mp.cpu_count()
+        results = []
+        jobs = []
+        pool = mp.Pool(processes=n_jobs)
+
+        for fold in range(self.num_folds):
+            for i in range(n_restarts):
+                job = pool.apply_async(
+                    voi_opt_wrapper, args=(self, starting_points[i, :], fold,)
+                )
+                jobs.append(job)
+
+        pool.close()
+        pool.join()
+        opt_values = {}
+        for fold in range(self.num_folds):
+            opt_values[fold] = []
+            for i in range(n_restarts):
+                try:
+                    opt_values[fold].append(jobs[fold*n_restarts + i].get())
+                except Exception as e:
+                    print "opt_voi failed"
+            j = np.argmin([o[1] for o in opt_values[fold]])
+            results.append(opt_values[fold][j])
+
+        j = np.argmin([o[1] for o in results])
+        opt = results[j]
+
+        point_to_sample = opt[0]
+        point_to_sample = self.move_point_to_domain(point_to_sample)
+
+
+
+
+        print ([o[1] for o in results])
+        print j
+        print opt
+
+        print "end"
+        return opt
+
+
+    def move_point_to_domain(self, x):
+        for i in range(len(x)):
+            if self.type_domain[i] == 'integer':
+                x[i] = int(round(x[i]))
+        return x
 
 
     def get_training_data(self, n, signature='1'):

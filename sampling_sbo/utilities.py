@@ -1,4 +1,4 @@
-
+from scipy.optimize import fmin_l_bfgs_b
 
 def kernOptWrapper(m, start , *args):
     """
@@ -17,4 +17,14 @@ def kernOptWrapper(m, start , *args):
     result = m.do_optimization(start=start)
     return result
 
+
+def voi_opt_wrapper(m, start, *args):
+    args = args[0]
+    result = fmin_l_bfgs_b(m.minus_voi,
+                           start,
+                           m.minus_grad_voi,
+                           args=(args, m.observed_inputs, )
+                           )
+
+    return result
 

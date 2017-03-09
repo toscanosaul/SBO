@@ -138,7 +138,7 @@ class Matern52(AbstractKernel):
         r = np.sqrt(r2)
 
         for i in range(self.n1):
-            factor = (self.ls.value[i] ** 2) * (new[0:1,i] - inputs[:,i]) / (r)
+            factor = (1.0 / (self.ls.value[i] ** 2)) * (new[0:1,i] - inputs[:,i]) / (r)
             gradXSigma0[0:N_points,i] = derivate_respect_to_r * factor
 
         return gradXSigma0, gradWSigma0
@@ -367,7 +367,7 @@ class ProductKernel(AbstractKernel):
         """
         ##to do: generalize to the general case of x,w
         N_points = inputs.shape[0]
-        gradXSigma0 = np.zeros([N_points + 1, self.n1])
+        gradXSigma0 = np.zeros([N_points + 1, self.dim_x])
         gradWSigma0 = np.zeros([N_points + 1, 1])
 
         first_grad = self.kernels[1].grad_new_point(new, inputs)

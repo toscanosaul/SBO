@@ -71,8 +71,12 @@ class Objective(object):
 
         return evaluations
 
-    def generate_random_points_in_domain(self, n):
-        points = np.zeros([n, self.dim_x+self.dim_w])
+    def generate_random_points_in_domain(self, n, only_x=False):
+        if only_x:
+            points = np.zeros([n, self.dim_x])
+        else:
+            points = np.zeros([n, self.dim_x+self.dim_w])
+
         for i in range(self.dim_x):
             if self.type_domain[i] == 'real':
                 points[:,i] = np.random.uniform(
@@ -86,6 +90,8 @@ class Objective(object):
                     self.domain[i]['upper'],
                     n
                 )
+        if only_x:
+            return points
 
         for j in range(self.dim_w):
             if self.type_domain[self.dim_x+j] == 'real':
