@@ -115,7 +115,7 @@ if __name__ == '__main__':
   #  noise = 2.0
     model = K_Folds(num_dims, 5, **data)
 
-    print model.get_next_point_af(n_restarts =1)
+    print model.get_next_point_af(n_restarts =10)
     ddf
     #model.mle_parameters(n_restarts=50)
 
