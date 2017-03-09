@@ -23,6 +23,7 @@ from objective_function import Objective
 import matplotlib.pyplot as plt
 from acquisition import SBO
 from statistics import SBO_stats
+import pickle
 
 
 try:
@@ -203,12 +204,24 @@ class K_Folds(AbstractModel):
             possible_values_w=np.arange(self.num_folds)
         )
 
+        self.optimal_solutions = []
+        self.optimal_values = []
+
 
 
     def run_sbo(self, iterations=1):
         for iteration in range(iterations):
 
             optimal_solution, optimal_value = self.get_optimal_point(self.number_restarts_an)
+            self.optimal_solutions.append(optimal_solution)
+            self.optimal_values.append(optimal_value)
+            with open('solutions.pickle', 'wb') as handle:
+                pickle.dump(self.optimal_solutions, handle,
+                            protocol=pickle.HIGHEST_PROTOCOL)
+
+            with open('optimal_values.pickle', 'wb') as handle:
+                pickle.dump(self.optimal_values, handle,
+                            protocol=pickle.HIGHEST_PROTOCOL)
 
             point_to_sample, value_point = self.get_next_point_af(
                 self.number_restarts_voi
@@ -219,7 +232,20 @@ class K_Folds(AbstractModel):
             if not self.noiseless:
                 self.noise = np.concatenate((self.observed_values, [value_point[1]]))
 
-            print optimal_solution, optimal_value
+            np.savetxt("final_inputs.txt", self.observed_inputs)
+            np.savetxt("final_values.txt", self.observed_values)
+
+        optimal_solution, optimal_value = self.get_optimal_point(self.number_restarts_an)
+        self.optimal_solutions.append(optimal_solution)
+        self.optimal_values.append(optimal_value)
+
+        with open('solutions.pickle', 'wb') as handle:
+            pickle.dump(self.optimal_solutions, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        with open('optimal_values.pickle', 'wb') as handle:
+            pickle.dump(self.optimal_values, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
 
     def minus_expectation(self, x, XW, y):
         x = x.reshape((1, len(x)))
@@ -290,7 +316,7 @@ class K_Folds(AbstractModel):
             j = np.argmin([o[1] for o in opt_values])
             result = opt_values[j]
 
-        return result[0], result[1]
+        return result[0], -1.0 * result[1]
 
     def minus_voi(self, x, w, XW):
         w = np.array([[w]])

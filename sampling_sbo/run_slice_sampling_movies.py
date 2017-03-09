@@ -85,6 +85,7 @@ if __name__ == '__main__':
     data['dim_x'] = 4
     data['dim_w'] = 1
     data['n_restarts_an'] = 10
+    data['n_restarts_voi'] = 10
     data['evaluation_f'] = g
 
     lower = [0.1, 0.01, 1, 1, 0]
@@ -115,7 +116,7 @@ if __name__ == '__main__':
 
   #  noise = 2.0
     model = K_Folds(num_dims, 5, **data)
-    model.run_sbo()
+    model.run_sbo(iterations=2)
     dfg
     self=model
 
