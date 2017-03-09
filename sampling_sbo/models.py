@@ -265,12 +265,12 @@ class K_Folds(AbstractModel):
 
 
 
-        print ([o[1] for o in results])
-        print j
-        print opt
+      #  print ([o[1] for o in results])
+      #  print j
+      #  print opt
 
         print "end"
-        return opt
+        return opt, j
 
 
     def move_point_to_domain(self, x):
